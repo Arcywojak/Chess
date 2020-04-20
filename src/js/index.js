@@ -1,3 +1,1 @@
-console.log("HELLO gasdy");
-
-const name = "name";
+console.log("hello");
