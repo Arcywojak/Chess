@@ -51,6 +51,10 @@ const innerBoard = document.querySelector(".board-inner"),
             "queen": [],
             "king": []
         }
+    },
+    activeCounterPosition = {
+        "x": null,
+        "y": null
     };
 
 
@@ -77,9 +81,11 @@ export const initPositionOfCounters = (team, counterName) => {
         const div = document.createElement("div");
 
         div.classList.add(
+            "field",
+            `x${counterArray[i].position.x / 78.5}`,
+            `y${counterArray[i].position.y / 78.5}`,
             `${team}`,
-            `${counterName}`,
-            `nr${i}`
+            `${counterName}`
         );
 
         const imageOfCounter = document.createElement("img");
@@ -135,5 +141,32 @@ export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = n
         typeOfCounter
     );
 
+
+};
+export const initOtherFields = () => {
+
+    for (let x = 0; x <= 7; x++) {
+
+        for (let y = 2; y <= 5; y++) {
+
+            const div = document.createElement("div");
+
+            div.classList.add(
+                "field",
+                `x${x}`,
+                `y${y}`
+            );
+
+            div.style.webkitTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
+            div.style.MozTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
+            div.style.msTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
+            div.style.OTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
+            div.style.transform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
+
+            innerBoard.appendChild(div);
+
+        }
+
+    }
 
 };

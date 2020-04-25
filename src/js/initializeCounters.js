@@ -1,4 +1,4 @@
-import {initCounters} from "./initFunctions.js";
+import {initCounters, initOtherFields} from "./initFunctions.js";
 
 /** ******* INITIALIZE COUNTERS *********/
 initCounters(
@@ -177,3 +177,7 @@ initCounters(
 );
 
 /** ****************************************/
+
+/** INIT OTHER FIELDS */
+
+initOtherFields();
