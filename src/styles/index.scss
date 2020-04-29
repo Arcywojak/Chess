@@ -18,6 +18,11 @@ body{
     background-repeat: no-repeat; 
     background-size: 100vw 100vh;
     @include flexCenter;
+
+    &-inner{
+        display: flex;
+        align-items: flex-start;
+    }
 }
 .board{
     background-image: url('/src/assets/board.jpg'); 
@@ -30,7 +35,7 @@ body{
     &-inner{
         width:89.71428%;
         height:89.71428%;
-        transform: translate(-0.85px, -1.5px);
+        transform: translate(-1.35px, -1.5px);
     }
 }
 .white,.black{
@@ -38,10 +43,12 @@ body{
     width:78.5px;
     height:78.5px;
     cursor: pointer;
+    
 
     img{
         width:100%;
         height:100%;
+        z-index: -1;
     }
 }
 .active{
@@ -55,16 +62,68 @@ body{
 .to-move{
     cursor: pointer;
 }
+.to-move::before{
+    content:'';
+    position: absolute;
+    left:0;
+    right:0;
+    top: 0;
+    margin: 0 auto;
+    width:77px;
+    height: 77px;
+    background-color: transparent;
+    border-radius: 50%;
+    opacity: .5;
+}
+
 .to-move::after{
     content:'';
     position: absolute;
     left:0;
     right:0;
-    top: calc(50% - 20px);
+    top: calc(50% - 10px);
     margin: 0 auto;
-    width:40px;
-    height: 40px;
+    width:20px;
+    height: 20px;
     background-color: red;
     border-radius: 50%;
     opacity: .5;
+}
+
+.game-info{
+    width:300px;
+    height: 300px;
+    background-color: #fefefe;
+    border:2px solid black;
+    margin-left: 30px;
+
+    &-h2{
+        text-align: center;
+    }
+}
+.last-move{
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+   z-index: -1;
+    
+    background-color: rgba(51, 170, 51, .5)    /*  10% opaque green */ ;
+}
+.danger::after{
+    content:"";
+    position: absolute;
+    display: block;
+    width:50%;
+    height: 50%;
+    top: 28%;   
+    left: 25%;
+   z-index: -1;
+    opacity: .5;
+    background-color: red;
+    border-radius: 50%;
+    -webkit-box-shadow: 0px 0px 14px 21px rgba(255,0,0,1);
+    -moz-box-shadow: 0px 0px 14px 21px rgba(255,0,0,1);
+    box-shadow: 0px 0px 14px 21px rgba(255,0,0,1);
 }

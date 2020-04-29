@@ -332,16 +332,80 @@ getRookMoves = (team, x, y) => {
             tabOfMoves.push({x:x, y:y+i});
     }
 
-    console.log(tabOfMoves)
+    
 
     return tabOfMoves;
 }
 
 getQueenMoves = (team, x, y) => {
     const rookPower = getRookMoves(team, x, y);
-    const bishoPower = getBishopMoves(team, x, y);
-
-    const queenMoves = rookPower.concat(bishoPower);
+    const bishopPower = getBishopMoves(team, x, y);
+    const queenMoves = rookPower.concat(bishopPower);
 
     return queenMoves;
+}
+
+getKingMoves = (team, x, y) => {
+    const enemy = team === "white" ? "black" : "white";
+    let takenField;
+    let field;
+    let filteredTab = [];
+
+    let tabOfMoves = [
+        {
+            x:x,
+            y:y-1
+        },
+        {
+            x:x,
+            y:y+1
+        },
+        {
+            x:x-1,
+            y:y
+        },
+        {
+            x:x+1,
+            y:y
+        },
+        {
+            x:x-1,
+            y:y-1
+        },
+        {
+            x:x+1,
+            y:y+1
+        },
+        {
+            x:x-1,
+            y:y+1
+        },
+        {
+            x:x+1,
+            y:y-1
+        },
+    ];
+
+    for(let i=0; i < tabOfMoves.length; i++){
+
+        const {x, y} = tabOfMoves[i];
+
+        if(x>=0 && x<=7 && y>=0 && y<=7){      
+
+            takenField = isFieldTaken(x, y);
+                if(takenField){
+                    field = getFieldFromCoordinates(x, y);
+                    if(field.classList[3] === enemy){
+                        filteredTab.push({x:x, y:y})
+                    }
+
+                } else {
+                    filteredTab.push({x:x, y:y});
+                }
+        }  
+    }
+
+    return filteredTab;
+
+    
 }

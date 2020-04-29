@@ -7,8 +7,15 @@ import {
     removeActivePosition,
     removePossibleMoves,
     showActivePosition,
-    showPossibleMoves} from "./showMoves.js";
+    showPossibleMoves,
+    showRecentMove,
+    removeRecentMove} from "./showMoves.js";
 import {getFieldFromCoordinates} from "./getSomething.js";
+import { doesCounterEndangerKing } from "./LookForCheck.js";
+import { findMovesForSomebody } from "./findMoves.js";
+
+const moveSound = document.querySelector("#move-sound");
+const beatSound = document.querySelector("#beat-sound");
 
 changePositionOfCounter = (origin, destination) => {
 
@@ -37,8 +44,6 @@ changePositionOfCounter = (origin, destination) => {
             destination.y
         );
 
-    console.log(destinationBlock);
-
     if (takenField) {
 
         const destinationImg = destinationBlock.childNodes[0];
@@ -50,6 +55,10 @@ changePositionOfCounter = (origin, destination) => {
             destinationBlock.classList[4]
         );
 
+        moveSound.play();
+
+    } else {
+        beatSound.play();
     }
 
     destinationBlock.classList.add(
@@ -60,6 +69,12 @@ changePositionOfCounter = (origin, destination) => {
 
     destinationBlock.appendChild(originBlockImg);
 
+    removeRecentMove();
+
+    showRecentMove(originBlock, destinationBlock);
+
+    findMovesForSomebody(counterClass, teamClass, destination.x, destination.y, false);
+        
     removeActivePosition();
 
 };

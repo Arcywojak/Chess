@@ -17,7 +17,9 @@ export let  findPossibleMoves,
             removeActivePosition,
             removePossibleMoves,
             showActivePosition,
-            showPossibleMoves;
+            showPossibleMoves,
+            showRecentMove,
+            removeRecentMove;
 
 
 
@@ -67,6 +69,25 @@ showActivePosition = (target) => {
 
 
 };
+
+showRecentMove = (fieldOrigin, fieldDestination) => {
+    fieldOrigin.classList.add('last-move');
+
+    fieldDestination.classList.add('last-move');
+};
+
+removeRecentMove = () => {
+    let fields = document.querySelectorAll(".last-move");
+
+    if(fields !== null){
+
+    fields.forEach(field => {
+        field.classList.remove("last-move");
+    })
+
+    }
+}
+
 showPossibleMoves = (arrayOfMoves) => {
 
     if (!(typeof arrayOfMoves === "undefined")) {
@@ -101,7 +122,7 @@ removePossibleMoves = () => {
 };
 findPossibleMoves = (team, x, y, typeOfCounter) => {
 
-    findMovesForSomebody(typeOfCounter, team, x, y);
+    findMovesForSomebody(typeOfCounter, team, x, y, true);
 
 };
 
@@ -110,11 +131,9 @@ isFieldTaken = (x, y) => {
     const field = getFieldFromCoordinates(
             x,
             y
-        ),
-        lengthOfClassList = field.classList.length;
+        );
 
-
-    if (lengthOfClassList > 4) { // It mean the field is taken by some counter
+    if (field.classList.contains("white") || field.classList.contains("black")) { // It mean the field is taken by some counter
 
         return true;
 

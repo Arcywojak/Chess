@@ -26,16 +26,20 @@ import {
     showActivePosition,
     showPossibleMoves} from "./showMoves.js";
 
-findMovesForSomebody = (typeOfCounter, team, x, y) => {
+import { doesCounterEndangerKing } from "./LookForCheck.js";
+
+    findMovesForSomebody = (typeOfCounter, team, x, y, show) => {
+
+        const enemyColour = team === "white" ? "black" : "white";
 
         let tabOfMoves = [];
 
         switch(typeOfCounter){
             case 'pawn':
 
-            const enemy = team === "white" ? "black" : "white";
+            
             const tabMove = getPawnMoves(team, x, y);
-            const tabAttack = canPawnAttack(enemy);
+            const tabAttack = canPawnAttack(enemyColour);
 
                 tabOfMoves = tabMove.concat(tabAttack);
                 
@@ -65,31 +69,28 @@ findMovesForSomebody = (typeOfCounter, team, x, y) => {
 
                 break;
 
+            case 'king':
+                
+                tabOfMoves = getKingMoves(team, x, y);
+
+                break;
+
             default: throw new Error("You have probably given wrong name of counter");
         }
 
-        showPossibleMoves(tabOfMoves);
+        if(show){
+            showPossibleMoves(tabOfMoves);
+
+            return;
+        }
+            
+    
+
+        doesCounterEndangerKing(tabOfMoves, enemyColour);
 }
 
-    findMovesForBishop = (team, x, y) => {
-        
-        
-        
-    }
 
-    findMovesForRook = (team, x, y) => {
 
-        const tab = getRookMoves(team, x, y);
-
-        showPossibleMoves(tab);
-    }
-
-    findMovesForQueen = (team, x, y) => {
-
-        const tab = getQueenMoves(team, x, y);
-
-        showPossibleMoves(tab);
-    }
 
     canPawnAttack = (unfriendlyColour) => {
 
@@ -152,7 +153,6 @@ findMovesForSomebody = (typeOfCounter, team, x, y) => {
             }
     
         }
-        console.log(tabOfMoves)
     
         return tabOfMoves;
     

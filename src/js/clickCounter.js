@@ -13,6 +13,28 @@ import {
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
+const gameOptions = {
+    move: "white"
+}
+
+
+const updatePlayerToMove = () => {
+    let field = document.querySelector('.game-info-h2');
+
+    field.innerText = `${gameOptions.move} move`;
+}
+
+updatePlayerToMove();
+
+
+
+const changeMove = () => {
+    if(gameOptions.move === "white"){
+        gameOptions.move = "black";
+    } else {
+        gameOptions.move = "white"
+    }
+}
 
 let handleClick;
 
@@ -74,9 +96,7 @@ handleClick = (e) => {
 
     const field = e.target,
 
-         active = getActiveField();
-
-
+        active = getActiveField();
 
     if (active === field) {
 
@@ -85,14 +105,18 @@ handleClick = (e) => {
         return;
     }
 
-    if (field.parentNode.classList.contains("white") || field.parentNode.classList.contains("black")) {
+    if ( (field.parentNode.classList.contains("white") && gameOptions.move === "white") || 
+         (field.parentNode.classList.contains("black") && gameOptions.move === "black") ) {
 
         removeActivePosition();
         showActivePosition(field);
 
     } else if (field.classList.contains("to-move")) {
                 
+        changeMove();
 
+        updatePlayerToMove();
+        
         const from = getActiveCoordinates(),
 
             to = getCoordinatesFromField(
