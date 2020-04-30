@@ -61,6 +61,7 @@ getActiveCoordinates = () => {
 };
 
 getCoordinatesFromField = (field, fromParent) => {
+    try {
 
     const coordinates = fromParent // If true, get if from parentNode
         ? {
@@ -69,12 +70,17 @@ getCoordinatesFromField = (field, fromParent) => {
         }
         : // If false, get directly from field
     {
+        
         "x": Number(field.classList[1].charAt(1)), // X position
         "y": Number(field.classList[2].charAt(1)) // Y position
     };
-
+    
 
     return coordinates;
+
+}    catch {
+    throw new Error("Something went wrong at getSomething.js, maybe you gave wrong the second parameter?")
+}  
 
 };
 

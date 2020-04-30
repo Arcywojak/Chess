@@ -39,7 +39,7 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
 
             
             const tabMove = getPawnMoves(team, x, y);
-            const tabAttack = canPawnAttack(enemyColour);
+            const tabAttack = canPawnAttack(enemyColour, x, y);
 
                 tabOfMoves = tabMove.concat(tabAttack);
                 
@@ -84,7 +84,7 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
             return;
         }
             
-    
+        
 
         doesCounterEndangerKing(tabOfMoves, enemyColour);
 }
@@ -92,13 +92,13 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
 
 
 
-    canPawnAttack = (unfriendlyColour) => {
+    canPawnAttack = (unfriendlyColour, x, y) => {
 
         let tabOfMoves = [];
-        const activeField = getActiveField(true),
+        const activeField = getFieldFromCoordinates(x, y),
         
     
-            activeCoordinates = getCoordinatesFromField(activeField),
+            activeCoordinates = getCoordinatesFromField(activeField, false),
     
             otherNumber = unfriendlyColour === "white"
                 ? 1

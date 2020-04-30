@@ -11,7 +11,7 @@ import {
     showRecentMove,
     removeRecentMove} from "./showMoves.js";
 import {getFieldFromCoordinates} from "./getSomething.js";
-import { doesCounterEndangerKing } from "./LookForCheck.js";
+import { doesCounterEndangerKing, doesTeamEndangerEnemyKing } from "./LookForCheck.js";
 import { findMovesForSomebody } from "./findMoves.js";
 
 const moveSound = document.querySelector("#move-sound");
@@ -71,10 +71,12 @@ changePositionOfCounter = (origin, destination) => {
 
     removeRecentMove();
 
+    removeActivePosition();
+
     showRecentMove(originBlock, destinationBlock);
 
-    findMovesForSomebody(counterClass, teamClass, destination.x, destination.y, false);
+    doesTeamEndangerEnemyKing(teamClass);
         
-    removeActivePosition();
+    
 
 };
