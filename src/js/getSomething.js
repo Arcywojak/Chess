@@ -7,17 +7,22 @@ export let getActiveCoordinates,
     getRookMoves,
     getKnightMoves,
     getKingMoves,
-    getQueenMoves;
+    getQueenMoves,
+    getOppositeColour;
 
     import {
-        findPossibleMoves,
         isFieldTaken,
         removeActivePosition,
         removePossibleMoves,
         showActivePosition,
-        showPossibleMoves} from "./showMoves.js";
+        showPossibleMoves} from "./handleWithDOM.js";
+import { COLOR_CLASS, battleField } from "./variables.js";
 
 getFieldFromCoordinates = (x, y) => {
+
+    if(typeof(x) !== 'number' || typeof(y) !== 'number'){
+        throw new Error(`Something is wrong with parameters: x:${x}, y:${y}`)
+    }
 
     const field = document.querySelector(`.x${x}.y${y}`);
 
@@ -63,7 +68,7 @@ getActiveCoordinates = () => {
 getCoordinatesFromField = (field, fromParent) => {
     try {
 
-    const coordinates = fromParent // If true, get if from parentNode
+    const coordinates = fromParent // If true, get it from parentNode
         ? {
             "x": Number(field.parentNode.classList[1].charAt(1)), // X position
             "y": Number(field.parentNode.classList[2].charAt(1)) // Y position
@@ -85,11 +90,11 @@ getCoordinatesFromField = (field, fromParent) => {
 };
 
 getPawnMoves = (team, x, y) => {
+
     let numberOfPositionY = y,
         newPositionY,
         additionMoveY,
         isFirstMove,
-        enemy = team === "white" ? "black" : "white",
         tabOfMoves = [];
 
     if (team === "white") {
@@ -115,8 +120,11 @@ getPawnMoves = (team, x, y) => {
 
     if (!isBlocked) {
 
-        tabOfMoves.push({x,
-            "y": newPositionY}); // Check pos x, y+1/-1
+        tabOfMoves.push(
+            {
+            x,
+            "y": newPositionY
+            }); // Check pos x, y+1/-1
 
         const isAdditionBlocked = isFieldTaken(
             x,
@@ -140,17 +148,16 @@ getPawnMoves = (team, x, y) => {
 }
 
 getBishopMoves = (team, x, y) => {
-    const enemy = team === "white" ? "black" : "white";
+
     let tabOfMoves = [];
         let takenField;
-        let field;
+
 
         for(let i = 1; (x+i <= 7 && y+i <=7); i++){
             takenField = isFieldTaken(x+i, y+i);
-
+            
             if(takenField){
-                field = getFieldFromCoordinates(x+i, y+1);
-                if(field.classList[3] === enemy){
+                if(battleField.fields[x+i][y+i].color !== team){
                     tabOfMoves.push({x:x+i, y:y+i})
                 }
 
@@ -163,8 +170,8 @@ getBishopMoves = (team, x, y) => {
             takenField = isFieldTaken(x+i, y-i);
 
             if(takenField){
-                field = getFieldFromCoordinates(x+i, y-i);
-                if(field.classList[3] === enemy){
+ 
+                if(battleField.fields[x+i][y-i].color !== team){
                     tabOfMoves.push({x:x+i, y:y-i})
                 }
 
@@ -177,8 +184,8 @@ getBishopMoves = (team, x, y) => {
             takenField = isFieldTaken(x-i, y+i);
 
             if(takenField){
-                field = getFieldFromCoordinates(x-i, y+i);
-                if(field.classList[3] === enemy){
+                if(battleField.fields[x-i][y+i].color !== team){
+
                     tabOfMoves.push({x:x-i, y:y+i})
                 }
 
@@ -191,8 +198,7 @@ getBishopMoves = (team, x, y) => {
             takenField = isFieldTaken(x-i, y-i);
 
             if(takenField){
-                field = getFieldFromCoordinates(x-i, y-i);
-                if(field.classList[3] === enemy){
+                if(battleField.fields[x-i][y-i].color !== team){
                     tabOfMoves.push({x:x-i, y:y-i})
                 }
 
@@ -205,8 +211,8 @@ getBishopMoves = (team, x, y) => {
 }
 
 getKnightMoves = (team , x, y) => {
-    const enemy = team === "white" ? "black" : "white",
-        tabOfMoves = [
+
+        const tabOfMoves = [
             {
                 "x": x + 1,
                 "y": y + 2
@@ -241,9 +247,11 @@ getKnightMoves = (team , x, y) => {
             }
         ];
 
+        
+
        const filteredTab = tabOfMoves.filter((move) => {
 
-            if (move.x >= 0 && move.x <= 7 && (move.y >= 0 && move.y <= 7)) {
+            if ( (move.x >= 0 && move.x <= 7) && (move.y >= 0 && move.y <= 7) ) {
 
                 return move;
 
@@ -255,15 +263,10 @@ getKnightMoves = (team , x, y) => {
 
     for (let i = 0; i < filteredTab.length; i++) {
 
-        const {x, y} = filteredTab[i],
-
-            field = getFieldFromCoordinates(
-                x,
-                y
-            );
-
-        if (!(field.classList[3] === team)) {
-
+        const {x, y} = filteredTab[i];
+        
+        if(battleField.fields[x][y].color !== team) {
+            
             moreFilteredTab.push(filteredTab[i]);
 
         }
@@ -274,17 +277,16 @@ getKnightMoves = (team , x, y) => {
 }
 
 getRookMoves = (team, x, y) => {
-    const enemy = team === "white" ? "black" : "white";
+
     let tabOfMoves = [];
         let takenField;
-        let field;
 
     for(let i = 1; x+i<=7; i++){
         takenField = isFieldTaken(x+i, y);
 
             if(takenField){
-                field = getFieldFromCoordinates(x+i, y);
-                if(field.classList[3] === enemy){
+               
+                if(battleField.fields[x+i][y].color !== team){
                     tabOfMoves.push({x:x+i, y:y})
                 }
 
@@ -298,8 +300,8 @@ getRookMoves = (team, x, y) => {
         takenField = isFieldTaken(x-i, y);
 
             if(takenField){
-                field = getFieldFromCoordinates(x-i, y);
-                if(field.classList[3] === enemy){
+               
+                if(battleField.fields[x-i][y].color !== team){
                     tabOfMoves.push({x:x-i, y:y})
                 }
 
@@ -313,8 +315,8 @@ getRookMoves = (team, x, y) => {
         takenField = isFieldTaken(x, y-i);
 
             if(takenField){
-                field = getFieldFromCoordinates(x, y-i);
-                if(field.classList[3] === enemy){
+
+                if(battleField.fields[x][y-i].color !== team){
                     tabOfMoves.push({x:x, y:y-i})
                 }
 
@@ -328,8 +330,8 @@ getRookMoves = (team, x, y) => {
         takenField = isFieldTaken(x, y+i);
 
             if(takenField){
-                field = getFieldFromCoordinates(x, y+i);
-                if(field.classList[3] === enemy){
+        
+                if(battleField.fields[x][y+i].color !== team){
                     tabOfMoves.push({x:x, y:y+i})
                 }
 
@@ -352,9 +354,8 @@ getQueenMoves = (team, x, y) => {
 }
 
 getKingMoves = (team, x, y) => {
-    const enemy = team === "white" ? "black" : "white";
+ 
     let takenField;
-    let field;
     let filteredTab = [];
 
     let tabOfMoves = [
@@ -400,8 +401,8 @@ getKingMoves = (team, x, y) => {
 
             takenField = isFieldTaken(x, y);
                 if(takenField){
-                    field = getFieldFromCoordinates(x, y);
-                    if(field.classList[3] === enemy){
+            
+                    if(battleField.fields[x][y].color !== team){
                         filteredTab.push({x:x, y:y})
                     }
 
@@ -414,4 +415,12 @@ getKingMoves = (team, x, y) => {
     return filteredTab;
 
     
+};
+
+getOppositeColour = (colour) => {
+    if(colour === "white"){
+        return "black"
+    }
+
+    return "white";
 }

@@ -8,71 +8,13 @@
 
 *//** ************************************/
 
+import {battleField, imagesOfCounter} from './variables.js'
 
-const innerBoard = document.querySelector(".board-inner"),
+const innerBoard = document.querySelector(".board-inner");
 
-    imagesOfCounter = {
-        "white": {
-            "pawn": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wp.png",
-            "knight": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wn.png",
-            "bishop": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wb.png",
-            "rook": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wr.png",
-            "queen": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wq.png",
-            "king": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/wk.png"
-        },
-        "black": {
-            "pawn": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/bp.png",
-            "knight": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/bn.png",
-            "bishop": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/bb.png",
-            "rook": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/br.png",
-            "queen": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/bq.png",
-            "king": "http://images.chesscomfiles.com/chess-themes/pieces/neo/80/bk.png"
-        }
-    },
+export const initPositionOfCounters_DOM = (team, counterName) => {
 
-    whitePlayer = {
-        "team": "white",
-        "counters": {
-            "pawn": [],
-            "knight": [],
-            "bishop": [],
-            "rook": [],
-            "queen": [],
-            "king": []
-        }
-    },
-    blackPlayer = {
-        "team": "black",
-        "counters": {
-            "pawn": [],
-            "knight": [],
-            "bishop": [],
-            "rook": [],
-            "queen": [],
-            "king": []
-        }
-    },
-    activeCounterPosition = {
-        "x": null,
-        "y": null
-    };
-
-
-export const initPositionOfCounters = (team, counterName) => {
-
-    let player;
-
-    if (team === "white") {
-
-        player = whitePlayer;
-
-    } else if (team === "black") {
-
-        player = blackPlayer;
-
-    }
-
-    const quantityOfCounters = player.counters[counterName].length,
+   /* const quantityOfCounters = player.counters[counterName].length,
 
         counterArray = player.counters[counterName];
 
@@ -84,8 +26,9 @@ export const initPositionOfCounters = (team, counterName) => {
             "field",
             `x${counterArray[i].position.x / 78.5}`,
             `y${counterArray[i].position.y / 78.5}`,
-            `${team}`,
-            `${counterName}`
+            `${counterName}`,
+            `${team}`
+            
         );
 
         const imageOfCounter = document.createElement("img");
@@ -102,11 +45,60 @@ export const initPositionOfCounters = (team, counterName) => {
 
         innerBoard.appendChild(div);
 
+    }*/
+
+    let div,
+        imageOfCounter,
+        color,
+        typeOfCounter;
+
+    for(let x = 0; x <=7; x++){
+
+        for(let y=0; y<=7; y++){
+
+            div = document.createElement("div");
+
+            div.classList.add(
+                "field",
+                `x${x}`,
+                `y${y}`
+                
+            );
+
+        if(battleField.fields[x][y].color !== null){
+
+            color = battleField.fields[x][y].color,
+            typeOfCounter = battleField.fields[x][y].typeOfCounter
+
+            div.classList.add(
+                color,
+                typeOfCounter            
+            );
+
+            imageOfCounter = document.createElement("img");
+
+          
+
+            imageOfCounter.src = imagesOfCounter[color][typeOfCounter];
+
+            div.appendChild(imageOfCounter);
+        }
+
+        
+
+        div.style.webkitTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
+        div.style.MozTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
+        div.style.msTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
+        div.style.OTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
+        div.style.transform = `translate(${x*78.5}px, ${y*78.5}px)`;
+
+        innerBoard.appendChild(div);
+        }
     }
 
 };
 
-export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = null, position = 0) => {
+export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = null, position = []) => {
 
     let player;
 
@@ -143,30 +135,44 @@ export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = n
 
 
 };
-export const initOtherFields = () => {
 
-    for (let x = 0; x <= 7; x++) {
+//////////////
 
-        for (let y = 2; y <= 5; y++) {
+export const setEmptyBattleField = () => {
+    for(let x = 0; x <= 7; x++){
 
-            const div = document.createElement("div");
+        battleField.fields[x] = []
 
-            div.classList.add(
-                "field",
-                `x${x}`,
-                `y${y}`
-            );
+        for(let y = 0; y <= 7; y++){
 
-            div.style.webkitTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
-            div.style.MozTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
-            div.style.msTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
-            div.style.OTransform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
-            div.style.transform = `translate(${x * 78.5}px, ${y * 78.5}px)`;
-
-            innerBoard.appendChild(div);
-
+            battleField.fields[x][y] = {
+                color: null,
+                typeOfCounter: null
+            }
         }
-
     }
+}
 
-};
+export const fillFieldsInCounters = (team = "", counterType = "", numberOfCounters = null, position = []) => {
+    
+    for(let i = 0; i<numberOfCounters; i++){
+        battleField.fields[
+            position[i].x
+        ][
+            position[i].y
+        ]
+        .color = team;
+
+        battleField.fields[
+            position[i].x
+        ][
+            position[i].y
+        ]
+        .typeOfCounter = counterType;
+    }
+}
+
+
+
+
+////////////////

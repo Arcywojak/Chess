@@ -1,7 +1,13 @@
-import {initCounters, initOtherFields} from "./initFunctions.js";
+import {fillFieldsInCounters, setEmptyBattleField, initPositionOfCounters_DOM} from "./initFunctions.js";
+import {battleField} from './variables.js'
+
 
 /** ******* INITIALIZE COUNTERS *********/
-initCounters(
+
+
+setEmptyBattleField();
+
+fillFieldsInCounters(
     "white",
     "pawn",
     8,
@@ -25,7 +31,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "pawn",
     8,
@@ -52,7 +58,7 @@ initCounters(
 /** **************************************/
 
 /** ******* INITIALIZE KNIGHTS ***********/
-initCounters(
+fillFieldsInCounters(
     "white",
     "knight",
     2,
@@ -64,7 +70,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "knight",
     2,
@@ -79,7 +85,7 @@ initCounters(
 /** ***************************************/
 
 /** ******** INITIALIZE BISHOPS ***********/
-initCounters(
+fillFieldsInCounters(
     "white",
     "bishop",
     2,
@@ -91,7 +97,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "bishop",
     2,
@@ -106,7 +112,7 @@ initCounters(
 /** ***************************************/
 
 /** ******** INITIALIZE ROOKS ***********/
-initCounters(
+fillFieldsInCounters(
     "white",
     "rook",
     2,
@@ -118,7 +124,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "rook",
     2,
@@ -133,7 +139,7 @@ initCounters(
 /** ***************************************/
 
 /** ******** INITIALIZE QUEENS ***********/
-initCounters(
+fillFieldsInCounters(
     "white",
     "queen",
     1,
@@ -143,7 +149,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "queen",
     1,
@@ -156,7 +162,7 @@ initCounters(
 /** ****************************************/
 
 /** ******** INITIALIZE KINGS ***********/
-initCounters(
+fillFieldsInCounters(
     "white",
     "king",
     1,
@@ -166,7 +172,7 @@ initCounters(
     ]
 );
 
-initCounters(
+fillFieldsInCounters(
     "black",
     "king",
     1,
@@ -178,6 +184,4 @@ initCounters(
 
 /** ****************************************/
 
-/** INIT OTHER FIELDS */
-
-initOtherFields();
+initPositionOfCounters_DOM();

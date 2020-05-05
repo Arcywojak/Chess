@@ -2,9 +2,9 @@ export let findMovesForBishop,
     findMovesForKing,
     findMovesForKnight,
     findMovesForPawn,
-    findMovesForQueen,
+    findMovesForQueen,  
     findMovesForRook,
-    findMovesForSomebody,
+    findPossibleMoves,
     canPawnAttack;
 
 import {getActiveCoordinates,
@@ -19,16 +19,19 @@ import {getActiveCoordinates,
     getPawnMoves} from "./getSomething.js";
 
 import {
-    findPossibleMoves,
     isFieldTaken,
     removeActivePosition,
     removePossibleMoves,
     showActivePosition,
-    showPossibleMoves} from "./showMoves.js";
+    showPossibleMoves} from "./handleWithDOM.js";
 
-import { doesCounterEndangerKing } from "./LookForCheck.js";
+import { doesCounterEndangerKing, filterTabInCaseOfCheck, willBeMyKingInDanger } from "./LookForCheck.js";
+import { COLOR_CLASS, battleField } from "./variables.js";
 
-    findMovesForSomebody = (typeOfCounter, team, x, y, show) => {
+
+
+
+    findPossibleMoves = (typeOfCounter, team, x, y, filterTabAndShowMoves) => {
 
         const enemyColour = team === "white" ? "black" : "white";
 
@@ -36,7 +39,6 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
 
         switch(typeOfCounter){
             case 'pawn':
-
             
             const tabMove = getPawnMoves(team, x, y);
             const tabAttack = canPawnAttack(enemyColour, x, y);
@@ -78,15 +80,19 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
             default: throw new Error("You have probably given wrong name of counter");
         }
 
-        if(show){
-            showPossibleMoves(tabOfMoves);
-
-            return;
-        }
-            
         
 
-        doesCounterEndangerKing(tabOfMoves, enemyColour);
+        if(filterTabAndShowMoves){
+
+          // const filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
+
+           showPossibleMoves(tabOfMoves);
+
+           return;
+        }
+        
+
+    //  return doesCounterEndangerKing(tabOfMoves);
 }
 
 
@@ -95,64 +101,52 @@ import { doesCounterEndangerKing } from "./LookForCheck.js";
     canPawnAttack = (unfriendlyColour, x, y) => {
 
         let tabOfMoves = [];
-        const activeField = getFieldFromCoordinates(x, y),
-        
+
     
-            activeCoordinates = getCoordinatesFromField(activeField, false),
-    
-            otherNumber = unfriendlyColour === "white"
-                ? 1
-                : -1,
+    // this number decide if the pawn go up or down through the battlefield
+        const moveY = unfriendlyColour === "white" 
+            ? 1
+            : -1,
+    ////////////////////////////////////////////////////////////////////////
     
     
             rightCoordinates = {
-                "x": activeCoordinates.x - 1,
-                "y": activeCoordinates.y + otherNumber
+                "x": x + 1,
+                "y": y + moveY
             },
     
             leftCoordinates = {
-                "x": activeCoordinates.x + 1,
-                "y": activeCoordinates.y + otherNumber
-            },
-    
-            leftField = getFieldFromCoordinates(
-                leftCoordinates.x,
-                leftCoordinates.y
-            ),
-            rightField = getFieldFromCoordinates(
-                rightCoordinates.x,
-                rightCoordinates.y
-            );
-    
-    
-        if (leftField !== null) {
-    
-            const team = leftField.classList[3];
-    
-            if (team === unfriendlyColour) {
+                "x": x - 1,
+                "y": y + moveY
+            };
+
+        if(leftCoordinates.x >= 0){
+            console.log("AAA")
+
+            if (battleField.fields[leftCoordinates.x][leftCoordinates.y].color === unfriendlyColour) {
     
                 tabOfMoves.push(
                     {"x": leftCoordinates.x,
                         "y": leftCoordinates.y}
                 );
     
-            }
-    
+             }
+
         }
-        if (rightField !== null) {
-    
-            const team = rightField.classList[3];
-    
-            if (team === unfriendlyColour) {
-    
+        
+        if(rightCoordinates.x <=7 ){
+
+            if (battleField.fields[rightCoordinates.x][rightCoordinates.y].color === unfriendlyColour) {
+        
                 tabOfMoves.push(
                     {"x": rightCoordinates.x,
                         "y": rightCoordinates.y}
                 );
-    
+
             }
-    
+            
         }
+
     
         return tabOfMoves;
     

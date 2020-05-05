@@ -4,37 +4,27 @@ import {getActiveCoordinates,
     getFieldFromCoordinates} from "./getSomething.js";
 
 import {
-    findPossibleMoves,
-    isFieldTaken,
     removeActivePosition,
     removePossibleMoves,
     showActivePosition,
-    showPossibleMoves} from "./showMoves.js";
+    showPossibleMoves} from "./handleWithDOM.js";
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
-const gameOptions = {
-    move: "white"
-}
+import {findPossibleMoves} from './findMoves.js'
+
+import {
+    COLOR_CLASS,
+    TYPE_OF_COUNTER_CLASS,
+    gameOptions,
+    updatePlayerToMove,
+    changeColourOfActivePlayer
+} from './variables.js'
 
 
-const updatePlayerToMove = () => {
-    let field = document.querySelector('.game-info-h2');
 
-    field.innerText = `${gameOptions.move} move`;
-}
 
 updatePlayerToMove();
-
-
-
-const changeMove = () => {
-    if(gameOptions.move === "white"){
-        gameOptions.move = "black";
-    } else {
-        gameOptions.move = "white"
-    }
-}
 
 let handleClick;
 
@@ -105,17 +95,22 @@ handleClick = (e) => {
         return;
     }
 
-    if ( (field.parentNode.classList.contains("white") && gameOptions.move === "white") || 
-         (field.parentNode.classList.contains("black") && gameOptions.move === "black") ) {
+    if ( (field.parentNode.classList.contains("white") && gameOptions.activeColour === "white") || 
+         (field.parentNode.classList.contains("black") && gameOptions.activeColour === "black") ) {
 
         removeActivePosition();
+
+        const team = field.parentNode.classList[COLOR_CLASS],
+              typeOfCounter = field.parentNode.classList[TYPE_OF_COUNTER_CLASS],
+              {x, y} = getCoordinatesFromField(field, true);
+
+        findPossibleMoves(typeOfCounter, team, x, y, true); //findMoves.js
+ 
         showActivePosition(field);
 
     } else if (field.classList.contains("to-move")) {
                 
-        changeMove();
-
-        updatePlayerToMove();
+        changeColourOfActivePlayer();
         
         const from = getActiveCoordinates(),
 

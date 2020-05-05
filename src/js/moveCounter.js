@@ -2,17 +2,16 @@ export let beatCounter,
     changePositionOfCounter;
 
 import {
-    findPossibleMoves,
     isFieldTaken,
     removeActivePosition,
     removePossibleMoves,
     showActivePosition,
     showPossibleMoves,
     showRecentMove,
-    removeRecentMove} from "./showMoves.js";
+    removeRecentMove} from "./handleWithDOM.js";
 import {getFieldFromCoordinates} from "./getSomething.js";
 import { doesCounterEndangerKing, doesTeamEndangerEnemyKing } from "./LookForCheck.js";
-import { findMovesForSomebody } from "./findMoves.js";
+import { COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField } from "./variables.js";
 
 const moveSound = document.querySelector("#move-sound");
 const beatSound = document.querySelector("#beat-sound");
@@ -23,36 +22,50 @@ changePositionOfCounter = (origin, destination) => {
             origin.x,
             origin.y
         ),
+          colourOfMovingCounter = battleField.fields[origin.x][origin.y].color,
+          typeOfMovingCounter = battleField.fields[origin.x][origin.y].typeOfCounter,
+          colourOfTakenField = battleField.fields[destination.x][destination.y].color,
+          counterOfTakenField = battleField.fields[destination.x][destination.y].typeOfCounter,
+          originBlockImg = originBlock.childNodes[0],
 
-        teamClass = originBlock.classList[3],
-        counterClass = originBlock.classList[4];
-
-    originBlock.classList.remove(
-        teamClass,
-        counterClass
-    );
-    const originBlockImg = originBlock.childNodes[0];
-
-    originBlock.removeChild(originBlockImg);
-
-    const destinationBlock = getFieldFromCoordinates(
+          destinationBlock = getFieldFromCoordinates(
             destination.x,
             destination.y
         ),
+
         takenField = isFieldTaken(
             destination.x,
             destination.y
         );
 
+    originBlock.classList.remove(
+        typeOfMovingCounter,
+        colourOfMovingCounter
+    );
+
+    battleField.fields[origin.x][origin.y].color = null;
+    battleField.fields[origin.x][origin.y].typeOfCounter = null;
+
+    
+    originBlock.removeChild(originBlockImg);
+
+    
+
+    battleField.fields[destination.x][destination.y].color = colourOfMovingCounter;
+    battleField.fields[destination.x][destination.y].typeOfCounter = typeOfMovingCounter;  
+
     if (takenField) {
 
         const destinationImg = destinationBlock.childNodes[0];
+              
+
+
 
         destinationBlock.removeChild(destinationImg);
 
         destinationBlock.classList.remove(
-            destinationBlock.classList[3],
-            destinationBlock.classList[4]
+            counterOfTakenField,
+            colourOfTakenField
         );
 
         moveSound.play();
@@ -62,8 +75,8 @@ changePositionOfCounter = (origin, destination) => {
     }
 
     destinationBlock.classList.add(
-        teamClass,
-        counterClass
+        colourOfMovingCounter,
+        typeOfMovingCounter
     );
 
 
@@ -75,7 +88,7 @@ changePositionOfCounter = (origin, destination) => {
 
     showRecentMove(originBlock, destinationBlock);
 
-    doesTeamEndangerEnemyKing(teamClass);
+    //doesTeamEndangerEnemyKing(teamClass);
         
     
 
