@@ -1,9 +1,10 @@
-import { getFieldFromCoordinates, getCoordinatesFromField } from "./getSomething.js";
+import { getFieldFromCoordinates, getCoordinatesFromField, getAllCountersExceptKing } from "./getSomething.js";
 
 import {
     COLOR_CLASS,
     TYPE_OF_COUNTER_CLASS,
-    gameOptions
+    gameOptions,
+    battleField
 } from './variables.js'
 import { isFieldTaken } from "./handleWithDOM.js";
 import { findPossibleMoves } from "./findMoves.js";
@@ -54,59 +55,67 @@ export let doesCounterEndangerKing,
     }
 
     willBeMyKingInDanger = (origin, destination) =>{
+
+
         //PRETENT TO MOVE FROM ORIGIN TO DESTINATION
-
         
+        let originField = battleField.fields[origin.x][origin.y];
+        let destinationField = battleField.fields[destination.x][destination.y];
 
-        let originField = getFieldFromCoordinates(origin.x, origin.y);
+        const originFieldColor = originField.color,
+              originFieldTypeOfCounter = originField.typeOfCounter,
+              destinationFieldColor = destinationField.color,
+              destinationFieldTypeOfCounter = destinationField.typeOfCounter;
 
-        console.log(originField)
+        originField.color = null;
+        originField.typeOfCounter = null;
 
-        originField.classList.remove(gameOptions.activeColour);
+        const isDestinationFieldTaken = isFieldTaken(destination.x, destination.y);
 
-        let destinationField = getFieldFromCoordinates(destination.x, destination.y)
+        destinationField.color = originFieldColor;
+        destinationField.typeOfCounter = originFieldTypeOfCounter;
 
-        let isDestinationFieldTaken = isFieldTaken(destination.x, destination.y);
+        let isCheck = isKingInDanger(gameOptions.oppositeColour);
+
+        /********** undo changes ***********/
+        originField.color = originFieldColor;
+        originField.typeOfCounter = originFieldTypeOfCounter;
 
         if(isDestinationFieldTaken){
-            destinationField.classList.remove(gameOptions.oppositeColour);
+           destinationField.color = destinationFieldColor;
+           destinationField.typeOfCounter = destinationFieldTypeOfCounter;
+         
+        } else {
+           destinationField.color = null;
+           destinationField.typeOfCounter = null;
         }
-
-        destinationField.classList.add(gameOptions.activeColour);
-
-        let isCheck = isKingInDanger(gameOptions.activeColour, gameOptions.oppositeColour, false);
-
-        destinationField.classList.remove(gameOptions.activeColour);
-
-        //przywrocenie klas
-        if(isDestinationFieldTaken){
-            destinationField.classList.add(gameOptions.oppositeColour);
-        }
-
-        originField.classList.add(gameOptions.activeColour)
-
-        ///////
+        /***********************************/
+        
 
         return isCheck;
     };
 
-    isKingInDanger = (colourOfKing, offensiveColour, showDanger) => {
+    isKingInDanger = (offensiveColour) => {
       
         //exec
 
-        const offensiveCounters = document.querySelectorAll(`.${offensiveColour}`);
-        let typeOfCounter,
-            coordinates,
-            isInDanger;
+        const offensiveCounters = getAllCountersExceptKing(offensiveColour) ;
+        //we do not need king because he can't check enemy king
 
+        let isInDanger;
 
         for(let i=0; i<offensiveCounters.length; i++){
-            coordinates = getCoordinatesFromField(offensiveCounters[i], false);
-            typeOfCounter = offensiveCounters[i].classList[TYPE_OF_COUNTER_CLASS];
 
-            isInDanger = findPossibleMoves(typeOfCounter, offensiveColour, coordinates.x, coordinates.y, false);
+            isInDanger = findPossibleMoves(
+                offensiveCounters[i].typeOfCounter,
+                offensiveCounters[i].colour,
+                offensiveCounters[i].x,
+                offensiveCounters[i].y,
+                false
+                );
 
             if(isInDanger){
+
                 return true;
             }
         }
@@ -117,24 +126,18 @@ export let doesCounterEndangerKing,
 
     doesCounterEndangerKing = (tabOfMoves) => {
 
-        let fieldOfEnemyKing = document.querySelector(`.king.${gameOptions.activeColour}`)
-
-
-        let kingPosition = getCoordinatesFromField(fieldOfEnemyKing);
-
             for(let i=0; i<tabOfMoves.length; i++){
             
-            if(kingPosition.x === tabOfMoves[i].x &&
-                kingPosition.y === tabOfMoves[i].y){
-                //fieldOfEnemyKing.classList.add('danger');
-
-                
-
+            if(
+                battleField.fields[
+                    tabOfMoves[i].x
+                ][
+                    tabOfMoves[i].y
+                ].typeOfCounter === "king"
+              ) {
                 return true;
                 }
             }
-
-            //fieldOfEnemyKing.classList.remove("danger");
 
             return false;
 

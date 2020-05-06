@@ -8,7 +8,8 @@ export let getActiveCoordinates,
     getKnightMoves,
     getKingMoves,
     getQueenMoves,
-    getOppositeColour;
+    getOppositeColour,
+    getAllCountersExceptKing;
 
     import {
         isFieldTaken,
@@ -423,4 +424,25 @@ getOppositeColour = (colour) => {
     }
 
     return "white";
+}
+
+getAllCountersExceptKing = (colour) => {
+    let tabOfCounters = [];
+
+    
+
+    for(let x=0; x<=7; x++){
+        for(let y=0; y<=7; y++){
+            if(battleField.fields[x][y].color === colour && battleField.fields[x][y].typeOfCounter !== "king"){
+                tabOfCounters.push({
+                   x : x,
+                   y : y,
+                   colour: battleField.fields[x][y].color,
+                   typeOfCounter: battleField.fields[x][y].typeOfCounter
+                });
+            }
+        }
+    }
+
+    return tabOfCounters;
 }

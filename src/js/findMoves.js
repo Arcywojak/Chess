@@ -80,19 +80,17 @@ import { COLOR_CLASS, battleField } from "./variables.js";
             default: throw new Error("You have probably given wrong name of counter");
         }
 
-        
-
         if(filterTabAndShowMoves){
 
-          // const filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
+          const filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
 
-           showPossibleMoves(tabOfMoves);
+           showPossibleMoves(filteredTab);
 
            return;
         }
         
 
-    //  return doesCounterEndangerKing(tabOfMoves);
+      return doesCounterEndangerKing(tabOfMoves);
 }
 
 
@@ -121,7 +119,6 @@ import { COLOR_CLASS, battleField } from "./variables.js";
             };
 
         if(leftCoordinates.x >= 0){
-            console.log("AAA")
 
             if (battleField.fields[leftCoordinates.x][leftCoordinates.y].color === unfriendlyColour) {
     

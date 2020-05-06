@@ -18,8 +18,10 @@ import {
     TYPE_OF_COUNTER_CLASS,
     gameOptions,
     updatePlayerToMove,
-    changeColourOfActivePlayer
+    changeColourOfActivePlayer,
+    battleField
 } from './variables.js'
+import { isKingInDanger } from "./LookForCheck.js";
 
 
 
@@ -109,6 +111,14 @@ handleClick = (e) => {
         showActivePosition(field);
 
     } else if (field.classList.contains("to-move")) {
+
+        /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
+        const isCheck = isKingInDanger(gameOptions.oppositeColour)
+        if(isCheck){
+            const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
+            kingField.classList.remove("danger")
+        }
+        /********************************************************** */
                 
         changeColourOfActivePlayer();
         
@@ -118,6 +128,8 @@ handleClick = (e) => {
                 field,
                 false
             );
+
+            
 
         changePositionOfCounter(
             from,
