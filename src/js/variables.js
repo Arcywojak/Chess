@@ -3,7 +3,9 @@ export const TYPE_OF_COUNTER_CLASS = 4
 
 export const gameOptions = {
     activeColour: "white",
-    oppositeColour: "black"
+    oppositeColour: "black",
+    didGameEnd:false,
+    winner:null
 }
 
 export const changeColourOfActivePlayer = () => {
@@ -23,6 +25,12 @@ export const updatePlayerToMove = () => {
     let field = document.querySelector('.game-info-h2');
 
     field.innerText = `${gameOptions.activeColour} move`;
+}
+
+export const showWinner = () => {
+    let field = document.querySelector('.game-info-h2');
+
+    field.innerText = `checkmate, ${gameOptions.oppositeColour} won`;
 }
 
 export    const battleField = {

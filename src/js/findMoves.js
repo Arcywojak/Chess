@@ -16,7 +16,8 @@ import {getActiveCoordinates,
     getQueenMoves,
     getKingMoves,
     getKnightMoves,
-    getPawnMoves} from "./getSomething.js";
+    getPawnMoves,
+    getArrayOfMoves} from "./getSomething.js";
 
 import {
     isFieldTaken,
@@ -33,52 +34,7 @@ import { COLOR_CLASS, battleField } from "./variables.js";
 
     findPossibleMoves = (typeOfCounter, team, x, y, filterTabAndShowMoves) => {
 
-        const enemyColour = team === "white" ? "black" : "white";
-
-        let tabOfMoves = [];
-
-        switch(typeOfCounter){
-            case 'pawn':
-            
-            const tabMove = getPawnMoves(team, x, y);
-            const tabAttack = canPawnAttack(enemyColour, x, y);
-
-                tabOfMoves = tabMove.concat(tabAttack);
-                
-                break;
-
-            case 'knight':
-
-                tabOfMoves = getKnightMoves(team, x, y);
-
-                break;
-
-            case 'bishop':
-
-                tabOfMoves = getBishopMoves(team, x, y);
-
-                break;
-
-            case 'rook':
-
-                tabOfMoves = getRookMoves(team, x, y);
-
-                break;
-
-            case 'queen':
-                
-                tabOfMoves = getQueenMoves(team, x, y);
-
-                break;
-
-            case 'king':
-                
-                tabOfMoves = getKingMoves(team, x, y);
-
-                break;
-
-            default: throw new Error("You have probably given wrong name of counter");
-        }
+        const tabOfMoves = getArrayOfMoves(typeOfCounter, team, x, y)
 
         if(filterTabAndShowMoves){
 

@@ -10,8 +10,8 @@ import {
     showRecentMove,
     removeRecentMove} from "./handleWithDOM.js";
 import {getFieldFromCoordinates} from "./getSomething.js";
-import { doesCounterEndangerKing, doesTeamEndangerEnemyKing, isKingInDanger } from "./LookForCheck.js";
-import { COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions } from "./variables.js";
+import { doesCounterEndangerKing, doesTeamEndangerEnemyKing, isKingInDanger, isMate } from "./LookForCheck.js";
+import { COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, showWinner } from "./variables.js";
 
 const moveSound = document.querySelector("#move-sound");
 const beatSound = document.querySelector("#beat-sound");
@@ -93,6 +93,15 @@ changePositionOfCounter = (origin, destination) => {
     if(isCheck){
         const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
         kingField.classList.add("danger")
+
+        const mate = isMate(gameOptions.activeColour);
+
+        if(isMate){
+            gameOptions.didGameEnd = true;
+            gameOptions.winner = gameOptions.oppositeColour;
+
+            showWinner();
+        }
     }
 
 };

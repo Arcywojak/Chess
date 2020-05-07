@@ -1,4 +1,4 @@
-import { getFieldFromCoordinates, getCoordinatesFromField, getAllCountersExceptKing } from "./getSomething.js";
+import { getFieldFromCoordinates, getCoordinatesFromField, getAllCounters, getArrayOfMoves } from "./getSomething.js";
 
 import {
     COLOR_CLASS,
@@ -13,7 +13,8 @@ export let doesCounterEndangerKing,
            doesTeamEndangerEnemyKing,
            filterTabInCaseOfCheck,
            willBeMyKingInDanger,
-           isKingInDanger
+           isKingInDanger,
+           isMate
 
 
 
@@ -99,20 +100,22 @@ export let doesCounterEndangerKing,
       
         //exec
 
-        const offensiveCounters = getAllCountersExceptKing(offensiveColour) ;
+        const offensiveCounters = getAllCounters(offensiveColour, false) ;
         //we do not need king because he can't check enemy king
 
-        let isInDanger;
+        let isInDanger,
+        tabOfMoves;
 
         for(let i=0; i<offensiveCounters.length; i++){
 
-            isInDanger = findPossibleMoves(
+            tabOfMoves = getArrayOfMoves(
                 offensiveCounters[i].typeOfCounter,
                 offensiveCounters[i].colour,
                 offensiveCounters[i].x,
-                offensiveCounters[i].y,
-                false
+                offensiveCounters[i].y
                 );
+
+            isInDanger = doesCounterEndangerKing(tabOfMoves);
 
             if(isInDanger){
 
@@ -142,5 +145,33 @@ export let doesCounterEndangerKing,
             return false;
 
         
+    }
+
+    isMate = (endangeredColour) => {
+
+        const tabOfCounters = getAllCounters(endangeredColour, true);
+        let tabOfMoves,
+            tabOfFilteredMoves
+
+        for(let i = 0; i<tabOfCounters.length; i++){
+            tabOfMoves = getArrayOfMoves(
+                tabOfCounters[i].typeOfCounter,
+                tabOfCounters[i].colour,
+                tabOfCounters[i].x,
+                tabOfCounters[i].y
+                );
+
+            tabOfFilteredMoves = filterTabInCaseOfCheck(
+                tabOfCounters[i].x,
+                tabOfCounters[i].y,
+                tabOfMoves
+            )
+
+            if(tabOfFilteredMoves.length > 0){
+                return false;
+            }
+        }
+
+        return  true;
     }
 

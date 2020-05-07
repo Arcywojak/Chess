@@ -9,7 +9,8 @@ export let getActiveCoordinates,
     getKingMoves,
     getQueenMoves,
     getOppositeColour,
-    getAllCountersExceptKing;
+    getAllCounters,
+    getArrayOfMoves;
 
     import {
         isFieldTaken,
@@ -18,6 +19,8 @@ export let getActiveCoordinates,
         showActivePosition,
         showPossibleMoves} from "./handleWithDOM.js";
 import { COLOR_CLASS, battleField } from "./variables.js";
+
+import {canPawnAttack} from './findMoves.js';
 
 getFieldFromCoordinates = (x, y) => {
 
@@ -426,14 +429,19 @@ getOppositeColour = (colour) => {
     return "white";
 }
 
-getAllCountersExceptKing = (colour) => {
-    let tabOfCounters = [];
+getAllCounters = (colour, withKing) => {
+    //WITH KING - We need this parameter because if we look for check, we don't need king (he can't do check)
+    //            but if we want to know whether mate occured or not, we need king to see if he can escape
 
-    
+    let tabOfCounters = [];     
 
     for(let x=0; x<=7; x++){
         for(let y=0; y<=7; y++){
-            if(battleField.fields[x][y].color === colour && battleField.fields[x][y].typeOfCounter !== "king"){
+            if(battleField.fields[x][y].color === colour){
+                if(battleField.fields[x][y].typeOfCounter === "king" && !withKing){
+                    continue;
+                }
+
                 tabOfCounters.push({
                    x : x,
                    y : y,
@@ -445,4 +453,56 @@ getAllCountersExceptKing = (colour) => {
     }
 
     return tabOfCounters;
+}
+
+getArrayOfMoves = (typeOfCounter, team, x, y) => {
+
+    let tabOfMoves;
+
+    const enemyColour = getOppositeColour(team);
+
+    switch(typeOfCounter){
+        case 'pawn':
+        
+        const tabMove = getPawnMoves(team, x, y);
+        const tabAttack = canPawnAttack(enemyColour, x, y);
+
+            tabOfMoves = tabMove.concat(tabAttack);
+            
+            break;
+
+        case 'knight':
+
+            tabOfMoves = getKnightMoves(team, x, y);
+
+            break;
+
+        case 'bishop':
+
+            tabOfMoves = getBishopMoves(team, x, y);
+
+            break;
+
+        case 'rook':
+
+            tabOfMoves = getRookMoves(team, x, y);
+
+            break;
+
+        case 'queen':
+            
+            tabOfMoves = getQueenMoves(team, x, y);
+
+            break;
+
+        case 'king':
+            
+            tabOfMoves = getKingMoves(team, x, y);
+
+            break;
+
+        default: throw new Error("You have probably given wrong name of counter");
+    }
+
+    return tabOfMoves;
 }
