@@ -19,26 +19,9 @@ export let doesCounterEndangerKing,
 
 
 
-    doesTeamEndangerEnemyKing = (friendlyColour) => {
-        const hostileColour = friendlyColour === "white" ? "black" : "white";
 
-        let typeOfCounter, coordinates;
-
-        const allCountersOfFriendlyColour = document.querySelectorAll(`.${friendlyColour}`);
-        //typeOfCounter, team, x, y, show
-
-        allCountersOfFriendlyColour.forEach( field => {
-            typeOfCounter = field.classList[TYPE_OF_COUNTER_CLASS];
-            coordinates = getCoordinatesFromField(field, false);
-            const {x, y} = coordinates;
-
-            findPossibleMoves(typeOfCounter, friendlyColour, x, y, false);
-        })
-    }
 
     filterTabInCaseOfCheck = (x, y, tabOfMoves) => {
-
-        
 
         let willBeCheck;
 

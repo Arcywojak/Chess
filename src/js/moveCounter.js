@@ -12,11 +12,17 @@ import {
 import {getFieldFromCoordinates} from "./getSomething.js";
 import { doesCounterEndangerKing, doesTeamEndangerEnemyKing, isKingInDanger, isMate } from "./LookForCheck.js";
 import { COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, showWinner } from "./variables.js";
+import { DoesKingDoCastling, doesPawnPromote } from "./specialMoves.js";
 
 const moveSound = document.querySelector("#move-sound");
 const beatSound = document.querySelector("#beat-sound");
 
 changePositionOfCounter = (origin, destination) => {
+
+
+/******************* CHECKING IF WE WANT TO DO CASTLING **************************/
+    DoesKingDoCastling(origin, destination);
+/***************************************************************************************/
     
     removeRecentMove();
     removeActivePosition();
@@ -82,6 +88,10 @@ changePositionOfCounter = (origin, destination) => {
     );
 
     destinationBlock.appendChild(originBlockImg);
+
+    /******************* CHECKING IF A PAWN'S DREAM COMES TRUE **************************/
+    doesPawnPromote(destinationBlock);
+    /***************************************************************************************/
 
     
 

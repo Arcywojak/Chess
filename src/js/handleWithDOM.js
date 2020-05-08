@@ -96,6 +96,7 @@ removePossibleMoves = () => {
 
 showPossibleMoves = (arrayOfMoves) => {
 
+    //console.log(arrayOfMoves)
     if (!(typeof arrayOfMoves === "undefined")) {
 
         const tabOfPossibleMoves = [];

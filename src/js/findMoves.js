@@ -27,26 +27,35 @@ import {
     showPossibleMoves} from "./handleWithDOM.js";
 
 import { doesCounterEndangerKing, filterTabInCaseOfCheck, willBeMyKingInDanger } from "./LookForCheck.js";
-import { COLOR_CLASS, battleField } from "./variables.js";
+import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
+import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMoves.js";
 
 
 
 
-    findPossibleMoves = (typeOfCounter, team, x, y, filterTabAndShowMoves) => {
+    findPossibleMoves = (typeOfCounter, team, x, y) => {
 
         const tabOfMoves = getArrayOfMoves(typeOfCounter, team, x, y)
 
-        if(filterTabAndShowMoves){
 
-          const filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
+        let filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
+        
+        if(battleField.fields[x][y].typeOfCounter === "king"){
 
-           showPossibleMoves(filteredTab);
+        const shortCastlingMoves = addMovesForShortCastling(x, y, gameOptions.activeColour);
 
-           return;
-        }
+        const longCastlingMoves = addMovesForLongCastling(x, y, gameOptions.activeColour)
+
+
+         filteredTab = [...filteredTab, ...shortCastlingMoves, ...longCastlingMoves];
+        
+        } 
+        
         
 
-      return doesCounterEndangerKing(tabOfMoves);
+        showPossibleMoves(filteredTab);
+
+        return;
 }
 
 

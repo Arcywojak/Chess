@@ -1,5 +1,6 @@
 import {fillFieldsInCounters, setEmptyBattleField, initPositionOfCounters_DOM} from "./initFunctions.js";
 import {battleField} from './variables.js'
+import { setOptionsForCastling } from "./specialMoves.js";
 
 
 /** ******* INITIALIZE COUNTERS *********/
@@ -185,3 +186,5 @@ fillFieldsInCounters(
 /** ****************************************/
 
 initPositionOfCounters_DOM();
+
+setOptionsForCastling();

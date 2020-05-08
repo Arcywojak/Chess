@@ -18,9 +18,10 @@ export let getActiveCoordinates,
         removePossibleMoves,
         showActivePosition,
         showPossibleMoves} from "./handleWithDOM.js";
-import { COLOR_CLASS, battleField } from "./variables.js";
+import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
 
 import {canPawnAttack} from './findMoves.js';
+
 
 getFieldFromCoordinates = (x, y) => {
 
@@ -415,6 +416,8 @@ getKingMoves = (team, x, y) => {
                 }
         }  
     }
+
+
 
     return filteredTab;
 

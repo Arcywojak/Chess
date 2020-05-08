@@ -106,7 +106,7 @@ handleClick = (e) => {
               typeOfCounter = field.parentNode.classList[TYPE_OF_COUNTER_CLASS],
               {x, y} = getCoordinatesFromField(field, true);
 
-        findPossibleMoves(typeOfCounter, team, x, y, true); //findMoves.js
+        findPossibleMoves(typeOfCounter, team, x, y); //findMoves.js
  
         showActivePosition(field);
 
