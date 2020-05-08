@@ -149,8 +149,11 @@ export let doesCounterEndangerKing,
                 tabOfCounters[i].y,
                 tabOfMoves
             )
-
+           
             if(tabOfFilteredMoves.length > 0){
+
+               
+
                 return false;
             }
         }

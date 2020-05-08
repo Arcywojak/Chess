@@ -1,7 +1,8 @@
-import { battleField, gameOptions } from "./variables.js";
+import { battleField, gameOptions, imagesOfCounter, TYPE_OF_COUNTER_CLASS } from "./variables.js";
 import { isFieldTaken } from "./handleWithDOM.js";
 import {filterTabInCaseOfCheck, isKingInDanger} from "./LookForCheck.js"
 import {changePositionOfCounter} from './moveCounter.js'
+import { getCoordinatesFromField } from "./getSomething.js";
 
 export let setOptionsForCastling,
            canKingDoShortCastling,
@@ -144,6 +145,17 @@ export let setOptionsForCastling,
          }
         }
 
-    doesPawnPromote = (field) => {
-        console.log(field)
+    doesPawnPromote = (field, coordinates, team) => {
+        
+        if(coordinates.y === 0 || coordinates.y === 7){
+
+            field.childNodes[0].src = imagesOfCounter[team].queen;
+
+            field.classList.remove("pawn");
+
+            field.classList.add("queen")
+
+            battleField.fields[coordinates.x][coordinates.y].typeOfCounter = "queen";
+        }
+        
     }

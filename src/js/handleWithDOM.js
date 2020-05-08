@@ -96,7 +96,6 @@ removePossibleMoves = () => {
 
 showPossibleMoves = (arrayOfMoves) => {
 
-    //console.log(arrayOfMoves)
     if (!(typeof arrayOfMoves === "undefined")) {
 
         const tabOfPossibleMoves = [];
@@ -115,12 +114,18 @@ showPossibleMoves = (arrayOfMoves) => {
 
 isFieldTaken = (x, y) => {
 
-    if (battleField.fields[x][y].color !== null) { // It mean the field is taken by some counter
+    try{
+        if (battleField.fields[x][y].color !== null) { // It mean the field is taken by some counter
 
-        return true;
-
+            return true;
+    
+        }
+    
+        return false;
+    } catch (error) {
+        console.error(`Error with parameters:${x}, ${y} \n ${error}`)
     }
 
-    return false;
+    
 
 };

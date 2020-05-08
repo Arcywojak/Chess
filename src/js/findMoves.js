@@ -83,7 +83,7 @@ import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMove
                 "y": y + moveY
             };
 
-        if(leftCoordinates.x >= 0){
+        if(leftCoordinates.x >= 0 && leftCoordinates.y<=7 && leftCoordinates.y>=0){
 
             if (battleField.fields[leftCoordinates.x][leftCoordinates.y].color === unfriendlyColour) {
     
@@ -96,7 +96,7 @@ import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMove
 
         }
         
-        if(rightCoordinates.x <=7 ){
+        if(rightCoordinates.x <=7  && rightCoordinates.y<=7 && rightCoordinates.y>=0){
 
             if (battleField.fields[rightCoordinates.x][rightCoordinates.y].color === unfriendlyColour) {
         

@@ -10,7 +10,8 @@ export let getActiveCoordinates,
     getQueenMoves,
     getOppositeColour,
     getAllCounters,
-    getArrayOfMoves;
+    getArrayOfMoves,
+    filterOvermoves;
 
     import {
         isFieldTaken,
@@ -89,7 +90,7 @@ getCoordinatesFromField = (field, fromParent) => {
     return coordinates;
 
 }    catch {
-    throw new Error("Something went wrong at getSomething.js, maybe you gave wrong the second parameter?")
+    console.error("Something went wrong at getSomething.js, maybe you gave wrong the second parameter?")
 }  
 
 };
@@ -100,6 +101,8 @@ getPawnMoves = (team, x, y) => {
         newPositionY,
         additionMoveY,
         isFirstMove,
+        isBlocked,
+        isAdditionBlocked,
         tabOfMoves = [];
 
     if (team === "white") {
@@ -118,10 +121,16 @@ getPawnMoves = (team, x, y) => {
 
     }
 
-    const isBlocked = isFieldTaken(
-        x,
-        newPositionY
-    );
+    if(newPositionY >=0 && newPositionY <=7){
+        isBlocked = isFieldTaken(
+            x,
+            newPositionY
+        );
+    } else {
+        isBlocked = true;
+    }
+
+    
 
     if (!isBlocked) {
 
@@ -131,10 +140,16 @@ getPawnMoves = (team, x, y) => {
             "y": newPositionY
             }); // Check pos x, y+1/-1
 
-        const isAdditionBlocked = isFieldTaken(
-            x,
-            additionMoveY
-        );
+        
+        if(additionMoveY >=0 && additionMoveY <=7){
+            isAdditionBlocked = isFieldTaken(
+                x,
+                additionMoveY
+            );
+        } else {
+            isAdditionBlocked = true;
+        }
+        
 
         if (isFirstMove) {
 
@@ -148,6 +163,14 @@ getPawnMoves = (team, x, y) => {
         }
 
     }
+
+    const enemy = getOppositeColour(team)
+
+    const pawnAttackArray = canPawnAttack(enemy, x, y)
+
+    tabOfMoves = [...tabOfMoves, ...pawnAttackArray];
+
+    tabOfMoves = filterOvermoves(tabOfMoves);
 
     return tabOfMoves;
 }
@@ -254,15 +277,7 @@ getKnightMoves = (team , x, y) => {
 
         
 
-       const filteredTab = tabOfMoves.filter((move) => {
-
-            if ( (move.x >= 0 && move.x <= 7) && (move.y >= 0 && move.y <= 7) ) {
-
-                return move;
-
-            }
-
-        });
+       const filteredTab = filterOvermoves(tabOfMoves);
 
     const moreFilteredTab = [];
 
@@ -466,11 +481,8 @@ getArrayOfMoves = (typeOfCounter, team, x, y) => {
 
     switch(typeOfCounter){
         case 'pawn':
-        
-        const tabMove = getPawnMoves(team, x, y);
-        const tabAttack = canPawnAttack(enemyColour, x, y);
 
-            tabOfMoves = tabMove.concat(tabAttack);
+            tabOfMoves = getPawnMoves(team, x, y);
             
             break;
 
@@ -508,4 +520,18 @@ getArrayOfMoves = (typeOfCounter, team, x, y) => {
     }
 
     return tabOfMoves;
+}
+
+filterOvermoves = (tabOfMoves) => {
+    const filteredTab = tabOfMoves.filter( move => {
+        if(move.x <=7 && 
+           move.x >=0 &&
+           move.y <=7 && 
+           move.y >=0 
+           ) {
+               return move;
+           }
+    })
+
+    return filteredTab;
 }

@@ -90,14 +90,17 @@ changePositionOfCounter = (origin, destination) => {
     destinationBlock.appendChild(originBlockImg);
 
     /******************* CHECKING IF A PAWN'S DREAM COMES TRUE **************************/
-    doesPawnPromote(destinationBlock);
+    if(typeOfMovingCounter === 'pawn'){
+        doesPawnPromote(destinationBlock, destination, colourOfMovingCounter);
+    }
+    
     /***************************************************************************************/
 
     
 
     showRecentMove(originBlock, destinationBlock);
 
-    //IS CHECK AFTER THIS MOVE
+    //IS CHECK AFTER THIS MOVE?
     const isCheck = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
 
     if(isCheck){
@@ -106,7 +109,7 @@ changePositionOfCounter = (origin, destination) => {
 
         const mate = isMate(gameOptions.activeColour);
 
-        if(isMate){
+        if(mate){
             gameOptions.didGameEnd = true;
             gameOptions.winner = gameOptions.oppositeColour;
 
