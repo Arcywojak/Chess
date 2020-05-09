@@ -60,7 +60,9 @@ changePositionOfCounter = (origin, destination) => {
 /***************************************************************************************/
     
     removeRecentMove();
-    removeActivePosition();     
+    removeActivePosition();   
+    showRecentMove(originBlock, destinationBlock);
+      
 
     originBlock.classList.remove(
         typeOfMovingCounter,
@@ -70,53 +72,62 @@ changePositionOfCounter = (origin, destination) => {
     battleField.fields[origin.x][origin.y].color = null;
     battleField.fields[origin.x][origin.y].typeOfCounter = null;
 
+    originBlockImg.style.transform =
+     `translate(${(destination.x - origin.x)*78.5}px, ${(destination.y - origin.y)*78.5}px)`;
+
+     setTimeout( () => { // delay code by 100ms to let animation works
+
+        originBlockImg.style.transform = //reset animation
+     `translate(${(destination.x - origin.x)*0}px, ${(destination.y - origin.y)*0}px)`;
+
+        originBlock.removeChild(originBlockImg);
+
+        battleField.fields[destination.x][destination.y].color = colourOfMovingCounter;
+        battleField.fields[destination.x][destination.y].typeOfCounter = typeOfMovingCounter;  
     
-    originBlock.removeChild(originBlockImg);
-
+        if (takenField) {
     
-
-    battleField.fields[destination.x][destination.y].color = colourOfMovingCounter;
-    battleField.fields[destination.x][destination.y].typeOfCounter = typeOfMovingCounter;  
-
-    if (takenField) {
-
-        const destinationImg = destinationBlock.childNodes[0];
-
-        destinationBlock.removeChild(destinationImg);
-
-        destinationBlock.classList.remove(
-            counterOfTakenField,
-            colourOfTakenField
+            const destinationImg = destinationBlock.childNodes[0];
+    
+            destinationBlock.removeChild(destinationImg);
+    
+            destinationBlock.classList.remove(
+                counterOfTakenField,
+                colourOfTakenField
+            );
+    
+            moveSound.play();
+    
+        } else {
+            beatSound.play();
+        }
+    
+        destinationBlock.classList.add(
+            colourOfMovingCounter,
+            typeOfMovingCounter
         );
+    
+        destinationBlock.appendChild(originBlockImg);
+    
+        /******************* CHECKING IF A PAWN'S DREAM COMES TRUE **************************/
+        if(typeOfMovingCounter === 'pawn'){
+            doesPawnPromote(destination, colourOfMovingCounter);
+        }
+        /***************************************************************************************/
+    
+        
+    
+        
+        //IS CHECK AFTER THIS MOVE?
+        const isCheck = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
+    
+    
+        verifyCheckAndMate(isCheck);
 
-        moveSound.play();
-
-    } else {
-        beatSound.play();
-    }
-
-    destinationBlock.classList.add(
-        colourOfMovingCounter,
-        typeOfMovingCounter
-    );
-
-    destinationBlock.appendChild(originBlockImg);
-
-    /******************* CHECKING IF A PAWN'S DREAM COMES TRUE **************************/
-    if(typeOfMovingCounter === 'pawn'){
-        doesPawnPromote(destination, colourOfMovingCounter);
-    }
-    /***************************************************************************************/
+     }, 100)
 
     
-
-    showRecentMove(originBlock, destinationBlock);
-
-    //IS CHECK AFTER THIS MOVE?
-    const isCheck = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-
-
-    verifyCheckAndMate(isCheck);
+    
 
    
 

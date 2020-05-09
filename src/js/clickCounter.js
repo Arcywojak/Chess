@@ -87,6 +87,8 @@ let handleClick, selectPromotion;
 
 handleClick = (e) => {
 
+    
+
     const field = e.target,
 
         active = getActiveField();
@@ -111,7 +113,9 @@ handleClick = (e) => {
  
         showActivePosition(field);
 
-    } else if (field.classList.contains("to-move")) {
+    } else if (field.classList.contains("to-move") || field.parentNode.classList.contains("to-move")) {
+
+        const instanceContaingToMove = field.classList.contains("to-move") ? field : field.parentNode;
 
         /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
         const isCheck = isKingInDanger(gameOptions.oppositeColour)
@@ -126,7 +130,7 @@ handleClick = (e) => {
         const from = getActiveCoordinates(),
 
             to = getCoordinatesFromField(
-                field,
+                instanceContaingToMove,
                 false
             );
 
