@@ -4,7 +4,8 @@ import {
     COLOR_CLASS,
     TYPE_OF_COUNTER_CLASS,
     gameOptions,
-    battleField
+    battleField,
+    showWinner
 } from './variables.js'
 import { isFieldTaken } from "./handleWithDOM.js";
 import { findPossibleMoves } from "./findMoves.js";
@@ -14,7 +15,8 @@ export let doesCounterEndangerKing,
            filterTabInCaseOfCheck,
            willBeMyKingInDanger,
            isKingInDanger,
-           isMate
+           isMate,
+           verifyCheckAndMate;
 
 
 
@@ -159,5 +161,21 @@ export let doesCounterEndangerKing,
         }
 
         return  true;
+    }
+
+    verifyCheckAndMate = (isCheck) => {
+        if(isCheck){
+            const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
+            kingField.classList.add("danger")
+    
+            const mate = isMate(gameOptions.activeColour);
+    
+            if(mate){
+                gameOptions.didGameEnd = true;
+                gameOptions.winner = gameOptions.oppositeColour;
+    
+                showWinner();
+            }
+        }
     }
 

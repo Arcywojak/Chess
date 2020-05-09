@@ -5,7 +5,21 @@ export const gameOptions = {
     activeColour: "white",
     oppositeColour: "black",
     didGameEnd:false,
-    winner:null
+    winner:null,
+    lastMove : {
+        from : {
+            x:null,
+            y:null
+        },
+        to : {
+            x:null,
+            y:null
+        },
+        whoMoved:{
+            typeOfCounter:null,
+            colour:null
+        }   
+    }
 }
 
 export const changeColourOfActivePlayer = () => {

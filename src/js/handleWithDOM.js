@@ -5,7 +5,9 @@ export let  removeActivePosition,
             removeRecentMove,
             removePossibleMoves,
             showPossibleMoves,
-            isFieldTaken;  
+            isFieldTaken,
+            setCounterToPromoteImages,
+            toggleOverlayAndPromotionBlock;  
             
 import {getActiveField,
         getFieldFromCoordinates,
@@ -18,7 +20,8 @@ import {
     gameOptions,
     updatePlayerToMove,
     changeColourOfActivePlayer,
-    battleField
+    battleField,
+    imagesOfCounter
 } from './variables.js'
 
 
@@ -129,3 +132,43 @@ isFieldTaken = (x, y) => {
     
 
 };
+setCounterToPromoteImages = (team) => {
+    const promotionFields = document.querySelectorAll(".counter-to-promote");
+
+    console.log(team)
+
+    let images;
+
+    if(team === "white"){
+        images = imagesOfCounter.white;
+    } else {
+        images = imagesOfCounter.black;
+    }
+        promotionFields[0].childNodes[1].src = images.queen;
+        promotionFields[1].childNodes[1].src = images.knight;
+        promotionFields[2].childNodes[1].src = images.rook;
+        promotionFields[3].childNodes[1].src = images.bishop;
+ 
+        promotionFields[0].childNodes[1].src = images.queen;
+        promotionFields[1].childNodes[1].src = images.knight;
+        promotionFields[2].childNodes[1].src = images.rook;
+        promotionFields[3].childNodes[1].src = images.bishop;
+    
+}
+
+toggleOverlayAndPromotionBlock = (coordinates) => {
+
+        const selectPrize = document.querySelector(".select-counter-to-promote");
+        const promotionOverlay = document.querySelector(".promotion-overlay");
+
+        selectPrize.classList.toggle("invisible")
+        promotionOverlay.classList.toggle("invisible")
+
+        if(coordinates){
+            selectPrize.style.webkitTransform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
+            selectPrize.style.MozTransform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
+            selectPrize.style.msTransform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
+            selectPrize.style.OTransform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
+            selectPrize.style.transform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
+        }
+}

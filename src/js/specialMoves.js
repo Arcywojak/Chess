@@ -1,17 +1,18 @@
-import { battleField, gameOptions, imagesOfCounter, TYPE_OF_COUNTER_CLASS } from "./variables.js";
-import { isFieldTaken } from "./handleWithDOM.js";
+import { battleField, gameOptions, imagesOfCounter, TYPE_OF_COUNTER_CLASS, COLOR_CLASS } from "./variables.js";
+import { isFieldTaken, setCounterToPromoteImages, toggleOverlayAndPromotionBlock } from "./handleWithDOM.js";
 import {filterTabInCaseOfCheck, isKingInDanger} from "./LookForCheck.js"
 import {changePositionOfCounter} from './moveCounter.js'
-import { getCoordinatesFromField } from "./getSomething.js";
+import { getCoordinatesFromField, getFieldFromCoordinates } from "./getSomething.js";
 
 export let setOptionsForCastling,
            canKingDoShortCastling,
            canKingDoLongCastling,
-           enPassant,
+           addEnPassantIfPossible,
            addMovesForShortCastling,
            addMovesForLongCastling,
            DoesKingDoCastling,
-           doesPawnPromote;
+           doesPawnPromote,
+           didPawnDoEnPassant;
 
 
 
@@ -145,17 +146,94 @@ export let setOptionsForCastling,
          }
         }
 
-    doesPawnPromote = (field, coordinates, team) => {
+    doesPawnPromote = (coordinates, team) => {
         
         if(coordinates.y === 0 || coordinates.y === 7){
 
-            field.childNodes[0].src = imagesOfCounter[team].queen;
 
-            field.classList.remove("pawn");
+            setCounterToPromoteImages(team);
+            toggleOverlayAndPromotionBlock(coordinates)
 
-            field.classList.add("queen")
-
-            battleField.fields[coordinates.x][coordinates.y].typeOfCounter = "queen";
         }
         
     }
+
+    addEnPassantIfPossible = (hostileColour, x, y) => {
+
+        if(gameOptions.lastMove.whoMoved.typeOfCounter === "pawn" &&
+           gameOptions.lastMove.whoMoved.colour === hostileColour){
+
+            if( Math.abs(gameOptions.lastMove.from.y - gameOptions.lastMove.to.y) === 2 ){
+
+                if(y === gameOptions.lastMove.to.y &&
+                   Math.abs(gameOptions.lastMove.to.x - x) === 1 ){
+
+                    let yToReturn;
+
+                    if(hostileColour === "white"){
+                        yToReturn = y+1
+                    } else {
+                        yToReturn = y-1
+                    }
+
+                    return [{x:gameOptions.lastMove.from.x, y: yToReturn}]
+                }
+            }
+        }
+
+        return [];
+    }
+
+    didPawnDoEnPassant = (origin, destination) => {
+
+        if(
+           !isFieldTaken(destination.x, destination.y) &&
+           origin.x !== destination.x
+        ){
+
+            if(battleField.fields[origin.x][origin.y].color === "white"){
+                //remove pawn from field destination.x, destination.y + 1
+
+                battleField.fields[destination.x][destination.y + 1].color = null;
+                battleField.fields[destination.x][destination.y + 1].typeOfCounter = null;
+
+                const fieldWithPawn = getFieldFromCoordinates(
+                    destination.x,
+                    destination.y + 1
+                )
+
+                console.log(fieldWithPawn)
+                console.log("FIELD")
+
+                fieldWithPawn.classList.remove(
+                    fieldWithPawn.classList[COLOR_CLASS],
+                    fieldWithPawn.classList[TYPE_OF_COUNTER_CLASS]
+                )
+
+                const imageOfField = fieldWithPawn.childNodes[0];
+
+                fieldWithPawn.removeChild(imageOfField);
+
+            } else {
+                 //remove pawn from field destination.x, destination.y - 1
+
+                 battleField.fields[destination.x][destination.y - 1].color = null;
+                battleField.fields[destination.x][destination.y - 1].typeOfCounter = null;
+
+                const fieldWithPawn = getFieldFromCoordinates(
+                    destination.x,
+                    destination.y - 1
+                );
+
+                fieldWithPawn.classList.remove(
+                    fieldWithPawn.classList[COLOR_CLASS],
+                    fieldWithPawn.classList[TYPE_OF_COUNTER_CLASS]
+                );
+
+                const imageOfField = fieldWithPawn.childNodes[0];
+
+                fieldWithPawn.removeChild(imageOfField);
+            }
+        }
+    }
+

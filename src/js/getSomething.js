@@ -23,6 +23,8 @@ import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
 
 import {canPawnAttack} from './findMoves.js';
 
+import {addEnPassantIfPossible} from './specialMoves.js'
+
 
 getFieldFromCoordinates = (x, y) => {
 
@@ -168,7 +170,9 @@ getPawnMoves = (team, x, y) => {
 
     const pawnAttackArray = canPawnAttack(enemy, x, y)
 
-    tabOfMoves = [...tabOfMoves, ...pawnAttackArray];
+    const enPassant = addEnPassantIfPossible(enemy, x, y)
+
+    tabOfMoves = [...tabOfMoves, ...pawnAttackArray, ...enPassant];
 
     tabOfMoves = filterOvermoves(tabOfMoves);
 

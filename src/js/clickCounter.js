@@ -7,7 +7,8 @@ import {
     removeActivePosition,
     removePossibleMoves,
     showActivePosition,
-    showPossibleMoves} from "./handleWithDOM.js";
+    showPossibleMoves,
+    toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
@@ -21,14 +22,14 @@ import {
     changeColourOfActivePlayer,
     battleField
 } from './variables.js'
-import { isKingInDanger } from "./LookForCheck.js";
+import { isKingInDanger, verifyCheckAndMate } from "./LookForCheck.js";
 
 
 
 
 updatePlayerToMove();
 
-let handleClick;
+let handleClick, selectPromotion;
 
 
 /* /* 
@@ -140,7 +141,38 @@ handleClick = (e) => {
 
 };
 
+const promotonBlock = document.querySelectorAll(".counter-to-promote");
+
+promotonBlock.forEach(field => {
+    
+    field.childNodes[1].addEventListener("click" , (e) => { //add event to images
+        const theLatestPosition = {x:gameOptions.lastMove.to.x, y:gameOptions.lastMove.to.y };
+
+        battleField.fields[theLatestPosition.x][theLatestPosition.y].typeOfCounter = e.target.id;
+
+        const theLatestField = getFieldFromCoordinates(theLatestPosition.x, theLatestPosition.y);
+
+        console.log(theLatestField.childNodes[0])
+    
+        theLatestField.classList.remove("pawn");
+        theLatestField.classList.add(e.target.id);
+
+        theLatestField.childNodes[0].src = e.target.src;
+
+        toggleOverlayAndPromotionBlock();
+
+        //IS CHECK AFTER THIS MOVE?
+        const isCheck = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
+
+        verifyCheckAndMate(isCheck);
+   })
+})
+
+
+
 document.addEventListener(
     "click",
     handleClick
 );
+
+document.addEventListener("click", selectPromotion)
