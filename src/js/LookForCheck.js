@@ -97,7 +97,8 @@ export let doesCounterEndangerKing,
                 offensiveCounters[i].typeOfCounter,
                 offensiveCounters[i].colour,
                 offensiveCounters[i].x,
-                offensiveCounters[i].y
+                offensiveCounters[i].y,
+                false
                 );
 
             isInDanger = doesCounterEndangerKing(tabOfMoves);
@@ -143,7 +144,8 @@ export let doesCounterEndangerKing,
                 tabOfCounters[i].typeOfCounter,
                 tabOfCounters[i].colour,
                 tabOfCounters[i].x,
-                tabOfCounters[i].y
+                tabOfCounters[i].y,
+                false
                 );
 
             tabOfFilteredMoves = filterTabInCaseOfCheck(
@@ -164,8 +166,12 @@ export let doesCounterEndangerKing,
     }
 
     verifyCheckAndMate = (isCheck) => {
+        const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
+
+        const otherKingField = document.querySelector(`.${gameOptions.oppositeColour}.king`);
+
         if(isCheck){
-            const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
+            
             kingField.classList.add("danger")
     
             const mate = isMate(gameOptions.activeColour);
@@ -175,6 +181,10 @@ export let doesCounterEndangerKing,
                 gameOptions.winner = gameOptions.oppositeColour;
     
                 showWinner();
+            }
+        } else {
+            if(otherKingField.classList.contains("danger")){
+                otherKingField.classList.remove("danger")
             }
         }
     }

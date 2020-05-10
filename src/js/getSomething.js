@@ -24,6 +24,7 @@ import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
 import {canPawnAttack} from './findMoves.js';
 
 import {addEnPassantIfPossible} from './specialMoves.js'
+import { filterTabInCaseOfCheck } from "./LookForCheck.js";
 
 
 getFieldFromCoordinates = (x, y) => {
@@ -417,6 +418,16 @@ getKingMoves = (team, x, y) => {
         },
     ];
 
+    const enemyColour = getOppositeColour(team);
+
+    const hostileKing = document.querySelector(`.${enemyColour}.king`);
+
+    const hostileKingCoordintes = getCoordinatesFromField(hostileKing);
+
+    
+
+
+//REMOVE IMPOSSIBLE MOVES (ATTACKING FRIENDS AND APPROACHING THE ENEMY KING)
     for(let i=0; i < tabOfMoves.length; i++){
 
         const {x, y} = tabOfMoves[i];
@@ -424,17 +435,27 @@ getKingMoves = (team, x, y) => {
         if(x>=0 && x<=7 && y>=0 && y<=7){      
 
             takenField = isFieldTaken(x, y);
+
+            if(
+                Math.abs(hostileKingCoordintes.x - x)>1 ||
+                Math.abs(hostileKingCoordintes.y - y)>1 
+              ) {
+
                 if(takenField){
             
                     if(battleField.fields[x][y].color !== team){
-                        filteredTab.push({x:x, y:y})
+                         
+                            filteredTab.push({x:x, y:y})
                     }
 
                 } else {
                     filteredTab.push({x:x, y:y});
                 }
+            }
         }  
     }
+/******************************************************************* */
+    
 
 
 
@@ -477,7 +498,7 @@ getAllCounters = (colour, withKing) => {
     return tabOfCounters;
 }
 
-getArrayOfMoves = (typeOfCounter, team, x, y) => {
+getArrayOfMoves = (typeOfCounter, team, x, y, filterTab=true) => {
 
     let tabOfMoves;
 
@@ -522,6 +543,11 @@ getArrayOfMoves = (typeOfCounter, team, x, y) => {
 
         default: throw new Error("You have probably given wrong name of counter");
     }
+
+    if(filterTab){
+        tabOfMoves = filterTabInCaseOfCheck(x, y, tabOfMoves);
+    }
+    
 
     return tabOfMoves;
 }

@@ -35,10 +35,7 @@ import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMove
 
     findPossibleMoves = (typeOfCounter, team, x, y) => {
 
-        const tabOfMoves = getArrayOfMoves(typeOfCounter, team, x, y)
-
-
-        let filteredTab = filterTabInCaseOfCheck(x, y, tabOfMoves);
+        let tabOfMoves = getArrayOfMoves(typeOfCounter, team, x, y)
         
         if(battleField.fields[x][y].typeOfCounter === "king"){
 
@@ -47,13 +44,13 @@ import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMove
         const longCastlingMoves = addMovesForLongCastling(x, y, gameOptions.activeColour)
 
 
-         filteredTab = [...filteredTab, ...shortCastlingMoves, ...longCastlingMoves];
+         tabOfMoves = [...tabOfMoves, ...shortCastlingMoves, ...longCastlingMoves];
         
         } 
         
         
 
-        showPossibleMoves(filteredTab);
+        showPossibleMoves(tabOfMoves);
 
         return;
 }

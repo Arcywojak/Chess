@@ -10,7 +10,7 @@ import {
     showPossibleMoves,
     toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 
-import {changePositionOfCounter} from "./moveCounter.js";
+import {changePositionOfCounter, AIdoMove} from "./moveCounter.js";
 
 import {findPossibleMoves} from './findMoves.js'
 
@@ -29,7 +29,12 @@ import { isKingInDanger, verifyCheckAndMate } from "./LookForCheck.js";
 
 updatePlayerToMove();
 
-let handleClick, selectPromotion;
+export let handleClick, selectPromotion, promotePawn;
+
+setTimeout( () => {
+    AIdoMove();
+}, 3000)
+
 
 
 /* /* 
@@ -125,7 +130,7 @@ handleClick = (e) => {
         }
         /********************************************************** */
                 
-        changeColourOfActivePlayer();
+        
         
         const from = getActiveCoordinates(),
 
@@ -145,30 +150,33 @@ handleClick = (e) => {
 
 };
 
-const promotonBlock = document.querySelectorAll(".counter-to-promote");
+const promotionBlock = document.querySelectorAll(".counter-to-promote");
 
-promotonBlock.forEach(field => {
+promotePawn = (src, id) => {
+
+    const theLatestPosition = {x:gameOptions.lastMove.to.x, y:gameOptions.lastMove.to.y };
+    battleField.fields[theLatestPosition.x][theLatestPosition.y].typeOfCounter = id;
+    const theLatestField = getFieldFromCoordinates(theLatestPosition.x, theLatestPosition.y);
+    theLatestField.classList.remove("pawn");
+    theLatestField.classList.add(id);
+    theLatestField.childNodes[0].src = src;
+
+    toggleOverlayAndPromotionBlock();
+    
+    const isCheckFirst = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
+    const isCheckSecond = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
+
+
+    verifyCheckAndMate(isCheckFirst);
+    verifyCheckAndMate(isCheckSecond);
+}
+
+promotionBlock.forEach(field => {
     
     field.childNodes[1].addEventListener("click" , (e) => { //add event to images
-        const theLatestPosition = {x:gameOptions.lastMove.to.x, y:gameOptions.lastMove.to.y };
 
-        battleField.fields[theLatestPosition.x][theLatestPosition.y].typeOfCounter = e.target.id;
-
-        const theLatestField = getFieldFromCoordinates(theLatestPosition.x, theLatestPosition.y);
-
-        console.log(theLatestField.childNodes[0])
-    
-        theLatestField.classList.remove("pawn");
-        theLatestField.classList.add(e.target.id);
-
-        theLatestField.childNodes[0].src = e.target.src;
-
-        toggleOverlayAndPromotionBlock();
-
-        //IS CHECK AFTER THIS MOVE?
-        const isCheck = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-
-        verifyCheckAndMate(isCheck);
+        promotePawn(e.target.src, e.target.id);
+ 
    })
 })
 
