@@ -8,44 +8,11 @@
 
 *//** ************************************/
 
-import {battleField, imagesOfCounter} from './variables.js'
+import {battleField, imagesOfCounter, gameOptions} from './variables.js'
 
 const innerBoard = document.querySelector(".board-inner");
 
-export const initPositionOfCounters_DOM = (team, counterName) => {
-
-   /* const quantityOfCounters = player.counters[counterName].length,
-
-        counterArray = player.counters[counterName];
-
-    for (let i = 0; i < quantityOfCounters; i++) {
-
-        const div = document.createElement("div");
-
-        div.classList.add(
-            "field",
-            `x${counterArray[i].position.x / 78.5}`,
-            `y${counterArray[i].position.y / 78.5}`,
-            `${counterName}`,
-            `${team}`
-            
-        );
-
-        const imageOfCounter = document.createElement("img");
-
-        imageOfCounter.src = imagesOfCounter[team][counterName];
-
-        div.appendChild(imageOfCounter);
-
-        div.style.webkitTransform = `translate(${counterArray[i].position.x}px, ${counterArray[i].position.y}px)`;
-        div.style.MozTransform = `translate(${counterArray[i].position.x}px, ${counterArray[i].position.y}px)`;
-        div.style.msTransform = `translate(${counterArray[i].position.x}px, ${counterArray[i].position.y}px)`;
-        div.style.OTransform = `translate(${counterArray[i].position.x}px, ${counterArray[i].position.y}px)`;
-        div.style.transform = `translate(${counterArray[i].position.x}px, ${counterArray[i].position.y}px)`;
-
-        innerBoard.appendChild(div);
-
-    }*/
+export const initPositionOfCounters_DOM = () => {
 
     let div,
         imageOfCounter,
@@ -86,11 +53,11 @@ export const initPositionOfCounters_DOM = (team, counterName) => {
 
         
 
-        div.style.webkitTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
-        div.style.MozTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
-        div.style.msTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
-        div.style.OTransform = `translate(${x*78.5}px, ${y*78.5}px)`;
-        div.style.transform = `translate(${x*78.5}px, ${y*78.5}px)`;
+        div.style.webkitTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
+        div.style.MozTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
+        div.style.msTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
+        div.style.OTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
+        div.style.transform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
 
         innerBoard.appendChild(div);
         }

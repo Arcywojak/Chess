@@ -10,7 +10,9 @@ import {
     showPossibleMoves,
     toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 
-import {changePositionOfCounter, AIdoMove} from "./moveCounter.js";
+import {changePositionOfCounter} from "./moveCounter.js";
+
+import {AIdoMove} from "./artificalInteligence.js";
 
 import {findPossibleMoves} from './findMoves.js'
 
@@ -20,20 +22,22 @@ import {
     gameOptions,
     updatePlayerToMove,
     changeColourOfActivePlayer,
-    battleField
-} from './variables.js'
+    battleField,
+    switchTeams
+} from './variables.js';
 import { isKingInDanger, verifyCheckAndMate } from "./LookForCheck.js";
 
+
+export let handleClick, selectPromotion, promotePawn;
 
 
 
 updatePlayerToMove();
 
-export let handleClick, selectPromotion, promotePawn;
 
-setTimeout( () => {
-    AIdoMove();
-}, 3000)
+//setTimeout( () => {
+  //  AIdoMove();
+//}, 3000)
 
 
 
@@ -123,7 +127,7 @@ handleClick = (e) => {
         const instanceContaingToMove = field.classList.contains("to-move") ? field : field.parentNode;
 
         /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
-        const isCheck = isKingInDanger(gameOptions.oppositeColour)
+        const isCheck = isKingInDanger(gameOptions.activeColour)
         if(isCheck){
             const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
             kingField.classList.remove("danger")
@@ -163,12 +167,7 @@ promotePawn = (src, id) => {
 
     toggleOverlayAndPromotionBlock();
     
-    const isCheckFirst = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-    const isCheckSecond = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-
-
-    verifyCheckAndMate(isCheckFirst);
-    verifyCheckAndMate(isCheckSecond);
+    verifyCheckAndMate();
 }
 
 promotionBlock.forEach(field => {
@@ -188,3 +187,28 @@ document.addEventListener(
 );
 
 document.addEventListener("click", selectPromotion)
+
+const button = document.querySelector(".switch-button");
+
+button.addEventListener("click", () => {
+
+    switchTeams();
+
+    let fieldWithCounter, img;
+
+    console.log(gameOptions.reverseBoard)
+
+    for(let x = 0; x<=7; x++){
+
+        for(let y=0; y<=7; y++){
+
+            if(battleField.fields[x][y].color !== null){    
+                fieldWithCounter = getFieldFromCoordinates(x, y)
+
+                img = fieldWithCounter.childNodes[0];
+
+                img.style.transform =`rotate(${gameOptions.reverseBoard}deg)`;
+            }
+        }
+    }
+});

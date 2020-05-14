@@ -26,7 +26,7 @@ import {
     showActivePosition,
     showPossibleMoves} from "./handleWithDOM.js";
 
-import { doesCounterEndangerKing, filterTabInCaseOfCheck, willBeMyKingInDanger } from "./LookForCheck.js";
+import { doesCounterEndangerKing, filterTabInCaseOfCheck} from "./LookForCheck.js";
 import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
 import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMoves.js";
 

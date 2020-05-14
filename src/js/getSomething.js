@@ -472,28 +472,50 @@ getOppositeColour = (colour) => {
     return "white";
 }
 
-getAllCounters = (colour, withKing) => {
+getAllCounters = (specificCounter, colour, withKing=true) => {
     //WITH KING - We need this parameter because if we look for check, we don't need king (he can't do check)
     //            but if we want to know whether mate occured or not, we need king to see if he can escape
 
-    let tabOfCounters = [];     
+    let tabOfCounters = [];  
+    
+    if(specificCounter === null){
 
-    for(let x=0; x<=7; x++){
-        for(let y=0; y<=7; y++){
-            if(battleField.fields[x][y].color === colour){
-                if(battleField.fields[x][y].typeOfCounter === "king" && !withKing){
-                    continue;
+        for(let x=0; x<=7; x++){
+            for(let y=0; y<=7; y++){
+                if(battleField.fields[x][y].color === colour){
+                    if(battleField.fields[x][y].typeOfCounter === "king" && !withKing){
+                        continue;
+                    }
+
+                    tabOfCounters.push({
+                    x : x,
+                    y : y,
+                    colour: battleField.fields[x][y].color,
+                    typeOfCounter: battleField.fields[x][y].typeOfCounter
+                    });
                 }
-
-                tabOfCounters.push({
-                   x : x,
-                   y : y,
-                   colour: battleField.fields[x][y].color,
-                   typeOfCounter: battleField.fields[x][y].typeOfCounter
-                });
             }
         }
+    } else {
+
+        for(let x=0; x<=7; x++){
+            for(let y=0; y<=7; y++){
+                if(battleField.fields[x][y].color === colour &&
+                   battleField.fields[x][y].typeOfCounter === specificCounter){
+                       
+                       tabOfCounters.push({
+                        x,
+                        y,
+                        colour: battleField.fields[x][y].color,
+                        typeOfCounter: battleField.fields[x][y].typeOfCounter
+                       })
+                   }
+            }
+            
+        }
+
     }
+    
 
     return tabOfCounters;
 }

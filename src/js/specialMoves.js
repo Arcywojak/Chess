@@ -37,7 +37,7 @@ export let setOptionsForCastling,
             !isFieldTaken(5, coordinateY) &&
             !isFieldTaken(6, coordinateY) &&
             battleField.fields[4][coordinateY].isFirstMove &&
-            !isKingInDanger(gameOptions.oppositeColour)
+            !isKingInDanger(gameOptions.activeColour)
           )     {
                
             let tabWithShortCastling = [
@@ -73,7 +73,7 @@ export let setOptionsForCastling,
                 !isFieldTaken(2, coordinateY) &&
                 !isFieldTaken(3, coordinateY) &&
                 battleField.fields[4][coordinateY].isFirstMove &&
-                !isKingInDanger(gameOptions.oppositeColour)
+                !isKingInDanger(gameOptions.activeColour)
               )     {
                    
                 let tabWithLongCastling = [

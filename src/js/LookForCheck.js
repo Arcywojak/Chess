@@ -1,4 +1,4 @@
-import { getFieldFromCoordinates, getCoordinatesFromField, getAllCounters, getArrayOfMoves } from "./getSomething.js";
+import { getFieldFromCoordinates, getCoordinatesFromField, getAllCounters, getArrayOfMoves, getOppositeColour } from "./getSomething.js";
 
 import {
     COLOR_CLASS,
@@ -13,7 +13,7 @@ import { findPossibleMoves } from "./findMoves.js";
 export let doesCounterEndangerKing,
            doesTeamEndangerEnemyKing,
            filterTabInCaseOfCheck,
-           willBeMyKingInDanger,
+           willBeKingInDanger,
            isKingInDanger,
            isMate,
            verifyCheckAndMate;
@@ -30,7 +30,7 @@ export let doesCounterEndangerKing,
         const filteredTab = [];
         
         for(let i = 0; i<tabOfMoves.length; i++){
-            willBeCheck = willBeMyKingInDanger({x, y},tabOfMoves[i]);
+            willBeCheck = willBeKingInDanger({x, y},tabOfMoves[i], gameOptions.activeColour);
 
             if(!willBeCheck){ // IF THERE IS NO CHECK  
                 filteredTab.push(tabOfMoves[i]);
@@ -40,8 +40,7 @@ export let doesCounterEndangerKing,
         return filteredTab;
     }
 
-    willBeMyKingInDanger = (origin, destination) =>{
-
+    willBeKingInDanger = (origin, destination, colour) =>{
 
         //PRETENT TO MOVE FROM ORIGIN TO DESTINATION
         
@@ -53,43 +52,49 @@ export let doesCounterEndangerKing,
               destinationFieldColor = destinationField.color,
               destinationFieldTypeOfCounter = destinationField.typeOfCounter;
 
-        originField.color = null;
-        originField.typeOfCounter = null;
-
         const isDestinationFieldTaken = isFieldTaken(destination.x, destination.y);
 
-        destinationField.color = originFieldColor;
-        destinationField.typeOfCounter = originFieldTypeOfCounter;
+        battleField.fields[destination.x][destination.y].color = originFieldColor;
+        battleField.fields[destination.x][destination.y].typeOfCounter = originFieldTypeOfCounter;
 
-        let isCheck = isKingInDanger(gameOptions.oppositeColour);
+        battleField.fields[origin.x][origin.y].color = null;
+        battleField.fields[origin.x][origin.y].typeOfCounter = null;
+
+
+        let isCheck = isKingInDanger(colour);
+
 
         /********** undo changes ***********/
-        originField.color = originFieldColor;
-        originField.typeOfCounter = originFieldTypeOfCounter;
+        battleField.fields[destination.x][destination.y].color = destinationFieldColor;
+        battleField.fields[destination.x][destination.y].typeOfCounter = destinationFieldTypeOfCounter;
 
-        if(isDestinationFieldTaken){
+        battleField.fields[origin.x][origin.y].color = originFieldColor;
+        battleField.fields[origin.x][origin.y].typeOfCounter = originFieldTypeOfCounter;
+
+     /*   if(isDestinationFieldTaken){
            destinationField.color = destinationFieldColor;
            destinationField.typeOfCounter = destinationFieldTypeOfCounter;
          
         } else {
            destinationField.color = null;
            destinationField.typeOfCounter = null;
-        }
+        }*/
         /***********************************/
         
 
         return isCheck;
     };
 
-    isKingInDanger = (offensiveColour) => {
+    isKingInDanger = (colour) => {
       
-        //exec
+        const oppositeColour = getOppositeColour(colour);
 
-        const offensiveCounters = getAllCounters(offensiveColour, false) ;
+        const offensiveCounters = getAllCounters(null, oppositeColour, false) ;
         //we do not need king because he can't check enemy king
 
         let isInDanger,
         tabOfMoves;
+
 
         for(let i=0; i<offensiveCounters.length; i++){
 
@@ -104,7 +109,6 @@ export let doesCounterEndangerKing,
             isInDanger = doesCounterEndangerKing(tabOfMoves);
 
             if(isInDanger){
-
                 return true;
             }
         }
@@ -114,6 +118,7 @@ export let doesCounterEndangerKing,
     }
 
     doesCounterEndangerKing = (tabOfMoves) => {
+        
 
             for(let i=0; i<tabOfMoves.length; i++){
             
@@ -135,7 +140,7 @@ export let doesCounterEndangerKing,
 
     isMate = (endangeredColour) => {
 
-        const tabOfCounters = getAllCounters(endangeredColour, true);
+        const tabOfCounters = getAllCounters(null, endangeredColour, true);
         let tabOfMoves,
             tabOfFilteredMoves
 
@@ -165,27 +170,52 @@ export let doesCounterEndangerKing,
         return  true;
     }
 
-    verifyCheckAndMate = (isCheck) => {
-        const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
+    verifyCheckAndMate = () => {
+        const firstKing = document.querySelector(`.white.king`);
+        const secondKing = document.querySelector(`.black.king`);
 
-        const otherKingField = document.querySelector(`.${gameOptions.oppositeColour}.king`);
+        const checkFirst = isKingInDanger("white");
+        const checkSecond = isKingInDanger("black");
 
-        if(isCheck){
+        const fieldWithDanger = document.querySelector(".danger");
+
+        console.log(fieldWithDanger)
+
+
+        if(checkFirst){
             
-            kingField.classList.add("danger")
+            firstKing.classList.add("danger")
     
-            const mate = isMate(gameOptions.activeColour);
+            const mate = isMate("white");
     
             if(mate){
                 gameOptions.didGameEnd = true;
-                gameOptions.winner = gameOptions.oppositeColour;
+                gameOptions.winner = "black";
     
                 showWinner();
             }
-        } else {
-            if(otherKingField.classList.contains("danger")){
-                otherKingField.classList.remove("danger")
+
+            return;
+        } 
+        
+        if(checkSecond){
+            
+            secondKing.classList.add("danger")
+    
+            const mate = isMate("black");
+            if(mate){
+                gameOptions.didGameEnd = true;
+                gameOptions.winner = "white";
+    
+                showWinner();
             }
+
+            return;
         }
-    }
+
+        if(fieldWithDanger !== null){
+            fieldWithDanger.classList.remove("danger")
+        }
+        
+}
 

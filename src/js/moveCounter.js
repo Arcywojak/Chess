@@ -1,6 +1,8 @@
 export let beatCounter,
     changePositionOfCounter,
-    AIdoMove;
+    updatePgn;
+
+import {AIdoMove} from './artificalInteligence.js'
 
 import {
     isFieldTaken,
@@ -11,10 +13,23 @@ import {
     showRecentMove,
     removeRecentMove} from "./handleWithDOM.js";
 import {getFieldFromCoordinates, getAllCounters, getArrayOfMoves} from "./getSomething.js";
-import { doesCounterEndangerKing, doesTeamEndangerEnemyKing, isKingInDanger, isMate, verifyCheckAndMate } from "./LookForCheck.js";
-import { COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, showWinner, changeColourOfActivePlayer, imagesOfCounter } from "./variables.js";
+import { doesCounterEndangerKing,
+     doesTeamEndangerEnemyKing,
+      isKingInDanger,
+       isMate,
+        verifyCheckAndMate,
+         willBeKingInDanger } from "./LookForCheck.js";
+import { COLOR_CLASS, 
+        TYPE_OF_COUNTER_CLASS,
+        battleField,
+        gameOptions,
+        showWinner,
+        changeColourOfActivePlayer,
+        imagesOfCounter,
+        nameOfFieldsX,
+        nameOfFieldsY,
+        charOfCounter } from "./variables.js";
 import { DoesKingDoCastling, doesPawnPromote, didPawnDoEnPassant } from "./specialMoves.js";
-import {promotePawn} from './clickCounter.js'
 
 const moveSound = document.querySelector("#move-sound");
 const beatSound = document.querySelector("#beat-sound");
@@ -54,6 +69,9 @@ changePositionOfCounter = (origin, destination) => {
         destination.y
     );
 
+    /*************UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
+    updatePgn(origin, destination, typeOfMovingCounter, counterOfTakenField);
+    /******************************************************************* */
 
 /******************* CHECKING IF WE WANT TO DO CASTLING **************************/
  if(typeOfMovingCounter === 'king'){
@@ -71,8 +89,9 @@ changePositionOfCounter = (origin, destination) => {
     removeActivePosition();   
     changeColourOfActivePlayer();
     showRecentMove(originBlock, destinationBlock);
-      
-
+   
+    
+    /**************ABANDOM FIELD WE MOVED FROM ******************/
     originBlock.classList.remove(
         typeOfMovingCounter,
         colourOfMovingCounter
@@ -80,14 +99,17 @@ changePositionOfCounter = (origin, destination) => {
 
     battleField.fields[origin.x][origin.y].color = null;
     battleField.fields[origin.x][origin.y].typeOfCounter = null;
+    /************************************************************* */
 
     originBlockImg.style.transform =
-     `translate(${(destination.x - origin.x)*78.5}px, ${(destination.y - origin.y)*78.5}px)`;
+     `translate(${(destination.x - origin.x)*78.5}px, ${(destination.y - origin.y)*78.5}px) 
+     rotate(${gameOptions.reverseBoard})`;
 
      setTimeout( () => { // delay code by 100ms to let animation works
 
         originBlockImg.style.transform = //reset animation
-        `translate(${(destination.x - origin.x)*0}px, ${(destination.y - origin.y)*0}px)`;
+        `translate(${(destination.x - origin.x)*0}px, ${(destination.y - origin.y)*0}px) 
+        rotate(${gameOptions.reverseBoard})`;
 
         originBlock.removeChild(originBlockImg);
 
@@ -127,90 +149,90 @@ changePositionOfCounter = (origin, destination) => {
         /***************************************************************************************/
     
         //*******************IS CHECK AFTER THIS MOVE? *****************************************/
-        const isCheckFirst = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-        const isCheckSecond = isKingInDanger(gameOptions.oppositeColour, gameOptions.activeColour)
-
-        verifyCheckAndMate(isCheckFirst);
-        verifyCheckAndMate(isCheckSecond)
+        verifyCheckAndMate();
         /***************************************************************************************/
 
-
-        if(!gameOptions.didGameEnd){
+        if(!gameOptions.didGameEnd && gameOptions.activeColour === "black"){
             setTimeout( () => {
                 AIdoMove();
-            }, 20)
+            }, 1000)
         }
 
-     }, 100)
-
- //   if(gameOptions.activeColour === "black"){
-
-   
-
-        
-        
-  //  }
-   
+     }, 100) 
 
 };
 
-AIdoMove = () => {
-    const allCounters = getAllCounters(gameOptions.activeColour, true) ;
 
-    const tabForCounters = [];
 
-    let moves, coordinates;
+updatePgn = (from, to, movingCounter, attackedCounter) => { 
+    const pgnBlock = document.querySelector(".pgn-text");
 
-    for(let i=0; i<allCounters.length; i++){
-        
-        coordinates = {x: allCounters[i].x, y:allCounters[i].y};
+    const movingCounterSiblings = getAllCounters(movingCounter, gameOptions.activeColour, false);
 
-        moves = getArrayOfMoves(
-            allCounters[i].typeOfCounter,
-            allCounters[i].colour,
-            allCounters[i].x,
-            allCounters[i].y
-            );
+    let textToAdd = pgnBlock.innerText;
 
-        tabForCounters.push({
-            coordinates,
-            moves
-        })
-    }
-   
-    const countersWithMoves = tabForCounters.filter( tab => {
-        return tab.moves.length > 0;
-    })
-
-    let randomCounter = Math.floor(Math.random()*countersWithMoves.length);
-
-    if(randomCounter === countersWithMoves.length){
-        randomCounter--;
+    if(Number.isInteger(gameOptions.numberOfMove)){
+        textToAdd += `${gameOptions.numberOfMove}. `; //add number of move, dot and space
     }
 
-    let randomMove = Math.floor(Math.random()*countersWithMoves[randomCounter].moves.length);
+     textToAdd += `${charOfCounter[movingCounter]}`;
 
-    if(randomMove === countersWithMoves[randomCounter].moves.length){
-        randomMove--;
+    //check if sibling has similar move
+
+    for(let i=0; i<movingCounterSiblings.length; i++){
+
+        if(movingCounterSiblings[i].x !== from.x ) {
+               const tabOfSibling = getArrayOfMoves(movingCounter, 
+                gameOptions.activeColour,
+                movingCounterSiblings[i].x,
+                movingCounterSiblings[i].y)
+
+                for(let j=0; j<tabOfSibling.length; j++){
+                    if(tabOfSibling[j].x === 
+                        to.x && 
+                        tabOfSibling[j].y === 
+                        to.y){
+                        textToAdd += nameOfFieldsX[from.x];
+                    }
+                }
+           }
+           
     }
 
-   
+    ///////////////////////////////////
 
-    const origin = countersWithMoves[randomCounter].coordinates
-    
-    const destination = {
-       x: countersWithMoves[randomCounter].moves[randomMove].x,
-       y: countersWithMoves[randomCounter].moves[randomMove].y
-    }
-    
-    const promotionBlock = document.querySelector(".select-counter-to-promote");
+    if(attackedCounter !== null){
 
+        if(movingCounter === "pawn"){
+            textToAdd += nameOfFieldsX[from.x]
+        }
 
-    if(!promotionBlock.classList.contains('invisible')){
-        console.log("PROMOTION")
-        promotePawn(imagesOfCounter[gameOptions.oppositeColour].queen,"queen")
+        textToAdd += "x";
     }
 
+    textToAdd += nameOfFieldsX[to.x];
+    textToAdd += nameOfFieldsY[to.y];
 
-   changePositionOfCounter(origin, destination)
+    const isCheck = willBeKingInDanger(from, to, gameOptions.oppositeColour);
+
+    if(isCheck){
+
+        const mate = isMate(gameOptions.oppositeColour);
+
+        if(mate){
+            textToAdd += `#` ;
+        } else {
+            textToAdd += `+`;
+        }
+       
+    }
+
+    textToAdd += '\xa0'
+
+  
+
+    gameOptions.numberOfMove += 0.5;
+
+    pgnBlock.innerText = textToAdd;
+
 }

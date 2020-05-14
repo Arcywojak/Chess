@@ -7,7 +7,7 @@ export let  removeActivePosition,
             showPossibleMoves,
             isFieldTaken,
             setCounterToPromoteImages,
-            toggleOverlayAndPromotionBlock;  
+            toggleOverlayAndPromotionBlock
             
 import {getActiveField,
         getFieldFromCoordinates,
@@ -171,4 +171,4 @@ toggleOverlayAndPromotionBlock = (coordinates) => {
             selectPrize.style.OTransform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
             selectPrize.style.transform = `translate(${coordinates.x*78.5}px, ${coordinates.y*78.5}px)`;
         }
-}
+    }

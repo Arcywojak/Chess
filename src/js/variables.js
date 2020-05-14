@@ -1,7 +1,17 @@
+
+export let updatePlayerToMove,
+            changeColourOfActivePlayer ,
+            showWinner ,
+            switchTeams
+
 export const COLOR_CLASS = 3;
 export const TYPE_OF_COUNTER_CLASS = 4
 
+export const board = document.querySelector(".board");
+
 export const gameOptions = {
+    reverseBoard: 0,
+    numberOfMove: 1,
     activeColour: "white",
     oppositeColour: "black",
     didGameEnd:false,
@@ -22,7 +32,47 @@ export const gameOptions = {
     }
 }
 
-export const changeColourOfActivePlayer = () => {
+export const nameOfFieldsX = {
+    0:'a',
+    1:'b',
+    2:'c',
+    3:'d',
+    4:'e',
+    5:'f',
+    6:'g',
+    7:'h'
+}
+
+export const nameOfFieldsY = { //I know that is strange
+    0: 8,
+    1: 7,
+    2: 6,
+    3: 5,
+    4: 4,
+    5: 3,
+    6: 2,
+    7: 1 
+}
+
+export const charOfCounter = {
+    "pawn":"",
+    "knight":"N",
+    "bishop":"B",
+    "rook":"R",
+    "queen": "Q",
+    "king": "K"
+}
+
+
+
+updatePlayerToMove = () => {
+     let field = document.querySelector('.game-info-h2');
+ 
+     field.innerText = `${gameOptions.activeColour} move`;
+
+ }
+
+changeColourOfActivePlayer = () => {
     if(gameOptions.activeColour === "white"){
         gameOptions.activeColour = "black";
         gameOptions.oppositeColour = "white";
@@ -35,13 +85,9 @@ export const changeColourOfActivePlayer = () => {
 }
 
 
-export const updatePlayerToMove = () => {
-    let field = document.querySelector('.game-info-h2');
 
-    field.innerText = `${gameOptions.activeColour} move`;
-}
 
-export const showWinner = () => {
+showWinner = () => {
     let field = document.querySelector('.game-info-h2');
 
     field.innerText = `checkmate, ${gameOptions.oppositeColour} won`;
@@ -74,6 +120,27 @@ export const activeCounterPosition = {
     "x": null,
     "y": null
 };
+
+switchTeams = (switchOrNot=true) => {
+
+    if(switchOrNot){
+        if(gameOptions.reverseBoard === 0){
+            gameOptions.reverseBoard = 180;
+        } else{
+            gameOptions.reverseBoard = 0
+        }
+
+     //   turnAroundAllCounters();
+    }
+    
+    if(gameOptions.reverseBoard === 180){
+        board.classList.add("reverse")
+    } else {
+        board.classList.remove("reverse")
+    }
+}
+
+
 
 
 
