@@ -1,101 +1,107 @@
 
-export let updatePlayerToMove,
-            changeColourOfActivePlayer ,
-            showWinner ,
-            switchTeams
+export let changeColourOfActivePlayer,
+    showWinner,
+    switchTeams,
+    updatePlayerToMove;
 
 export const COLOR_CLASS = 3;
-export const TYPE_OF_COUNTER_CLASS = 4
+export const TYPE_OF_COUNTER_CLASS = 4;
 
 export const board = document.querySelector(".board");
 
 export const gameOptions = {
-    reverseBoard: 0,
-    numberOfMove: 1,
-    activeColour: "white",
-    oppositeColour: "black",
-    didGameEnd:false,
-    winner:null,
-    lastMove : {
-        from : {
-            x:null,
-            y:null
+    "reverseBoard": 0,
+    "numberOfMove": 0,
+    "activeColour": "white",
+    "oppositeColour": "black",
+    "didGameEnd": false,
+    "winner": null,
+    "lastMove": {
+        "from": {
+            "x": null,
+            "y": null
         },
-        to : {
-            x:null,
-            y:null
+        "to": {
+            "x": null,
+            "y": null
         },
-        whoMoved:{
-            typeOfCounter:null,
-            colour:null
-        }   
+        "whoMoved": {
+            "typeOfCounter": null,
+            "colour": null
+        }
     }
-}
+};
 
 export const nameOfFieldsX = {
-    0:'a',
-    1:'b',
-    2:'c',
-    3:'d',
-    4:'e',
-    5:'f',
-    6:'g',
-    7:'h'
-}
+    "0": "a",
+    "1": "b",
+    "2": "c",
+    "3": "d",
+    "4": "e",
+    "5": "f",
+    "6": "g",
+    "7": "h"
+};
 
-export const nameOfFieldsY = { //I know that is strange
-    0: 8,
-    1: 7,
-    2: 6,
-    3: 5,
-    4: 4,
-    5: 3,
-    6: 2,
-    7: 1 
-}
+export const nameOfFieldsY = { // I know that is strange
+    "0": 8,
+    "1": 7,
+    "2": 6,
+    "3": 5,
+    "4": 4,
+    "5": 3,
+    "6": 2,
+    "7": 1
+};
 
 export const charOfCounter = {
-    "pawn":"",
-    "knight":"N",
-    "bishop":"B",
-    "rook":"R",
+    "pawn": "",
+    "knight": "N",
+    "bishop": "B",
+    "rook": "R",
     "queen": "Q",
     "king": "K"
-}
-
+};
 
 
 updatePlayerToMove = () => {
-     let field = document.querySelector('.game-info-h2');
- 
-     field.innerText = `${gameOptions.activeColour} move`;
 
- }
+    const field = document.querySelector(".game-info-h2");
+
+    field.innerText = `${gameOptions.activeColour} move`;
+
+};
 
 changeColourOfActivePlayer = () => {
-    if(gameOptions.activeColour === "white"){
+
+    if (gameOptions.activeColour === "white") {
+
         gameOptions.activeColour = "black";
         gameOptions.oppositeColour = "white";
+
     } else {
-        gameOptions.activeColour = "white"
+
+        gameOptions.activeColour = "white";
         gameOptions.oppositeColour = "black";
+
     }
 
     updatePlayerToMove();
-}
 
-
+};
 
 
 showWinner = () => {
-    let field = document.querySelector('.game-info-h2');
+
+    const field = document.querySelector(".game-info-h2");
 
     field.innerText = `checkmate, ${gameOptions.oppositeColour} won`;
-}
 
-export    const battleField = {
-    fields: []
- };
+};
+
+export const battleField = {
+    "fields": []
+};
 
 export const imagesOfCounter = {
     "white": {
@@ -121,29 +127,32 @@ export const activeCounterPosition = {
     "y": null
 };
 
-switchTeams = (switchOrNot=true) => {
+switchTeams = (switchOrNot = true) => {
 
-    if(switchOrNot){
-        if(gameOptions.reverseBoard === 0){
+    if (switchOrNot) {
+
+        if (gameOptions.reverseBoard === 0) {
+
             gameOptions.reverseBoard = 180;
-        } else{
-            gameOptions.reverseBoard = 0
+
+        } else {
+
+            gameOptions.reverseBoard = 0;
+
         }
 
-     //   turnAroundAllCounters();
+        //   TurnAroundAllCounters();
+
     }
-    
-    if(gameOptions.reverseBoard === 180){
-        board.classList.add("reverse")
+
+    if (gameOptions.reverseBoard === 180) {
+
+        board.classList.add("reverse");
+
     } else {
-        board.classList.remove("reverse")
+
+        board.classList.remove("reverse");
+
     }
-}
 
-
-
-
-
-
-
-
+};

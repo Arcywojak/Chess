@@ -1,38 +1,31 @@
 export let beatCounter,
-    changePositionOfCounter,
-    updatePgn;
+        changePositionOfCounter;
 
-import {AIdoMove} from './artificalInteligence.js'
+import {updatePgn} from "./handlePGN.js";
+
+import {AIdoMove} from "./artificalInteligence.js";
+
+import {isFieldTaken,
+        removeActivePosition,
+        removeRecentMove,
+        showRecentMove} from "./handleWithDOM.js";
+
+import {getFieldFromCoordinates} from "./getSomething.js";
+
+import {verifyCheckAndMate} from "./LookForCheck.js";
 
 import {
-    isFieldTaken,
-    removeActivePosition,
-    removePossibleMoves,
-    showActivePosition,
-    showPossibleMoves,
-    showRecentMove,
-    removeRecentMove} from "./handleWithDOM.js";
-import {getFieldFromCoordinates, getAllCounters, getArrayOfMoves} from "./getSomething.js";
-import { doesCounterEndangerKing,
-     doesTeamEndangerEnemyKing,
-      isKingInDanger,
-       isMate,
-        verifyCheckAndMate,
-         willBeKingInDanger } from "./LookForCheck.js";
-import { COLOR_CLASS, 
-        TYPE_OF_COUNTER_CLASS,
-        battleField,
-        gameOptions,
-        showWinner,
-        changeColourOfActivePlayer,
-        imagesOfCounter,
-        nameOfFieldsX,
-        nameOfFieldsY,
-        charOfCounter } from "./variables.js";
-import { DoesKingDoCastling, doesPawnPromote, didPawnDoEnPassant } from "./specialMoves.js";
+    battleField,
+    changeColourOfActivePlayer,
+    gameOptions,
+} from "./variables.js";
 
-const moveSound = document.querySelector("#move-sound");
-const beatSound = document.querySelector("#beat-sound");
+import {DoesKingDoCastling, 
+        didPawnDoEnPassant, 
+        doesPawnPromote} from "./specialMoves.js";
+
+const moveSound = document.querySelector("#move-sound"),
+    beatSound = document.querySelector("#beat-sound");
 
 changePositionOfCounter = (origin, destination) => {
 
@@ -44,54 +37,77 @@ changePositionOfCounter = (origin, destination) => {
     gameOptions.lastMove.whoMoved.colour = battleField.fields[origin.x][origin.y].color;
 
 
-/*******************GET ORIGIN AND DESTINATION FIELD ******************** */
+    /** *****************GET ORIGIN AND DESTINATION FIELD ******************** */
     const originBlock = getFieldFromCoordinates(
-        origin.x,
-        origin.y
-    ),
-    destinationBlock = getFieldFromCoordinates(
-        destination.x,
-        destination.y
-    ),
-/******************************************************* ******************** */
+            origin.x,
+            origin.y
+        ),
+        destinationBlock = getFieldFromCoordinates(
+            destination.x,
+            destination.y
+        ),
+
+        /** ***************************************************** ******************** */
 
 
-/*************GET TYPE AND COLOUR OF ATTACKING AND ATTACKED COUNTERS ***********/
-      colourOfMovingCounter = battleField.fields[origin.x][origin.y].color,
-      typeOfMovingCounter = battleField.fields[origin.x][origin.y].typeOfCounter,
-      colourOfTakenField = battleField.fields[destination.x][destination.y].color,
-      counterOfTakenField = battleField.fields[destination.x][destination.y].typeOfCounter,
-      originBlockImg = originBlock.childNodes[0],
-/*********************************************************************************/
+        /** ***********GET TYPE AND COLOUR OF ATTACKING AND ATTACKED COUNTERS ***********/
+        colourOfMovingCounter = battleField.fields[origin.x][origin.y].color,
+        typeOfMovingCounter = battleField.fields[origin.x][origin.y].typeOfCounter,
+        colourOfTakenField = battleField.fields[destination.x][destination.y].color,
+        counterOfTakenField = battleField.fields[destination.x][destination.y].typeOfCounter,
+        originBlockImg = originBlock.childNodes[0],
 
-    takenField = isFieldTaken(
-        destination.x,
-        destination.y
+        /** *******************************************************************************/
+
+        takenField = isFieldTaken(
+            destination.x,
+            destination.y
+        );
+
+    /** ***********UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
+    updatePgn(
+        origin,
+        destination,
+        typeOfMovingCounter,
+        counterOfTakenField
     );
 
-    /*************UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
-    updatePgn(origin, destination, typeOfMovingCounter, counterOfTakenField);
-    /******************************************************************* */
+    /** ***************************************************************** */
 
-/******************* CHECKING IF WE WANT TO DO CASTLING **************************/
- if(typeOfMovingCounter === 'king'){
-    DoesKingDoCastling(origin, destination);
- }
-/***************************************************************************************/
+    /** ***************** CHECKING IF WE WANT TO DO CASTLING **************************/
+    if (typeOfMovingCounter === "king") {
 
- /******************* CHECKING IF A PAWN DID EN PASSANT **************************/
- if(typeOfMovingCounter === 'pawn'){
-    didPawnDoEnPassant(origin, destination);
- } 
-/***************************************************************************************/
-    
+        DoesKingDoCastling(
+            origin,
+            destination
+        );
+
+    }
+
+    /** *************************************************************************************/
+
+    /** ***************** CHECKING IF A PAWN DID EN PASSANT **************************/
+    if (typeOfMovingCounter === "pawn") {
+
+        didPawnDoEnPassant(
+            origin,
+            destination
+        );
+
+    }
+
+    /** *************************************************************************************/
+
     removeRecentMove();
-    removeActivePosition();   
+    removeActivePosition();
     changeColourOfActivePlayer();
-    showRecentMove(originBlock, destinationBlock);
-   
-    
-    /**************ABANDOM FIELD WE MOVED FROM ******************/
+    showRecentMove(
+        originBlock,
+        destinationBlock
+    );
+
+
+    /** ************ABANDOM FIELD WE MOVED FROM ******************/
     originBlock.classList.remove(
         typeOfMovingCounter,
         colourOfMovingCounter
@@ -99,140 +115,85 @@ changePositionOfCounter = (origin, destination) => {
 
     battleField.fields[origin.x][origin.y].color = null;
     battleField.fields[origin.x][origin.y].typeOfCounter = null;
-    /************************************************************* */
+
+    /** *********************************************************** */
 
     originBlockImg.style.transform =
-     `translate(${(destination.x - origin.x)*78.5}px, ${(destination.y - origin.y)*78.5}px) 
+     `translate(${(destination.x - origin.x) * 78.5}px, ${(destination.y - origin.y) * 78.5}px) 
      rotate(${gameOptions.reverseBoard})`;
 
-     setTimeout( () => { // delay code by 100ms to let animation works
+    setTimeout(
+        () => { // Delay code by 100ms to let animation works
 
-        originBlockImg.style.transform = //reset animation
-        `translate(${(destination.x - origin.x)*0}px, ${(destination.y - origin.y)*0}px) 
+            originBlockImg.style.transform = // Reset animation
+        `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
         rotate(${gameOptions.reverseBoard})`;
 
-        originBlock.removeChild(originBlockImg);
+            originBlock.removeChild(originBlockImg);
 
-        battleField.fields[destination.x][destination.y].color = colourOfMovingCounter;
-        battleField.fields[destination.x][destination.y].typeOfCounter = typeOfMovingCounter;  
+            battleField.fields[destination.x][destination.y].color = colourOfMovingCounter;
+            battleField.fields[destination.x][destination.y].typeOfCounter = typeOfMovingCounter;
 
 
-    //**************CHECK IF WE BEAT OR MOVE INTO AN EMPTY FIELD ***************/
-        if (takenField) {
-    
-            const destinationImg = destinationBlock.childNodes[0];
-    
-            destinationBlock.removeChild(destinationImg);
-    
-            destinationBlock.classList.remove(
-                counterOfTakenField,
-                colourOfTakenField
+            //* *************CHECK IF WE BEAT OR MOVE INTO AN EMPTY FIELD ***************/
+            if (takenField) {
+
+                const destinationImg = destinationBlock.childNodes[0];
+
+                destinationBlock.removeChild(destinationImg);
+
+                destinationBlock.classList.remove(
+                    counterOfTakenField,
+                    colourOfTakenField
+                );
+
+                moveSound.play();
+
+            } else {
+
+                beatSound.play();
+
+            }
+
+            destinationBlock.classList.add(
+                colourOfMovingCounter,
+                typeOfMovingCounter
             );
-    
-            moveSound.play();
-    
-        } else {
-            beatSound.play();
-        }
-    
-        destinationBlock.classList.add(
-            colourOfMovingCounter,
-            typeOfMovingCounter
-        ); 
-        destinationBlock.appendChild(originBlockImg);
-        //**************************************************************************************/
-    
-        /******************* CHECKING IF A PAWN'S DREAM COMES TRUE *****************************/
-        if(typeOfMovingCounter === 'pawn'){
-            doesPawnPromote(destination, colourOfMovingCounter);
-        }
-        /***************************************************************************************/
-    
-        //*******************IS CHECK AFTER THIS MOVE? *****************************************/
-        verifyCheckAndMate();
-        /***************************************************************************************/
+            destinationBlock.appendChild(originBlockImg);
+            //* *************************************************************************************/
 
-        if(!gameOptions.didGameEnd && gameOptions.activeColour === "black"){
-            setTimeout( () => {
-                AIdoMove();
-            }, 1000)
-        }
+            /** ***************** CHECKING IF A PAWN'S DREAM COMES TRUE *****************************/
+            if (typeOfMovingCounter === "pawn") {
 
-     }, 100) 
+                doesPawnPromote(
+                    destination,
+                    colourOfMovingCounter
+                );
+
+            }
+
+            /** *************************************************************************************/
+
+            //* ******************IS CHECK AFTER THIS MOVE? *****************************************/
+            verifyCheckAndMate();
+
+            /** *************************************************************************************/
+
+            if (!gameOptions.didGameEnd && gameOptions.activeColour === "black") {
+
+                setTimeout(
+                    () => {
+
+                        AIdoMove();
+
+                    },
+                    1000
+                );
+
+            }
+
+        },
+        100
+    );
 
 };
-
-
-
-updatePgn = (from, to, movingCounter, attackedCounter) => { 
-    const pgnBlock = document.querySelector(".pgn-text");
-
-    const movingCounterSiblings = getAllCounters(movingCounter, gameOptions.activeColour, false);
-
-    let textToAdd = pgnBlock.innerText;
-
-    if(Number.isInteger(gameOptions.numberOfMove)){
-        textToAdd += `${gameOptions.numberOfMove}. `; //add number of move, dot and space
-    }
-
-     textToAdd += `${charOfCounter[movingCounter]}`;
-
-    //check if sibling has similar move
-
-    for(let i=0; i<movingCounterSiblings.length; i++){
-
-        if(movingCounterSiblings[i].x !== from.x ) {
-               const tabOfSibling = getArrayOfMoves(movingCounter, 
-                gameOptions.activeColour,
-                movingCounterSiblings[i].x,
-                movingCounterSiblings[i].y)
-
-                for(let j=0; j<tabOfSibling.length; j++){
-                    if(tabOfSibling[j].x === 
-                        to.x && 
-                        tabOfSibling[j].y === 
-                        to.y){
-                        textToAdd += nameOfFieldsX[from.x];
-                    }
-                }
-           }
-           
-    }
-
-    ///////////////////////////////////
-
-    if(attackedCounter !== null){
-
-        if(movingCounter === "pawn"){
-            textToAdd += nameOfFieldsX[from.x]
-        }
-
-        textToAdd += "x";
-    }
-
-    textToAdd += nameOfFieldsX[to.x];
-    textToAdd += nameOfFieldsY[to.y];
-
-    const isCheck = willBeKingInDanger(from, to, gameOptions.oppositeColour);
-
-    if(isCheck){
-
-        const mate = isMate(gameOptions.oppositeColour);
-
-        if(mate){
-            textToAdd += `#` ;
-        } else {
-            textToAdd += `+`;
-        }
-       
-    }
-
-    textToAdd += '\xa0'
-
-  
-
-    gameOptions.numberOfMove += 0.5;
-
-    pgnBlock.innerText = textToAdd;
-
-}

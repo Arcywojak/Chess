@@ -1,6 +1,6 @@
-import {fillFieldsInCounters, setEmptyBattleField, initPositionOfCounters_DOM} from "./initFunctions.js";
-import {battleField} from './variables.js'
-import { setOptionsForCastling } from "./specialMoves.js";
+import {fillFieldsInCounters, initPositionOfCounters_DOM, setEmptyBattleField} from "./initFunctions.js";
+import {battleField} from "./variables.js";
+import {setOptionsForCastling} from "./specialMoves.js";
 
 
 /** ******* INITIALIZE COUNTERS *********/

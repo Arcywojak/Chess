@@ -11,21 +11,23 @@ export let getActiveCoordinates,
     getOppositeColour,
     getAllCounters,
     getArrayOfMoves,
-    filterOvermoves;
+    filterOvermoves,
+    getCurrentPgn,
+    getMoveFromOpenings;
 
-    import {
-        isFieldTaken,
-        removeActivePosition,
-        removePossibleMoves,
-        showActivePosition,
-        showPossibleMoves} from "./handleWithDOM.js";
-import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
+import {isFieldTaken} from "./handleWithDOM.js";
+
+import {openings} from "./openings/openings.js";
+
+import {battleField, gameOptions} from "./variables.js";
 
 import {canPawnAttack} from './findMoves.js';
 
 import {addEnPassantIfPossible} from './specialMoves.js'
+
 import { filterTabInCaseOfCheck } from "./LookForCheck.js";
 
+import {convertPgnIntoMoves} from "./handlePGN.js"
 
 getFieldFromCoordinates = (x, y) => {
 
@@ -586,4 +588,58 @@ filterOvermoves = (tabOfMoves) => {
     })
 
     return filteredTab;
+};
+
+getMoveFromOpenings = () => {
+
+    const pgnBlock = document.querySelector(".pgn-text");
+
+    const currentPgn = pgnBlock.innerText;
+
+    let matchingPgns = [],
+        tabOfValidatedMoves = [];
+
+       // console.log(currentPgn
+
+    for(let i=0; i<openings.length; i++){
+        let cutOpening = openings[i].moves.slice(0, currentPgn.length);
+
+            //CUT OPENING MUST BE SHORTER BECAUSE WE NEED AT LEAST ONE MORE MOVE TO EXECUTE
+        if(cutOpening.replace(/\s+/g, "") === currentPgn.replace(/\s+/g, "") 
+        && cutOpening.length < openings[i].moves.length){
+
+            matchingPgns.push(openings[i])
+
+         //   console.log("MATCH")
+
+            tabOfValidatedMoves.push(
+                convertPgnIntoMoves(openings[i].moves)
+            ) 
+        }
+    }
+
+    if(tabOfValidatedMoves.length === 0){
+        return null;
+    }
+
+    let randomOpening = Math.floor(Math.random() * matchingPgns.length);
+
+        if (randomOpening === matchingPgns.length) {
+
+            randomOpening--;
+
+        }
+
+        
+
+       const randomOpeningMoves = tabOfValidatedMoves[randomOpening];
+
+       console.log(randomOpeningMoves, gameOptions.numberOfMove*2)
+
+       const currentMove = randomOpeningMoves[Math.round(gameOptions.numberOfMove*2)]
+
+       return currentMove;
+
+        
+
 }

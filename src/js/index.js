@@ -1,6 +1,8 @@
-//import {gameOptions} from  './gameOptions.js'
+// Import {gameOptions} from  './gameOptions.js'
 
-//const move = gameOptions().getCountersToMove();
-//gameOptions().changeCountersToMove();
-//console.log(move)
-//alert("ROBIC PGN PRZED ZMIANA WSZYSTKICH POZYCJI")
+/*
+ * Const move = gameOptions().getCountersToMove();
+ * gameOptions().changeCountersToMove();
+ * console.log(move)
+ */
+

@@ -1,112 +1,104 @@
-export let findMovesForBishop,
+export let canPawnAttack,
+    findMovesForBishop,
     findMovesForKing,
     findMovesForKnight,
     findMovesForPawn,
-    findMovesForQueen,  
+    findMovesForQueen,
     findMovesForRook,
-    findPossibleMoves,
-    canPawnAttack;
+    findPossibleMoves;
 
-import {getActiveCoordinates,
-    getActiveField,
-    getCoordinatesFromField,
-    getFieldFromCoordinates,
-    getBishopMoves,
-    getRookMoves,
-    getQueenMoves,
-    getKingMoves,
-    getKnightMoves,
-    getPawnMoves,
-    getArrayOfMoves} from "./getSomething.js";
+import {getArrayOfMoves} from "./getSomething.js";
 
-import {
-    isFieldTaken,
-    removeActivePosition,
-    removePossibleMoves,
-    showActivePosition,
-    showPossibleMoves} from "./handleWithDOM.js";
+import {showPossibleMoves} from "./handleWithDOM.js";
 
-import { doesCounterEndangerKing, filterTabInCaseOfCheck} from "./LookForCheck.js";
-import { COLOR_CLASS, battleField, gameOptions } from "./variables.js";
-import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMoves.js";
+import {battleField, gameOptions} from "./variables.js";
+import {addMovesForLongCastling, addMovesForShortCastling} from "./specialMoves.js";
 
 
+findPossibleMoves = (typeOfCounter, team, x, y) => {
+
+    let tabOfMoves = getArrayOfMoves(
+        typeOfCounter,
+        team,
+        x,
+        y
+    );
+
+    if (battleField.fields[x][y].typeOfCounter === "king") {
+
+        const shortCastlingMoves = addMovesForShortCastling(
+                x,
+                y,
+                gameOptions.activeColour
+            ),
+
+            longCastlingMoves = addMovesForLongCastling(
+                x,
+                y,
+                gameOptions.activeColour
+            );
 
 
-    findPossibleMoves = (typeOfCounter, team, x, y) => {
+        tabOfMoves = [
+            ...tabOfMoves,
+            ...shortCastlingMoves,
+            ...longCastlingMoves
+        ];
 
-        let tabOfMoves = getArrayOfMoves(typeOfCounter, team, x, y)
-        
-        if(battleField.fields[x][y].typeOfCounter === "king"){
-
-        const shortCastlingMoves = addMovesForShortCastling(x, y, gameOptions.activeColour);
-
-        const longCastlingMoves = addMovesForLongCastling(x, y, gameOptions.activeColour)
+    }
 
 
-         tabOfMoves = [...tabOfMoves, ...shortCastlingMoves, ...longCastlingMoves];
-        
-        } 
-        
-        
-
-        showPossibleMoves(tabOfMoves);
-
-        return;
-}
+    showPossibleMoves(tabOfMoves);
 
 
+};
 
 
-    canPawnAttack = (unfriendlyColour, x, y) => {
+canPawnAttack = (unfriendlyColour, x, y) => {
 
-        let tabOfMoves = [];
+    const tabOfMoves = [],
 
-    
-    // this number decide if the pawn go up or down through the battlefield
-        const moveY = unfriendlyColour === "white" 
+
+        // This number decide if the pawn go up or down through the battlefield
+        moveY = unfriendlyColour === "white"
             ? 1
             : -1,
-    ////////////////////////////////////////////////////////////////////////
-    
-    
-            rightCoordinates = {
-                "x": x + 1,
-                "y": y + moveY
-            },
-    
-            leftCoordinates = {
-                "x": x - 1,
-                "y": y + moveY
-            };
+        // //////////////////////////////////////////////////////////////////////
 
-        if(leftCoordinates.x >= 0 && leftCoordinates.y<=7 && leftCoordinates.y>=0){
 
-            if (battleField.fields[leftCoordinates.x][leftCoordinates.y].color === unfriendlyColour) {
-    
-                tabOfMoves.push(
-                    {"x": leftCoordinates.x,
-                        "y": leftCoordinates.y}
-                );
-    
-             }
+        rightCoordinates = {
+            "x": x + 1,
+            "y": y + moveY
+        },
+
+        leftCoordinates = {
+            "x": x - 1,
+            "y": y + moveY
+        };
+
+    if (leftCoordinates.x >= 0 && leftCoordinates.y <= 7 && leftCoordinates.y >= 0) {
+
+        if (battleField.fields[leftCoordinates.x][leftCoordinates.y].color === unfriendlyColour) {
+
+            tabOfMoves.push({"x": leftCoordinates.x,
+                "y": leftCoordinates.y});
 
         }
-        
-        if(rightCoordinates.x <=7  && rightCoordinates.y<=7 && rightCoordinates.y>=0){
 
-            if (battleField.fields[rightCoordinates.x][rightCoordinates.y].color === unfriendlyColour) {
-        
-                tabOfMoves.push(
-                    {"x": rightCoordinates.x,
-                        "y": rightCoordinates.y}
-                );
+    }
 
-            }
-            
+    if (rightCoordinates.x <= 7 && rightCoordinates.y <= 7 && rightCoordinates.y >= 0) {
+
+        if (battleField.fields[rightCoordinates.x][rightCoordinates.y].color === unfriendlyColour) {
+
+            tabOfMoves.push({"x": rightCoordinates.x,
+                "y": rightCoordinates.y});
+
         }
 
-    
-        return tabOfMoves;
-    
-    };
+    }
+
+
+    return tabOfMoves;
+
+};

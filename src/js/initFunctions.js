@@ -8,20 +8,20 @@
 
 *//** ************************************/
 
-import {battleField, imagesOfCounter, gameOptions} from './variables.js'
+import {battleField, gameOptions, imagesOfCounter} from "./variables.js";
 
 const innerBoard = document.querySelector(".board-inner");
 
 export const initPositionOfCounters_DOM = () => {
 
-    let div,
+    let color,
+        div,
         imageOfCounter,
-        color,
         typeOfCounter;
 
-    for(let x = 0; x <=7; x++){
+    for (let x = 0; x <= 7; x++) {
 
-        for(let y=0; y<=7; y++){
+        for (let y = 0; y <= 7; y++) {
 
             div = document.createElement("div");
 
@@ -29,38 +29,39 @@ export const initPositionOfCounters_DOM = () => {
                 "field",
                 `x${x}`,
                 `y${y}`
-                
+
             );
 
-        if(battleField.fields[x][y].color !== null){
+            if (battleField.fields[x][y].color !== null) {
 
-            color = battleField.fields[x][y].color,
-            typeOfCounter = battleField.fields[x][y].typeOfCounter
+                color = battleField.fields[x][y].color,
+                typeOfCounter = battleField.fields[x][y].typeOfCounter;
 
-            div.classList.add(
-                color,
-                typeOfCounter            
-            );
+                div.classList.add(
+                    color,
+                    typeOfCounter
+                );
 
-            imageOfCounter = document.createElement("img");
+                imageOfCounter = document.createElement("img");
 
-          
 
-            imageOfCounter.src = imagesOfCounter[color][typeOfCounter];
+                imageOfCounter.src = imagesOfCounter[color][typeOfCounter];
 
-            div.appendChild(imageOfCounter);
+                div.appendChild(imageOfCounter);
+
+            }
+
+
+            div.style.webkitTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+            div.style.MozTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+            div.style.msTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+            div.style.OTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+            div.style.transform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+
+            innerBoard.appendChild(div);
+
         }
 
-        
-
-        div.style.webkitTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
-        div.style.MozTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
-        div.style.msTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
-        div.style.OTransform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
-        div.style.transform = `translate(${x*78.5}px, ${y*78.5}px) rotate(${gameOptions.reverseBoard})`;
-
-        innerBoard.appendChild(div);
-        }
     }
 
 };
@@ -103,43 +104,48 @@ export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = n
 
 };
 
-//////////////
+// ////////////
 
 export const setEmptyBattleField = () => {
-    for(let x = 0; x <= 7; x++){
 
-        battleField.fields[x] = []
+    for (let x = 0; x <= 7; x++) {
 
-        for(let y = 0; y <= 7; y++){
+        battleField.fields[x] = [];
+
+        for (let y = 0; y <= 7; y++) {
 
             battleField.fields[x][y] = {
-                color: null,
-                typeOfCounter: null
-            }
+                "color": null,
+                "typeOfCounter": null
+            };
+
         }
+
     }
-}
+
+};
 
 export const fillFieldsInCounters = (team = "", counterType = "", numberOfCounters = null, position = []) => {
-    
-    for(let i = 0; i<numberOfCounters; i++){
-        battleField.fields[
-            position[i].x
-        ][
-            position[i].y
-        ]
-        .color = team;
+
+    for (let i = 0; i < numberOfCounters; i++) {
 
         battleField.fields[
             position[i].x
         ][
             position[i].y
-        ]
-        .typeOfCounter = counterType;
+        ].
+            color = team;
+
+        battleField.fields[
+            position[i].x
+        ][
+            position[i].y
+        ].
+            typeOfCounter = counterType;
+
     }
-}
+
+};
 
 
-
-
-////////////////
+// //////////////
