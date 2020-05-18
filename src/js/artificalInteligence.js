@@ -94,8 +94,9 @@ AIdoMove = () => {
         return;
 
     }
-
+    
     console.log("I KNOW OPENINGS")
+
     changePositionOfCounter(
         move.from,
         move.to

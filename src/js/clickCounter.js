@@ -4,9 +4,7 @@ import {getActiveCoordinates,
     getFieldFromCoordinates} from "./getSomething.js";
 
 import {removeActivePosition,
-    removePossibleMoves,
     showActivePosition,
-    showPossibleMoves,
     toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 
 import {changePositionOfCounter} from "./moveCounter.js";
@@ -19,7 +17,6 @@ import {
     COLOR_CLASS,
     TYPE_OF_COUNTER_CLASS,
     battleField,
-    changeColourOfActivePlayer,
     gameOptions,
     switchTeams,
     updatePlayerToMove
@@ -126,7 +123,7 @@ handleClick = (e) => {
 
     } else if (field.classList.contains("to-move") || field.parentNode.classList.contains("to-move")) {
 
-        const instanceContaingToMove = field.classList.contains("to-move") ? field : field.parentNode,
+        const instanceContainingToMove = field.classList.contains("to-move") ? field : field.parentNode,
 
             /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
             isCheck = isKingInDanger(gameOptions.activeColour);
@@ -145,7 +142,7 @@ handleClick = (e) => {
         const from = getActiveCoordinates(),
 
             to = getCoordinatesFromField(
-                instanceContaingToMove,
+                instanceContainingToMove,
                 false
             );
 

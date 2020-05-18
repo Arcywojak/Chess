@@ -157,7 +157,8 @@ DoesKingDoCastling = (origin, destination) => {
 
                 changePositionOfCounter(
                     coordinatesOfRookOrigin,
-                    coordinatesOfRookDestination
+                    coordinatesOfRookDestination,
+                    false
                 );
 
             } else if (origin.x - destination.x === 2) { // It mean we are doing long castling

@@ -27,7 +27,7 @@ import {DoesKingDoCastling,
 const moveSound = document.querySelector("#move-sound"),
     beatSound = document.querySelector("#beat-sound");
 
-changePositionOfCounter = (origin, destination) => {
+changePositionOfCounter = (origin, destination, changeColour = true) => {
 
     gameOptions.lastMove.from.x = origin.x;
     gameOptions.lastMove.from.y = origin.y;
@@ -65,12 +65,17 @@ changePositionOfCounter = (origin, destination) => {
         );
 
     /** ***********UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
-    updatePgn(
-        origin,
-        destination,
-        typeOfMovingCounter,
-        counterOfTakenField
-    );
+
+    if(changeColour){
+        updatePgn(
+            origin,
+            destination,
+            typeOfMovingCounter,
+            counterOfTakenField,
+        );
+    }
+
+    
 
     /** ***************************************************************** */
 
@@ -100,7 +105,11 @@ changePositionOfCounter = (origin, destination) => {
 
     removeRecentMove();
     removeActivePosition();
-    changeColourOfActivePlayer();
+
+    if(changeColour){
+        changeColourOfActivePlayer();
+    }
+    
     showRecentMove(
         originBlock,
         destinationBlock
@@ -179,7 +188,7 @@ changePositionOfCounter = (origin, destination) => {
 
             /** *************************************************************************************/
 
-            if (!gameOptions.didGameEnd && gameOptions.activeColour === "black") {
+            if (!gameOptions.didGameEnd && gameOptions.activeColour === "black" && changeColour) {
 
                 setTimeout(
                     () => {

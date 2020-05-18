@@ -596,29 +596,24 @@ getMoveFromOpenings = () => {
 
     const currentPgn = pgnBlock.innerText;
 
-    let matchingPgns = [],
-        tabOfValidatedMoves = [];
-
-       // console.log(currentPgn
+    let matchingPgns = [];
 
     for(let i=0; i<openings.length; i++){
+
+        if(openings[i].moves.length < currentPgn.length) {
+            continue;
+        }
+
         let cutOpening = openings[i].moves.slice(0, currentPgn.length);
 
             //CUT OPENING MUST BE SHORTER BECAUSE WE NEED AT LEAST ONE MORE MOVE TO EXECUTE
-        if(cutOpening.replace(/\s+/g, "") === currentPgn.replace(/\s+/g, "") 
-        && cutOpening.length < openings[i].moves.length){
+        if(cutOpening.replace(/\s+/g, "") === currentPgn.replace(/\s+/g, "") ){
 
-            matchingPgns.push(openings[i])
-
-         //   console.log("MATCH")
-
-            tabOfValidatedMoves.push(
-                convertPgnIntoMoves(openings[i].moves)
-            ) 
+            matchingPgns.push(openings[i])  
         }
     }
 
-    if(tabOfValidatedMoves.length === 0){
+    if(matchingPgns.length === 0){
         return null;
     }
 
@@ -630,15 +625,15 @@ getMoveFromOpenings = () => {
 
         }
 
-        
+      //  console.log(matchingPgns[0].moves)
 
-       const randomOpeningMoves = tabOfValidatedMoves[randomOpening];
+       const randomOpeningMove = convertPgnIntoMoves(
+                                    matchingPgns[randomOpening].moves,
+                                    Math.round(gameOptions.numberOfMove*2)
+                                );
 
-       console.log(randomOpeningMoves, gameOptions.numberOfMove*2)
 
-       const currentMove = randomOpeningMoves[Math.round(gameOptions.numberOfMove*2)]
-
-       return currentMove;
+       return randomOpeningMove;
 
         
 

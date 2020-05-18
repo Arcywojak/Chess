@@ -15,10 +15,10 @@ import {charOfCounter,
         nameOfFieldsX, 
         nameOfFieldsY} from "./variables.js";
 
-import {willBeKingInDanger} from "./LookForCheck.js";
+import {willBeKingInDanger, isMate} from "./LookForCheck.js";
 
 import {getAllCounters, 
-        getArrayOfMoves} from "./getSomething.js";
+        getArrayOfMoves} from "./getSomething.js"; 
 
 
 updatePgn = (from, to, movingCounter, attackedCounter) => {
@@ -43,29 +43,47 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
     }
 
-    textToAdd += `${charOfCounter[movingCounter]}`;
+    if(movingCounter === "king" && Math.abs(from.x - to.x) === 2){
 
-    // Check if sibling has similar move
+        textToAdd += "O-O";
 
-    for (let i = 0; i < movingCounterSiblings.length; i++) {
+        if(from.x - to.x === 2){
+            textToAdd+= "-O"
+        }; 
 
-        if (movingCounterSiblings[i].x !== from.x) {
+    } else {
+  
+        textToAdd += `${charOfCounter[movingCounter]}`;
 
-            const tabOfSibling = getArrayOfMoves(
-                movingCounter,
-                gameOptions.activeColour,
-                movingCounterSiblings[i].x,
-                movingCounterSiblings[i].y
-            );
+        // Check if sibling has similar move, 
+        // we do not need to check it at pawn because 
+        // it doesnt depend on siblings when it comes to add addition letter to PGN
 
-            for (let j = 0; j < tabOfSibling.length; j++) {
+        if(movingCounter !== "pawn"){
 
-                if (tabOfSibling[j].x ===
-                        to.x &&
-                        tabOfSibling[j].y ===
-                        to.y) {
+            for (let i = 0; i < movingCounterSiblings.length; i++) {
 
-                    textToAdd += nameOfFieldsX[from.x];
+                if (movingCounterSiblings[i].x !== from.x) {
+
+                    const tabOfSibling = getArrayOfMoves(
+                        movingCounter,
+                        gameOptions.activeColour,
+                        movingCounterSiblings[i].x,
+                        movingCounterSiblings[i].y
+                    );
+
+                    for (let j = 0; j < tabOfSibling.length; j++) {
+
+                        if (tabOfSibling[j].x ===
+                                to.x &&
+                                tabOfSibling[j].y ===
+                                to.y) {
+
+                            textToAdd += nameOfFieldsX[from.x];
+                          //  console.log("I EXECUTE")  
+                        }
+
+                    }
 
                 }
 
@@ -73,55 +91,52 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
         }
 
-    }
+        // /////////////////////////////////
 
-    // /////////////////////////////////
+        if (attackedCounter !== null) {
 
-    if (attackedCounter !== null) {
+            if (movingCounter === "pawn") {
 
-        if (movingCounter === "pawn") {
+                textToAdd += nameOfFieldsX[from.x];
 
-            textToAdd += nameOfFieldsX[from.x];
+            }
 
-        }
-
-        textToAdd += "x";
-
-    }
-
-    textToAdd += nameOfFieldsX[to.x];
-    textToAdd += nameOfFieldsY[to.y];
-
-    const isCheck = willBeKingInDanger(
-        from,
-        to,
-        gameOptions.oppositeColour
-    );
-
-    if (isCheck) {
-
-        const mate = isMate(gameOptions.oppositeColour);
-
-        if (mate) {
-
-            textToAdd += "#";
-
-        } else {
-
-            textToAdd += "+";
+            textToAdd += "x";
 
         }
 
-    }
+        textToAdd += nameOfFieldsX[to.x];
+        textToAdd += nameOfFieldsY[to.y];
 
+        const isCheck = willBeKingInDanger(
+            from,
+            to,
+            gameOptions.oppositeColour
+        );
+
+        if (isCheck) {
+
+            const mate = isMate(gameOptions.oppositeColour);
+
+            if (mate) {
+
+                textToAdd += "#";
+
+            } else {
+
+                textToAdd += "+";
+
+            }
+
+        }
+    }
+       
+        
 
     gameOptions.numberOfMove += 0.5;
 
     pgnBlock.innerText = textToAdd;
-
-};
-
-const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
+}
 
     convertStringIntoPgnMoves = (pgnString) => {
 
@@ -132,7 +147,7 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                 if (word.length > 0) {
 
                     const isMoveValid = new RegExp(
-                        "([a-z])([1-8])",
+                        "([a-z])([1-8])|([O])",
                         "g"
                     );
 
@@ -239,6 +254,8 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
 
     getFullOriginBasedOnMove = (counterName, colour, origin, destination) => {
 
+       // console.log(counterName, colour, origin, destination)
+
 
         const newOrigin = {
                 "x": null,
@@ -249,6 +266,8 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                 counterName,
                 colour
             );
+
+          
 
         for (let i = 0; i < allCountersOfType.length; i++) {
 
@@ -264,18 +283,17 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                 if (movesArray[j].x === destination.x && movesArray[j].y === destination.y) {
 
                     if (origin.x !== null) {
+                        if(origin.x === allCountersOfType[i].x){
 
-                        if (allCountersOfType[i].x === origin.x) {
 
+                       
+                            newOrigin.x = allCountersOfType[i].x;
                             newOrigin.y = allCountersOfType[i].y;
-
                         }
 
                     } else {
-
                         newOrigin.x = allCountersOfType[i].x;
                         newOrigin.y = allCountersOfType[i].y;
-
                     }
 
                 }
@@ -283,12 +301,12 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
             }
 
         }
-
         return newOrigin;
 
     };
 
-    convertPgnIntoMoves = (pgnString) => {
+    convertPgnIntoMoves = (pgnString, index) => {
+
 
         if(typeof(pgnString) !== 'string'){
             throw new Error(`parameter "${pgnString}" is not valid string!`)
@@ -296,8 +314,11 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
 
         const pgn = convertStringIntoPgnMoves(pgnString);
 
-        let convertedMoves = [],
-            counterName, colour, counter,
+        const wantedMove = pgn[index];
+
+        let counterName, 
+            colour,
+            counterOfLetters = 0,
             origin = {
                 "x": null,
                 "y": null
@@ -307,65 +328,122 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                 "y": null
             };
 
-        for (let i = 0; i < pgn.length; i++) { // SEARCH THROUGH MOVES
+            const smallLetter = /^[a-h]+$/,
+            fieldNumber = /^\d+$/;
 
+            counterOfLetters = 0;
 
-            counterName = convertLetterIntoCounterType(pgn[i].charAt(0));
+            counterName = convertLetterIntoCounterType(wantedMove.charAt(0));
+
+            if (index % 2 === 0) {
+
+                colour = "white";
+
+            } else {
+
+                colour = "black";
+
+            }
+
+            console.log(wantedMove)
+
+            if(wantedMove.charAt(0) === "O"){   // only castling begins with "O"
+
+                    counterName = "king";
+
+                    origin.x = 4;
+
+                if(wantedMove.length >= 5) { //LONG castling
+
+                    destination.x = 2;
+
+                } else {    // SHORT castling
+
+                    destination.x = 6;
+                    
+                }
+
+                if(gameOptions.activeColour === "white"){
+                    origin.y = 7;
+                    destination.y = 7;
+                } else {
+                    origin.y = 0;
+                    destination.y = 0;
+                }
+
+                const move = {
+                    "from": {
+                        "x": origin.x,
+                        "y": origin.y
+                    },
+                    "to": {
+                        "x": destination.x,
+                        "y": destination.y
+                    },
+                    "typeOfCounter": counterName,
+                    color: colour
+                };
+
+                console.log(move)
+
+                return move;
+
+            } 
 
             if (counterName === "pawn") {
 
-                let counterOfLetters = 0;
-                const smallLetter = new RegExp(
-                        "[a-f]",
-                        "g"
-                    ),
-                    fieldNumber = new RegExp(
-                        "[1-9]",
-                        "g"
-                    );
+                for (let j = 0; j < wantedMove.length; j++) {
 
-                for (let j = 0; j < pgn[i].length; j++) {
-
-                    if (smallLetter.test(pgn[i].charAt(j))) { // IF CHAR IS SMALL LETTER
-
+                    if (smallLetter.test(wantedMove.charAt(j))) { // IF CHAR IS SMALL LETTER
                         if (counterOfLetters === 0) { // IF IT IS THE FIRST LETTER
 
+                            destination.x = convertFieldLetterIntoNumber(wantedMove.charAt(j));
 
-                            if (pgn[i].length <= 3) {
-
-                                destination.x = convertFieldLetterIntoNumber(pgn[i].charAt(j));
-
-                            } else {
-
-                                origin.x = convertFieldLetterIntoNumber(pgn[i].charAt(j));
-
-                            }
-
-                            counterOfLetters++;
+                            
 
                         } else { // IF IT IS NOT FIRST LETTER
 
-                            destination.x = convertFieldLetterIntoNumber(pgn[i].charAt(j));
+                            origin.x = destination.x;
+
+                            destination.x = convertFieldLetterIntoNumber(wantedMove.charAt(j));
 
                         }
 
-                    } else if (fieldNumber.test(pgn[i].charAt(j))) {
+                        counterOfLetters++;
 
-                        destination.y = convertPgnNumberIntoMyNotation(Number(pgn[i].charAt(j)));
+                    } else if (fieldNumber.test(wantedMove.charAt(j))) {
+                        destination.y = convertPgnNumberIntoMyNotation(Number(wantedMove.charAt(j)));
+
 
                     }
 
                 }
 
+            } else {
 
-                if (i % 2 === 0) {
-
-                    colour = "white";
-
-                } else {
-
-                    colour = "black";
-
+                for(let j = 1; j < wantedMove.length; j++){
+                        if (smallLetter.test(wantedMove.charAt(j))) { // IF CHAR IS SMALL LETTER
+    
+                            if (counterOfLetters === 0) { // IF IT IS THE FIRST LETTER      
+    
+                                destination.x = convertFieldLetterIntoNumber(wantedMove.charAt(j));
+    
+                             } else {
+                                 
+                                origin.x = destination.x;
+                                destination.x = convertFieldLetterIntoNumber(wantedMove.charAt(j));
+                             }
+                                
+                                counterOfLetters++;
+                                
+                            } else if(fieldNumber.test(wantedMove.charAt(j))) { // IF IT IS NOT FIRST LETTER
+    
+                                destination.y = convertPgnNumberIntoMyNotation(Number(wantedMove.charAt(j)));
+                                
+    
+                            }
+    
+                        }
                 }
 
                 const newOrigin = getFullOriginBasedOnMove(
@@ -375,7 +453,11 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                     destination
                 );
 
-                convertedMoves.push({
+            //    console.log(newOrigin)
+
+              //  console.log(newOrigin)
+
+                const move = {
                     "from": {
                         "x": newOrigin.x,
                         "y": newOrigin.y
@@ -386,13 +468,11 @@ const PGN = "1. e4 Nc6 2. f4 b5 3. d4 Nh6 4. d5 d6 5. dxc6 Rb8 ";
                     },
                     "typeOfCounter": counterName,
                     color: colour
-                });
+                };
 
-            }
+      //  console.log(move)
 
-        }
-
-        return convertedMoves;
+        return move;
 
     };
 
