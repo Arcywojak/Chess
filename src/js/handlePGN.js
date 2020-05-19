@@ -80,7 +80,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                                 to.y) {
 
                             textToAdd += nameOfFieldsX[from.x];
-                          //  console.log("I EXECUTE")  
                         }
 
                     }
@@ -254,9 +253,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
     getFullOriginBasedOnMove = (counterName, colour, origin, destination) => {
 
-       // console.log(counterName, colour, origin, destination)
-
-
         const newOrigin = {
                 "x": null,
                 "y": null
@@ -314,7 +310,13 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
         const pgn = convertStringIntoPgnMoves(pgnString);
 
+        if(index === pgn.length){
+            index = index - 1;
+        } 
+
         const wantedMove = pgn[index];
+
+        console.log(pgn, index)
 
         let counterName, 
             colour,
@@ -332,6 +334,7 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
             fieldNumber = /^\d+$/;
 
             counterOfLetters = 0;
+         
 
             counterName = convertLetterIntoCounterType(wantedMove.charAt(0));
 
@@ -344,8 +347,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                 colour = "black";
 
             }
-
-            console.log(wantedMove)
 
             if(wantedMove.charAt(0) === "O"){   // only castling begins with "O"
 
@@ -363,7 +364,7 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                     
                 }
 
-                if(gameOptions.activeColour === "white"){
+                if(colour === "white"){
                     origin.y = 7;
                     destination.y = 7;
                 } else {
@@ -383,8 +384,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                     "typeOfCounter": counterName,
                     color: colour
                 };
-
-                console.log(move)
 
                 return move;
 
@@ -453,10 +452,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                     destination
                 );
 
-            //    console.log(newOrigin)
-
-              //  console.log(newOrigin)
-
                 const move = {
                     "from": {
                         "x": newOrigin.x,
@@ -470,16 +465,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                     color: colour
                 };
 
-      //  console.log(move)
-
         return move;
 
     };
-
-
-    const testBtn = document.querySelector(".testPgn");
-
-testBtn.addEventListener(
-    "click",
-    convertPgnIntoMoves
-);

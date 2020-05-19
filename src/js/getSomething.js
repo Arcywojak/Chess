@@ -13,7 +13,8 @@ export let getActiveCoordinates,
     getArrayOfMoves,
     filterOvermoves,
     getCurrentPgn,
-    getMoveFromOpenings;
+    getMoveFromOpenings,
+    getCountersWithMoves;
 
 import {isFieldTaken} from "./handleWithDOM.js";
 
@@ -600,7 +601,7 @@ getMoveFromOpenings = () => {
 
     for(let i=0; i<openings.length; i++){
 
-        if(openings[i].moves.length < currentPgn.length) {
+        if(openings[i].moves.length <= currentPgn.length) {
             continue;
         }
 
@@ -637,4 +638,41 @@ getMoveFromOpenings = () => {
 
         
 
+}
+
+getCountersWithMoves = (color) => {
+
+    const allCounters = getAllCounters(
+        null,
+        gameOptions.activeColour,
+        true
+    ),
+
+    countersWithMoves = [];
+
+    let coordinates, moves;
+
+for (let i = 0; i < allCounters.length; i++) {
+
+    coordinates = {"x": allCounters[i].x,
+        "y": allCounters[i].y};
+
+    moves = getArrayOfMoves(
+        allCounters[i].typeOfCounter,
+        allCounters[i].colour,
+        allCounters[i].x,
+        allCounters[i].y
+    );
+
+    countersWithMoves.push({
+        coordinates,
+        type: allCounters[i].typeOfCounter,
+        moves
+    });
+
+    }
+
+    const filteredTab = countersWithMoves.filter((tab) => tab.moves.length > 0);
+
+    return filteredTab;
 }

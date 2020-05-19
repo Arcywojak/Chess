@@ -216,8 +216,6 @@ button.addEventListener(
 
         let fieldWithCounter, img;
 
-        console.log(gameOptions.reverseBoard);
-
         for (let x = 0; x <= 7; x++) {
 
             for (let y = 0; y <= 7; y++) {
@@ -241,3 +239,11 @@ button.addEventListener(
 
     }
 );
+
+const button2 = document.querySelector(".restart-button");
+
+button2.addEventListener("click", () => {
+
+    location.reload();
+    
+})

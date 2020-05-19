@@ -1,6 +1,7 @@
 import {getAllCounters,
         getArrayOfMoves,
-        getMoveFromOpenings} from "./getSomething.js";
+        getMoveFromOpenings,
+        getCountersWithMoves} from "./getSomething.js";
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
@@ -8,7 +9,8 @@ import {promotePawn} from "./clickCounter.js";
 
 import {gameOptions} from "./variables.js";
 
-export let AIdoMove;
+export let AIdoMove,
+           calculateBestMove;
 
 
 AIdoMove = () => {
@@ -17,36 +19,9 @@ AIdoMove = () => {
 
     if(move === null){
 
-        const allCounters = getAllCounters(
-                null,
-                gameOptions.activeColour,
-                true
-            ),
+      
 
-            tabForCounters = [];
-
-        let coordinates, moves;
-
-        for (let i = 0; i < allCounters.length; i++) {
-
-            coordinates = {"x": allCounters[i].x,
-                "y": allCounters[i].y};
-
-            moves = getArrayOfMoves(
-                allCounters[i].typeOfCounter,
-                allCounters[i].colour,
-                allCounters[i].x,
-                allCounters[i].y
-            );
-
-            tabForCounters.push({
-                coordinates,
-                moves
-            });
-
-        }
-
-        const countersWithMoves = tabForCounters.filter((tab) => tab.moves.length > 0);
+        const countersWithMoves = getCountersWithMoves(gameOptions.activeColour);
 
         let randomCounter = Math.floor(Math.random() * countersWithMoves.length);
 
@@ -103,3 +78,8 @@ AIdoMove = () => {
     );
 
 };
+
+calculateBestMove = () => {
+
+    const countersWithMoves = getCountersWithMoves(gameOptions.activeColour);
+}
