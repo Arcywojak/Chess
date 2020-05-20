@@ -316,8 +316,6 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
         const wantedMove = pgn[index];
 
-        console.log(pgn, index)
-
         let counterName, 
             colour,
             counterOfLetters = 0,

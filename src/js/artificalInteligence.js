@@ -7,7 +7,9 @@ import {changePositionOfCounter} from "./moveCounter.js";
 
 import {promotePawn} from "./clickCounter.js";
 
-import {gameOptions} from "./variables.js";
+import {gameOptions, battleField} from "./variables.js";
+
+import {pretendMove, undoMove, evaluateBoard} from "./aiHelpers.js"
 
 export let AIdoMove,
            calculateBestMove;
@@ -16,6 +18,8 @@ export let AIdoMove,
 AIdoMove = () => {
 
     const move = getMoveFromOpenings();
+
+    calculateBestMove();
 
     if(move === null){
 
@@ -82,4 +86,39 @@ AIdoMove = () => {
 calculateBestMove = () => {
 
     const countersWithMoves = getCountersWithMoves(gameOptions.activeColour);
+
+    let bestValue = -9999,
+        boardValue,
+        bestMove = {
+            origin:{
+                x:null,
+                y:null
+            },
+            destination:{
+                x:null,
+                y:null
+            }
+        };
+
+        const temporaryBattleField = JSON.parse(JSON.stringify(battleField));
+      
+        for(let i=0; i<countersWithMoves.length; i++){
+            for(let j=0; j<countersWithMoves[i].moves.length; j++){
+                
+                const pretendedMove = pretendMove(countersWithMoves[i].coordinates,
+                                                  countersWithMoves[i].moves[j]); 
+                // pretendMove returns the move we pretended
+
+                boardValue = evaluateBoard();
+                    console.log(boardValue)
+                if(boardValue > bestValue){
+                    bestValue = boardValue;
+
+                    bestMove.origin = countersWithMoves[i].coordinates;
+                    bestMove.destination = countersWithMoves[i].moves[j];
+                }
+
+                undoMove(pretendedMove);
+            }
+        }
 }
