@@ -119,11 +119,11 @@ showPossibleMoves = (arrayOfMoves) => {
 
 };
 
-isFieldTaken = (x, y) => {
+isFieldTaken = (copyOfBattleField, x, y) => {
 
     try {
 
-        if (battleField.fields[x][y].color !== null) { // It mean the field is taken by some counter
+        if (copyOfBattleField.fields[x][y].color !== null) { // It mean the field is taken by some counter
 
             return true;
 
@@ -142,8 +142,6 @@ isFieldTaken = (x, y) => {
 setCounterToPromoteImages = (team) => {
 
     const promotionFields = document.querySelectorAll(".counter-to-promote");
-
-    console.log(team);
 
     let images;
 

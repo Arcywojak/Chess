@@ -101,7 +101,9 @@ getCoordinatesFromField = (field, fromParent) => {
 
 };
 
-getPawnMoves = (team, x, y) => {
+getPawnMoves = (team, x, y, copyOfBattleField) => {
+    
+    
 
     let numberOfPositionY = y,
         newPositionY,
@@ -126,9 +128,10 @@ getPawnMoves = (team, x, y) => {
         additionMoveY = newPositionY + 1;
 
     }
-
+    
     if(newPositionY >=0 && newPositionY <=7){
         isBlocked = isFieldTaken(
+            copyOfBattleField,
             x,
             newPositionY
         );
@@ -149,6 +152,7 @@ getPawnMoves = (team, x, y) => {
         
         if(additionMoveY >=0 && additionMoveY <=7){
             isAdditionBlocked = isFieldTaken(
+                copyOfBattleField,
                 x,
                 additionMoveY
             );
@@ -172,9 +176,9 @@ getPawnMoves = (team, x, y) => {
 
     const enemy = getOppositeColour(team)
 
-    const pawnAttackArray = canPawnAttack(enemy, x, y)
+    const pawnAttackArray = canPawnAttack(enemy, x, y, copyOfBattleField)
 
-    const enPassant = addEnPassantIfPossible(enemy, x, y)
+    const enPassant = addEnPassantIfPossible(enemy, x, y, copyOfBattleField)
 
     tabOfMoves = [...tabOfMoves, ...pawnAttackArray, ...enPassant];
 
@@ -183,17 +187,17 @@ getPawnMoves = (team, x, y) => {
     return tabOfMoves;
 }
 
-getBishopMoves = (team, x, y) => {
+getBishopMoves = (team, x, y, copyOfBattleField) => {
 
     let tabOfMoves = [];
         let takenField;
 
 
         for(let i = 1; (x+i <= 7 && y+i <=7); i++){
-            takenField = isFieldTaken(x+i, y+i);
+            takenField = isFieldTaken(copyOfBattleField, x+i, y+i);
             
             if(takenField){
-                if(battleField.fields[x+i][y+i].color !== team){
+                if(copyOfBattleField.fields[x+i][y+i].color !== team){
                     tabOfMoves.push({x:x+i, y:y+i})
                 }
 
@@ -203,11 +207,11 @@ getBishopMoves = (team, x, y) => {
         }
 
         for(let i = 1; (x+i <= 7 && y-i >=0); i++){
-            takenField = isFieldTaken(x+i, y-i);
+            takenField = isFieldTaken(copyOfBattleField ,x+i, y-i);
 
             if(takenField){
  
-                if(battleField.fields[x+i][y-i].color !== team){
+                if(copyOfBattleField.fields[x+i][y-i].color !== team){
                     tabOfMoves.push({x:x+i, y:y-i})
                 }
 
@@ -217,10 +221,10 @@ getBishopMoves = (team, x, y) => {
         }
 
         for(let i = 1; (x-i >=0 && y+i <=7); i++){
-            takenField = isFieldTaken(x-i, y+i);
+            takenField = isFieldTaken(copyOfBattleField,x-i, y+i);
 
             if(takenField){
-                if(battleField.fields[x-i][y+i].color !== team){
+                if(copyOfBattleField.fields[x-i][y+i].color !== team){
 
                     tabOfMoves.push({x:x-i, y:y+i})
                 }
@@ -231,10 +235,10 @@ getBishopMoves = (team, x, y) => {
         }
 
         for(let i = 1; (x-i >=0 && y-i >=0); i++){
-            takenField = isFieldTaken(x-i, y-i);
+            takenField = isFieldTaken(copyOfBattleField, x-i, y-i);
 
             if(takenField){
-                if(battleField.fields[x-i][y-i].color !== team){
+                if(copyOfBattleField.fields[x-i][y-i].color !== team){
                     tabOfMoves.push({x:x-i, y:y-i})
                 }
 
@@ -246,7 +250,7 @@ getBishopMoves = (team, x, y) => {
         return tabOfMoves;
 }
 
-getKnightMoves = (team , x, y) => {
+getKnightMoves = (team , x, y, copyOfBattleField) => {
 
         const tabOfMoves = [
             {
@@ -293,7 +297,7 @@ getKnightMoves = (team , x, y) => {
 
         const {x, y} = filteredTab[i];
         
-        if(battleField.fields[x][y].color !== team) {
+        if(copyOfBattleField.fields[x][y].color !== team) {
             
             moreFilteredTab.push(filteredTab[i]);
 
@@ -304,17 +308,17 @@ getKnightMoves = (team , x, y) => {
         return moreFilteredTab;
 }
 
-getRookMoves = (team, x, y) => {
+getRookMoves = (team, x, y, copyOfBattleField) => {
 
     let tabOfMoves = [];
         let takenField;
 
     for(let i = 1; x+i<=7; i++){
-        takenField = isFieldTaken(x+i, y);
+        takenField = isFieldTaken(copyOfBattleField, x+i, y);
 
             if(takenField){
                
-                if(battleField.fields[x+i][y].color !== team){
+                if(copyOfBattleField.fields[x+i][y].color !== team){
                     tabOfMoves.push({x:x+i, y:y})
                 }
 
@@ -325,11 +329,11 @@ getRookMoves = (team, x, y) => {
     }
 
     for(let i = 1; x-i>=0; i++){
-        takenField = isFieldTaken(x-i, y);
+        takenField = isFieldTaken(copyOfBattleField, x-i, y);
 
             if(takenField){
                
-                if(battleField.fields[x-i][y].color !== team){
+                if(copyOfBattleField.fields[x-i][y].color !== team){
                     tabOfMoves.push({x:x-i, y:y})
                 }
 
@@ -340,11 +344,11 @@ getRookMoves = (team, x, y) => {
     }
 
     for(let i = 1; y-i>=0; i++){
-        takenField = isFieldTaken(x, y-i);
+        takenField = isFieldTaken(copyOfBattleField,x , y-i);
 
             if(takenField){
 
-                if(battleField.fields[x][y-i].color !== team){
+                if(copyOfBattleField.fields[x][y-i].color !== team){
                     tabOfMoves.push({x:x, y:y-i})
                 }
 
@@ -355,11 +359,11 @@ getRookMoves = (team, x, y) => {
     }
 
     for(let i = 1; y+i<=7; i++){
-        takenField = isFieldTaken(x, y+i);
+        takenField = isFieldTaken(copyOfBattleField, x, y+i);
 
             if(takenField){
         
-                if(battleField.fields[x][y+i].color !== team){
+                if(copyOfBattleField.fields[x][y+i].color !== team){
                     tabOfMoves.push({x:x, y:y+i})
                 }
 
@@ -373,15 +377,15 @@ getRookMoves = (team, x, y) => {
     return tabOfMoves;
 }
 
-getQueenMoves = (team, x, y) => {
-    const rookPower = getRookMoves(team, x, y);
-    const bishopPower = getBishopMoves(team, x, y);
+getQueenMoves = (team, x, y, copyOfBattleField) => {
+    const rookPower = getRookMoves(team, x, y, copyOfBattleField);
+    const bishopPower = getBishopMoves(team, x, y, copyOfBattleField);
     const queenMoves = rookPower.concat(bishopPower);
 
     return queenMoves;
 }
 
-getKingMoves = (team, x, y) => {
+getKingMoves = (team, x, y, copyOfBattleField) => {
  
     let takenField;
     let filteredTab = [];
@@ -437,7 +441,7 @@ getKingMoves = (team, x, y) => {
 
         if(x>=0 && x<=7 && y>=0 && y<=7){      
 
-            takenField = isFieldTaken(x, y);
+            takenField = isFieldTaken(copyOfBattleField, x, y);
 
             if(
                 Math.abs(hostileKingCoordintes.x - x)>1 ||
@@ -446,7 +450,7 @@ getKingMoves = (team, x, y) => {
 
                 if(takenField){
             
-                    if(battleField.fields[x][y].color !== team){
+                    if(copyOfBattleField.fields[x][y].color !== team){
                          
                             filteredTab.push({x:x, y:y})
                     }
@@ -475,7 +479,7 @@ getOppositeColour = (colour) => {
     return "white";
 }
 
-getAllCounters = (specificCounter, colour, withKing=true) => {
+getAllCounters = (specificCounter, colour, withKing=true, copyOfBattleField) => {
     //WITH KING - We need this parameter because if we look for check, we don't need king (he can't do check)
     //            but if we want to know whether mate occured or not, we need king to see if he can escape
 
@@ -485,16 +489,16 @@ getAllCounters = (specificCounter, colour, withKing=true) => {
 
         for(let x=0; x<=7; x++){
             for(let y=0; y<=7; y++){
-                if(battleField.fields[x][y].color === colour){
-                    if(battleField.fields[x][y].typeOfCounter === "king" && !withKing){
+                if(copyOfBattleField.fields[x][y].color === colour){
+                    if(copyOfBattleField.fields[x][y].typeOfCounter === "king" && !withKing){
                         continue;
                     }
 
                     tabOfCounters.push({
                     x : x,
                     y : y,
-                    colour: battleField.fields[x][y].color,
-                    typeOfCounter: battleField.fields[x][y].typeOfCounter
+                    colour: copyOfBattleField.fields[x][y].color,
+                    typeOfCounter: copyOfBattleField.fields[x][y].typeOfCounter
                     });
                 }
             }
@@ -503,14 +507,14 @@ getAllCounters = (specificCounter, colour, withKing=true) => {
 
         for(let x=0; x<=7; x++){
             for(let y=0; y<=7; y++){
-                if(battleField.fields[x][y].color === colour &&
-                   battleField.fields[x][y].typeOfCounter === specificCounter){
+                if(copyOfBattleField.fields[x][y].color === colour &&
+                   copyOfBattleField.fields[x][y].typeOfCounter === specificCounter){
                        
                        tabOfCounters.push({
                         x,
                         y,
-                        colour: battleField.fields[x][y].color,
-                        typeOfCounter: battleField.fields[x][y].typeOfCounter
+                        colour: copyOfBattleField.fields[x][y].color,
+                        typeOfCounter: copyOfBattleField.fields[x][y].typeOfCounter
                        })
                    }
             }
@@ -523,46 +527,44 @@ getAllCounters = (specificCounter, colour, withKing=true) => {
     return tabOfCounters;
 }
 
-getArrayOfMoves = (typeOfCounter, team, x, y, filterTab=true) => {
-
+getArrayOfMoves = (typeOfCounter, team, x, y, filterTab, copyOfBattleField) => {
+ 
     let tabOfMoves;
-
-    const enemyColour = getOppositeColour(team);
 
     switch(typeOfCounter){
         case 'pawn':
 
-            tabOfMoves = getPawnMoves(team, x, y);
+            tabOfMoves = getPawnMoves(team, x, y, copyOfBattleField);
             
             break;
 
         case 'knight':
 
-            tabOfMoves = getKnightMoves(team, x, y);
+            tabOfMoves = getKnightMoves(team, x, y, copyOfBattleField);
 
             break;
 
         case 'bishop':
 
-            tabOfMoves = getBishopMoves(team, x, y);
+            tabOfMoves = getBishopMoves(team, x, y, copyOfBattleField);
 
             break;
 
         case 'rook':
 
-            tabOfMoves = getRookMoves(team, x, y);
+            tabOfMoves = getRookMoves(team, x, y, copyOfBattleField);
 
             break;
 
         case 'queen':
             
-            tabOfMoves = getQueenMoves(team, x, y);
+            tabOfMoves = getQueenMoves(team, x, y, copyOfBattleField);
 
             break;
 
         case 'king':
             
-            tabOfMoves = getKingMoves(team, x, y);
+            tabOfMoves = getKingMoves(team, x, y, copyOfBattleField);
 
             break;
 
@@ -570,7 +572,7 @@ getArrayOfMoves = (typeOfCounter, team, x, y, filterTab=true) => {
     }
 
     if(filterTab){
-        tabOfMoves = filterTabInCaseOfCheck(x, y, tabOfMoves);
+        tabOfMoves = filterTabInCaseOfCheck(x, y, tabOfMoves, copyOfBattleField);
     }
     
 
@@ -626,8 +628,6 @@ getMoveFromOpenings = () => {
 
         }
 
-      //  console.log(matchingPgns[0].moves)
-
        const randomOpeningMove = convertPgnIntoMoves(
                                     matchingPgns[randomOpening].moves,
                                     Math.round(gameOptions.numberOfMove*2)
@@ -640,15 +640,19 @@ getMoveFromOpenings = () => {
 
 }
 
-getCountersWithMoves = (color) => {
-
+getCountersWithMoves = (color, copyOfBattleField) => {
+    
     const allCounters = getAllCounters(
         null,
         gameOptions.activeColour,
-        true
+        true,
+        copyOfBattleField
     ),
 
+    
     countersWithMoves = [];
+
+    
 
     let coordinates, moves;
 
@@ -661,7 +665,9 @@ for (let i = 0; i < allCounters.length; i++) {
         allCounters[i].typeOfCounter,
         allCounters[i].colour,
         allCounters[i].x,
-        allCounters[i].y
+        allCounters[i].y,
+        true,
+        copyOfBattleField
     );
 
     countersWithMoves.push({
@@ -671,6 +677,7 @@ for (let i = 0; i < allCounters.length; i++) {
     });
 
     }
+    
 
     const filteredTab = countersWithMoves.filter((tab) => tab.moves.length > 0);
 

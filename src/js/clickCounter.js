@@ -105,18 +105,20 @@ handleClick = (e) => {
 
         removeActivePosition();
 
+        
         const team = field.parentNode.classList[COLOR_CLASS],
             typeOfCounter = field.parentNode.classList[TYPE_OF_COUNTER_CLASS],
             {x, y} = getCoordinatesFromField(
                 field,
                 true
             );
-
-        findPossibleMoves(
+              
+        findPossibleMoves(  
             typeOfCounter,
             team,
             x,
-            y
+            y,
+            battleField
         ); // FindMoves.js
 
         showActivePosition(field);
@@ -126,7 +128,7 @@ handleClick = (e) => {
         const instanceContainingToMove = field.classList.contains("to-move") ? field : field.parentNode,
 
             /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
-            isCheck = isKingInDanger(gameOptions.activeColour);
+            isCheck = isKingInDanger(gameOptions.activeColour, battleField);
 
         if (isCheck) {
 
@@ -175,7 +177,7 @@ promotePawn = (src, id) => {
 
     toggleOverlayAndPromotionBlock();
 
-    verifyCheckAndMate();
+    verifyCheckAndMate(battleField);
 
 };
 

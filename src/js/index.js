@@ -5,5 +5,3 @@
  * gameOptions().changeCountersToMove();
  * console.log(move)
  */
-
-

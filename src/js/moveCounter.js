@@ -60,18 +60,20 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
         /** *******************************************************************************/
 
         takenField = isFieldTaken(
+            battleField,
             destination.x,
             destination.y
         );
 
     /** ***********UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
-
+            
     if(changeColour){
         updatePgn(
             origin,
             destination,
             typeOfMovingCounter,
             counterOfTakenField,
+            battleField
         );
     }
 
@@ -184,7 +186,7 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
             /** *************************************************************************************/
 
             //* ******************IS CHECK AFTER THIS MOVE? *****************************************/
-            verifyCheckAndMate();
+            verifyCheckAndMate(battleField);
 
             /** *************************************************************************************/
 

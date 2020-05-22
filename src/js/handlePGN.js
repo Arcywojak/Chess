@@ -21,14 +21,15 @@ import {getAllCounters,
         getArrayOfMoves} from "./getSomething.js"; 
 
 
-updatePgn = (from, to, movingCounter, attackedCounter) => {
+updatePgn = (from, to, movingCounter, attackedCounter, copyOfBattleField) => {
 
     const pgnBlock = document.querySelector(".pgn-text"),
 
         movingCounterSiblings = getAllCounters(
             movingCounter,
             gameOptions.activeColour,
-            false
+            false,
+            copyOfBattleField
         );
 
     let textToAdd = pgnBlock.innerText;
@@ -69,7 +70,9 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                         movingCounter,
                         gameOptions.activeColour,
                         movingCounterSiblings[i].x,
-                        movingCounterSiblings[i].y
+                        movingCounterSiblings[i].y,
+                        true,
+                        copyOfBattleField
                     );
 
                     for (let j = 0; j < tabOfSibling.length; j++) {
@@ -110,7 +113,8 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
         const isCheck = willBeKingInDanger(
             from,
             to,
-            gameOptions.oppositeColour
+            gameOptions.oppositeColour,
+            copyOfBattleField
         );
 
         if (isCheck) {
@@ -251,7 +255,7 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
     };
 
-    getFullOriginBasedOnMove = (counterName, colour, origin, destination) => {
+    getFullOriginBasedOnMove = (counterName, colour, origin, destination, copyOfBattleField) => {
 
         const newOrigin = {
                 "x": null,
@@ -260,7 +264,9 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
             allCountersOfType = getAllCounters(
                 counterName,
-                colour
+                colour,
+                true,
+                copyOfBattleField
             );
 
           
@@ -271,7 +277,9 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                 allCountersOfType[i].typeOfCounter,
                 allCountersOfType[i].colour,
                 allCountersOfType[i].x,
-                allCountersOfType[i].y
+                allCountersOfType[i].y,
+                true,
+                copyOfBattleField
             );
 
             for (let j = 0; j < movesArray.length; j++) {

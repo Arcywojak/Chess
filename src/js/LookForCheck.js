@@ -19,8 +19,9 @@ export let doesCounterEndangerKing,
     willBeKingInDanger;
 
 
-filterTabInCaseOfCheck = (x, y, tabOfMoves) => {
+filterTabInCaseOfCheck = (x, y, tabOfMoves, copyOfBattleField) => {
 
+    
     let willBeCheck;
 
     const filteredTab = [];
@@ -31,7 +32,8 @@ filterTabInCaseOfCheck = (x, y, tabOfMoves) => {
             {x,
                 y},
             tabOfMoves[i],
-            gameOptions.activeColour
+            gameOptions.activeColour,
+            copyOfBattleField
         );
 
         if (!willBeCheck) { // IF THERE IS NO CHECK
@@ -46,39 +48,34 @@ filterTabInCaseOfCheck = (x, y, tabOfMoves) => {
 
 };
 
-willBeKingInDanger = (origin, destination, colour) => {
+willBeKingInDanger = (origin, destination, colour, copyOfBattleField) => {
 
     // PRETENT TO MOVE FROM ORIGIN TO DESTINATION
 
-    const originField = battleField.fields[origin.x][origin.y],
-        destinationField = battleField.fields[destination.x][destination.y],
+    const originField = copyOfBattleField.fields[origin.x][origin.y],
+        destinationField = copyOfBattleField.fields[destination.x][destination.y],
 
         originFieldColor = originField.color,
         originFieldTypeOfCounter = originField.typeOfCounter,
         destinationFieldColor = destinationField.color,
-        destinationFieldTypeOfCounter = destinationField.typeOfCounter,
+        destinationFieldTypeOfCounter = destinationField.typeOfCounter;
 
-        isDestinationFieldTaken = isFieldTaken(
-            destination.x,
-            destination.y
-        );
+    copyOfBattleField.fields[destination.x][destination.y].color = originFieldColor;
+    copyOfBattleField.fields[destination.x][destination.y].typeOfCounter = originFieldTypeOfCounter;
 
-    battleField.fields[destination.x][destination.y].color = originFieldColor;
-    battleField.fields[destination.x][destination.y].typeOfCounter = originFieldTypeOfCounter;
-
-    battleField.fields[origin.x][origin.y].color = null;
-    battleField.fields[origin.x][origin.y].typeOfCounter = null;
+    copyOfBattleField.fields[origin.x][origin.y].color = null;
+    copyOfBattleField.fields[origin.x][origin.y].typeOfCounter = null;
 
 
-    const isCheck = isKingInDanger(colour);
+    const isCheck = isKingInDanger(colour, copyOfBattleField);
 
 
     /** ******** Undo changes ***********/
-    battleField.fields[destination.x][destination.y].color = destinationFieldColor;
-    battleField.fields[destination.x][destination.y].typeOfCounter = destinationFieldTypeOfCounter;
+    copyOfBattleField.fields[destination.x][destination.y].color = destinationFieldColor;
+    copyOfBattleField.fields[destination.x][destination.y].typeOfCounter = destinationFieldTypeOfCounter;
 
-    battleField.fields[origin.x][origin.y].color = originFieldColor;
-    battleField.fields[origin.x][origin.y].typeOfCounter = originFieldTypeOfCounter;
+    copyOfBattleField.fields[origin.x][origin.y].color = originFieldColor;
+    copyOfBattleField.fields[origin.x][origin.y].typeOfCounter = originFieldTypeOfCounter;
 
     /*
      *   If(isDestinationFieldTaken){
@@ -97,14 +94,15 @@ willBeKingInDanger = (origin, destination, colour) => {
 
 };
 
-isKingInDanger = (colour) => {
+isKingInDanger = (colour, copyOfBattleField) => {
 
     const oppositeColour = getOppositeColour(colour),
 
         offensiveCounters = getAllCounters(
             null,
             oppositeColour,
-            false
+            false,
+            copyOfBattleField
         );
         // We do not need king because he can't check enemy king
 
@@ -119,7 +117,8 @@ isKingInDanger = (colour) => {
             offensiveCounters[i].colour,
             offensiveCounters[i].x,
             offensiveCounters[i].y,
-            false
+            false,
+            copyOfBattleField
         );
 
         isInDanger = doesCounterEndangerKing(tabOfMoves);
@@ -160,12 +159,13 @@ doesCounterEndangerKing = (tabOfMoves) => {
 
 };
 
-isMate = (endangeredColour) => {
+isMate = (endangeredColour, copyOfBattleField) => {
 
     const tabOfCounters = getAllCounters(
         null,
         endangeredColour,
-        true
+        true,
+        copyOfBattleField
     );
     let tabOfFilteredMoves,
         tabOfMoves;
@@ -177,13 +177,15 @@ isMate = (endangeredColour) => {
             tabOfCounters[i].colour,
             tabOfCounters[i].x,
             tabOfCounters[i].y,
-            false
+            false,
+            copyOfBattleField
         );
 
         tabOfFilteredMoves = filterTabInCaseOfCheck(
             tabOfCounters[i].x,
             tabOfCounters[i].y,
-            tabOfMoves
+            tabOfMoves,
+            copyOfBattleField
         );
 
         if (tabOfFilteredMoves.length > 0) {
@@ -199,13 +201,13 @@ isMate = (endangeredColour) => {
 
 };
 
-verifyCheckAndMate = () => {
-
+verifyCheckAndMate = (copyOfBattleField) => {
+    
     const firstKing = document.querySelector(".white.king"),
         secondKing = document.querySelector(".black.king"),
 
-        checkFirst = isKingInDanger("white"),
-        checkSecond = isKingInDanger("black"),
+        checkFirst = isKingInDanger("white", copyOfBattleField),
+        checkSecond = isKingInDanger("black", copyOfBattleField),
 
         fieldWithDanger = document.querySelector(".danger");
 
@@ -213,7 +215,7 @@ verifyCheckAndMate = () => {
 
         firstKing.classList.add("danger");
 
-        const mate = isMate("white");
+        const mate = isMate("white", copyOfBattleField);
 
         if (mate) {
 
@@ -232,7 +234,7 @@ verifyCheckAndMate = () => {
 
         secondKing.classList.add("danger");
 
-        const mate = isMate("black");
+        const mate = isMate("black", copyOfBattleField);
 
         if (mate) {
 

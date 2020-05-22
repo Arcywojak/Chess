@@ -29,21 +29,23 @@ setOptionsForCastling = () => {
 
 };
 
-addMovesForShortCastling = (x, y, color) => {
+addMovesForShortCastling = (x, y, color, copyOfBattleField) => {
 
     const coordinateY = color === "white" ? 7 : 0;
 
     if (
         !isFieldTaken(
+            copyOfBattleField,
             5,
             coordinateY
         ) &&
             !isFieldTaken(
+                copyOfBattleField,
                 6,
                 coordinateY
             ) &&
-            battleField.fields[4][coordinateY].isFirstMove &&
-            !isKingInDanger(gameOptions.activeColour)
+            copyOfBattleField.fields[4][coordinateY].isFirstMove &&
+            !isKingInDanger(gameOptions.activeColour, copyOfBattleField)
     ) {
 
         let tabWithShortCastling = [
@@ -60,7 +62,8 @@ addMovesForShortCastling = (x, y, color) => {
         tabWithShortCastling = filterTabInCaseOfCheck(
             x,
             y,
-            tabWithShortCastling
+            tabWithShortCastling,
+            copyOfBattleField
         );
 
         if (tabWithShortCastling.length === 2) {
@@ -78,25 +81,28 @@ addMovesForShortCastling = (x, y, color) => {
 
 };
 
-addMovesForLongCastling = (x, y, color) => {
+addMovesForLongCastling = (x, y, color, copyOfBattleField) => {
 
     const coordinateY = color === "white" ? 7 : 0;
 
     if (
         !isFieldTaken(
+            copyOfBattleField,
             1,
             coordinateY
         ) &&
                 !isFieldTaken(
+                    copyOfBattleField,
                     2,
                     coordinateY
                 ) &&
                 !isFieldTaken(
+                    copyOfBattleField,
                     3,
                     coordinateY
                 ) &&
-                battleField.fields[4][coordinateY].isFirstMove &&
-                !isKingInDanger(gameOptions.activeColour)
+                copyOfBattleField.fields[4][coordinateY].isFirstMove &&
+                !isKingInDanger(gameOptions.activeColour, battleField)
     ) {
 
         let tabWithLongCastling = [
@@ -117,7 +123,8 @@ addMovesForLongCastling = (x, y, color) => {
         tabWithLongCastling = filterTabInCaseOfCheck(
             x,
             y,
-            tabWithLongCastling
+            tabWithLongCastling,
+            copyOfBattleField
         );
 
         if (tabWithLongCastling.length === 3) {
@@ -241,6 +248,7 @@ didPawnDoEnPassant = (origin, destination) => {
 
     if (
         !isFieldTaken(
+            battleField,
             destination.x,
             destination.y
         ) &&
@@ -258,9 +266,6 @@ didPawnDoEnPassant = (origin, destination) => {
                 destination.x,
                 destination.y + 1
             );
-
-            console.log(fieldWithPawn);
-            console.log("FIELD");
 
             fieldWithPawn.classList.remove(
                 fieldWithPawn.classList[COLOR_CLASS],
