@@ -644,7 +644,7 @@ getCountersWithMoves = (color) => {
 
     const allCounters = getAllCounters(
         null,
-        gameOptions.activeColour,
+        color,
         true
     ),
 

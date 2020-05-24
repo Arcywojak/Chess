@@ -9,7 +9,7 @@ import {promotePawn} from "./clickCounter.js";
 
 import {gameOptions, battleField} from "./variables.js";
 
-import {pretendMove, undoMove, evaluateBoard} from "./aiHelpers.js"
+import {pretendMove, undoMove, evaluateBoard, minimax} from "./aiHelpers.js"
 
 export let AIdoMove,
            calculateBestMove;
@@ -17,75 +17,44 @@ export let AIdoMove,
 
 AIdoMove = () => {
 
-    const move = getMoveFromOpenings();
+    let move = null//getMoveFromOpenings();
 
-    calculateBestMove();
+    
 
     if(move === null){
 
-      
+    const depth = 3;
 
-        const countersWithMoves = getCountersWithMoves(gameOptions.activeColour);
+    move = calculateBestMove(depth, true); 
 
-        let randomCounter = Math.floor(Math.random() * countersWithMoves.length);
-
-        if (randomCounter === countersWithMoves.length) {
-
-            randomCounter--;
-
-        }
-
-        let randomMove = Math.floor(Math.random() * countersWithMoves[randomCounter].moves.length);
-
-        if (randomMove === countersWithMoves[randomCounter].moves.length) {
-
-            randomMove--;
-
-        }
+            //promotionBlock = document.querySelector(".select-counter-to-promote");
 
 
-        const origin = countersWithMoves[randomCounter].coordinates,
+       // if (!promotionBlock.classList.contains("invisible")) {
 
-            destination = {
-                "x": countersWithMoves[randomCounter].moves[randomMove].x,
-                "y": countersWithMoves[randomCounter].moves[randomMove].y
-            },
+        //    promotePawn(
+        //        imagesOfCounter[gameOptions.oppositeColour].queen,
+        //        "queen"
+        //    );
 
-            promotionBlock = document.querySelector(".select-counter-to-promote");
-
-
-        if (!promotionBlock.classList.contains("invisible")) {
-
-            promotePawn(
-                imagesOfCounter[gameOptions.oppositeColour].queen,
-                "queen"
-            );
-
-        }
-
-        changePositionOfCounter(
-            origin,
-            destination
-        );
-
-        console.log("RANDOM")
-
-        return;
-
+       // }
     }
     
-    console.log("I KNOW OPENINGS")
+  //  console.log("I KNOW OPENINGS")
+
+  console.log(move)
 
     changePositionOfCounter(
-        move.from,
-        move.to
+        move.origin,
+        move.destination
     );
 
 };
 
-calculateBestMove = () => {
+calculateBestMove = (depth=3, isMaximisingPlayer=true) => {
 
     const countersWithMoves = getCountersWithMoves(gameOptions.activeColour);
+    
 
     let bestValue = -9999,
         boardValue,
@@ -100,25 +69,42 @@ calculateBestMove = () => {
             }
         };
 
-        const temporaryBattleField = JSON.parse(JSON.stringify(battleField));
+        //const temporaryBattleField = 
       
         for(let i=0; i<countersWithMoves.length; i++){
             for(let j=0; j<countersWithMoves[i].moves.length; j++){
-                
-                const pretendedMove = pretendMove(countersWithMoves[i].coordinates,
-                                                  countersWithMoves[i].moves[j]); 
-                // pretendMove returns the move we pretended
 
-                boardValue = evaluateBoard();
-                    console.log(boardValue)
-                if(boardValue > bestValue){
+                const pretendedMove = pretendMove(countersWithMoves[i].coordinates,
+                                                  countersWithMoves[i].moves[j]);
+                 
+                
+                                                //  console.log(JSON.parse(JSON.stringify(copyOfBattleField.fields)))
+                // pretendMove returns the move we pretended
+               // console.log(battleField)
+
+                boardValue = minimax
+                    (
+                    depth - 1, 
+                    !isMaximisingPlayer,
+                    -10000,
+                    10000,
+                    gameOptions.activeColour
+                    );
+              
+                undoMove(pretendedMove);
+
+                //console.log(boardValue)
+                if(boardValue >= bestValue){
+              //      console.log(`Changed from ${bestValue} to ${boardValue}`)
                     bestValue = boardValue;
 
                     bestMove.origin = countersWithMoves[i].coordinates;
                     bestMove.destination = countersWithMoves[i].moves[j];
-                }
-
-                undoMove(pretendedMove);
+                }        
             }
         }
+        console.log(bestMove)
+        
+
+        return bestMove;
 }
