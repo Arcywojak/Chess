@@ -8,9 +8,9 @@
 
 *//** ************************************/
 
-import {battleField, gameOptions, imagesOfCounter} from "./variables.js";
+import {battleField, gameOptions, imagesOfCounter, innerBoard} from "./variables.js";
 
-const innerBoard = document.querySelector(".board-inner");
+
 
 export const initPositionOfCounters_DOM = () => {
 

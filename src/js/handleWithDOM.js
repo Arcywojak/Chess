@@ -20,7 +20,8 @@ import {
     changeColourOfActivePlayer,
     gameOptions,
     imagesOfCounter,
-    updatePlayerToMove
+    updatePlayerToMove,
+    innerBoard
 } from "./variables.js";
 
 
@@ -71,7 +72,7 @@ showRecentMove = (fieldOrigin, fieldDestination) => {
 
 removeRecentMove = () => {
 
-    const fields = document.querySelectorAll(".last-move");
+    const fields = innerBoard.querySelectorAll(".last-move");
 
     if (fields !== null) {
 
@@ -87,7 +88,7 @@ removeRecentMove = () => {
 
 removePossibleMoves = () => {
 
-    const previouslyToMove = document.querySelectorAll(".to-move");
+    const previouslyToMove = innerBoard.querySelectorAll(".to-move");
 
     if (previouslyToMove !== null) {
 
@@ -109,7 +110,7 @@ showPossibleMoves = (arrayOfMoves) => {
 
         for (let i = 0; i < arrayOfMoves.length; i++) {
 
-            tabOfPossibleMoves[i] = document.querySelector(`.x${arrayOfMoves[i].x}.y${arrayOfMoves[i].y}`);
+            tabOfPossibleMoves[i] = innerBoard.querySelector(`.x${arrayOfMoves[i].x}.y${arrayOfMoves[i].y}`);
 
             tabOfPossibleMoves[i].classList.add("to-move");
 

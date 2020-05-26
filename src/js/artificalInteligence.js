@@ -10,6 +10,7 @@ import {promotePawn} from "./clickCounter.js";
 import {gameOptions, battleField} from "./variables.js";
 
 import {pretendMove, undoMove, evaluateBoard, minimax} from "./aiHelpers.js"
+import { addMovesForShortCastling, addMovesForLongCastling } from "./specialMoves.js";
 
 export let AIdoMove,
            calculateBestMove;
@@ -19,35 +20,31 @@ AIdoMove = () => {
 
     let move = null//getMoveFromOpenings();
 
-    
-
     if(move === null){
 
-    const depth = 3;
+        const depth = 4;
 
-    move = calculateBestMove(depth, true); 
+        move = calculateBestMove(depth, true); 
 
-            //promotionBlock = document.querySelector(".select-counter-to-promote");
+        changePositionOfCounter(
+            move.origin,
+            move.destination
+        );
 
-
-       // if (!promotionBlock.classList.contains("invisible")) {
-
-        //    promotePawn(
-        //        imagesOfCounter[gameOptions.oppositeColour].queen,
-        //        "queen"
-        //    );
-
-       // }
-    }
+        return;
     
-  //  console.log("I KNOW OPENINGS")
+    } 
 
-  console.log(move)
+    setTimeout( () => {
 
-    changePositionOfCounter(
-        move.origin,
-        move.destination
-    );
+        changePositionOfCounter(
+            move.origin,
+            move.destination
+        );
+
+        gameOptions.computerIsThinking = false;
+
+    }, 1000)
 
 };
 
@@ -75,12 +72,8 @@ calculateBestMove = (depth=3, isMaximisingPlayer=true) => {
             for(let j=0; j<countersWithMoves[i].moves.length; j++){
 
                 const pretendedMove = pretendMove(countersWithMoves[i].coordinates,
-                                                  countersWithMoves[i].moves[j]);
-                 
-                
-                                                //  console.log(JSON.parse(JSON.stringify(copyOfBattleField.fields)))
+                                                  countersWithMoves[i].moves[j]);    
                 // pretendMove returns the move we pretended
-               // console.log(battleField)
 
                 boardValue = minimax
                     (
@@ -93,18 +86,32 @@ calculateBestMove = (depth=3, isMaximisingPlayer=true) => {
               
                 undoMove(pretendedMove);
 
-                //console.log(boardValue)
                 if(boardValue >= bestValue){
-              //      console.log(`Changed from ${bestValue} to ${boardValue}`)
                     bestValue = boardValue;
 
                     bestMove.origin = countersWithMoves[i].coordinates;
                     bestMove.destination = countersWithMoves[i].moves[j];
                 }        
             }
-        }
-        console.log(bestMove)
+        }   
         
+        if(battleField.fields[bestMove.origin.x][bestMove.origin.y].typeOfCounter === "king"){
+
+                const shortCastling = addMovesForShortCastling(bestMove.origin.x, bestMove.origin.y, gameOptions.computerColor);
+
+                if(shortCastling.length > 0){
+                    bestMove.destination.x = shortCastling[0].x;
+                    bestMove.destination.y = shortCastling[0].y;
+                } else {
+
+                    const longCastling = addMovesForLongCastling(bestMove.origin.x, bestMove.origin.y, gameOptions.computerColor);
+
+                    if(longCastling.length > 0){
+                        bestMove.destination.x = longCastling[0].x;
+                        bestMove.destination.y = longCastling[0].y;
+                    }
+                }
+        }
 
         return bestMove;
 }

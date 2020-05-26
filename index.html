@@ -32,9 +32,49 @@
             </div>
             <div class="info-wrapper">
                 <div class="game-info">
-                    <h2 class="game-info-h2"></h2>
+                    <div class="move-info">
+                        <h2>Turn:</h2>
+                        <div class="turn-colour"></div>
+                    </div>
                     <button class="switch-button btn">Switch board</button>
                     <button class="restart-button btn">restart game</button>
+
+                    <div class="line"></div>
+
+                    <div class="game-mode">
+                        <h2>Play with:</h2>
+
+                        <label class="input-wrapper gm" id="c">
+                            
+                            <input type="radio" id="c" name="mode" checked>
+                            <span id="c"></span>
+                            Computer
+                        </label>
+                        <div class="check-colour shown">
+                            <h3>As:</h3>
+                            <label class="input-wrapper mini" id="black">
+                                <input type="radio" id="black" name="col" checked>
+                                <span id="black"></span>
+                                White
+                            </label>
+                            <label class="input-wrapper mini" id="white">
+                                <input type="radio" id="white" name="col">
+                                <span id="white"></span>
+                                Black
+                            </label>
+
+                            <div class="change-team-alert hidden">
+                                <p>Color can be changed only at the beggining</p>
+                            </div>
+                        </div>
+                        <label class="input-wrapper gm" id="y">
+                            
+                            <input type="radio" id="y" name="mode" >
+                            <span id="y"></span>
+                            Yourself
+                        </label>
+
+                    </div>
                 </div>
                 <div class="pgn-block">
                     <h2>PGN</h2>

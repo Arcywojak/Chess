@@ -18,11 +18,13 @@ import {
     battleField,
     changeColourOfActivePlayer,
     gameOptions,
+    disableChangingColour
 } from "./variables.js";
 
 import {DoesKingDoCastling, 
         didPawnDoEnPassant, 
-        doesPawnPromote} from "./specialMoves.js";
+        doesPawnPromote,
+        isDraw} from "./specialMoves.js";
 
 const moveSound = document.querySelector("#move-sound"),
     beatSound = document.querySelector("#beat-sound");
@@ -185,19 +187,26 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
 
             //* ******************IS CHECK AFTER THIS MOVE? *****************************************/
             verifyCheckAndMate();
-
             /** *************************************************************************************/
 
-            if (!gameOptions.didGameEnd && gameOptions.activeColour === "black" && changeColour) {
+            /****************************** IS DRAW AFTER THIS MOVE? *****************************/
+            isDraw();
+            /*************************************************************************************** */
+            
+            if (
+                !gameOptions.didGameEnd && 
+                 gameOptions.activeColour === gameOptions.computerColor && 
+                 changeColour &&
+                 gameOptions.gameMode === "c"
+                 ) {
 
-                setTimeout(
-                    () => {
+                    setTimeout( () => {
+                        
+                        AIdoMove();  
 
-                        AIdoMove();
-
-                    },
-                    1000
-                );
+                        
+                    }, 50)
+                              
 
             }
 
@@ -205,4 +214,15 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
         100
     );
 
+    if(!gameOptions.gameStarted){ // first move
+
+        setTimeout( () => {
+                        
+            disableChangingColour(); 
+                
+        }, 50)
+        
+    }
+
+    gameOptions.gameStarted = true
 };

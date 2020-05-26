@@ -2,18 +2,25 @@
 export let changeColourOfActivePlayer,
     showWinner,
     switchTeams,
-    updatePlayerToMove;
+    updatePlayerToMove,
+    disableChangingColour;
 
 export const COLOR_CLASS = 3;
 export const TYPE_OF_COUNTER_CLASS = 4;
 
 export const board = document.querySelector(".board");
 
+export const innerBoard = document.querySelector(".board-inner");
+
 export const gameOptions = {
+    "gameStarted": false,
     "reverseBoard": 0,
     "numberOfMove": 0,
+    "gameMode" : "c",
+    "computerColor": "black",
     "activeColour": "white",
     "oppositeColour": "black",
+    "computerIsThinking": false,
     "didGameEnd": false,
     "winner": null,
     "lastMove": {
@@ -148,9 +155,9 @@ export const kingEvalBlack = reverseArray(kingEvalWhite);
 
 updatePlayerToMove = () => {
 
-    const field = document.querySelector(".game-info-h2");
+    const field = document.querySelector(".turn-colour");
 
-    field.innerText = `${gameOptions.activeColour} move`;
+    field.classList.toggle("black-colour");
 
 };
 
@@ -238,3 +245,10 @@ switchTeams = (switchOrNot = true) => {
     }
 
 };
+
+disableChangingColour = () => {
+    const inputs = document.getElementsByName("col");
+
+    inputs[0].disabled = true;
+    inputs[1].disabled = true;
+}

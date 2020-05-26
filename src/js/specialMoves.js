@@ -2,7 +2,8 @@ import {COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, imagesOfCo
 import {isFieldTaken, setCounterToPromoteImages, toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 import {filterTabInCaseOfCheck, isKingInDanger} from "./LookForCheck.js";
 import {changePositionOfCounter} from "./moveCounter.js";
-import {getCoordinatesFromField, getFieldFromCoordinates} from "./getSomething.js";
+import {getCoordinatesFromField, getFieldFromCoordinates, getAllCounters} from "./getSomething.js";
+import { convertStringIntoPgnMoves } from "./handlePGN.js";
 
 export let DoesKingDoCastling,
     addEnPassantIfPossible,
@@ -12,7 +13,8 @@ export let DoesKingDoCastling,
     canKingDoShortCastling,
     didPawnDoEnPassant,
     doesPawnPromote,
-    setOptionsForCastling;
+    setOptionsForCastling,
+    isDraw;
 
 
 setOptionsForCastling = () => {
@@ -137,8 +139,7 @@ addMovesForLongCastling = (x, y, color) => {
 
 DoesKingDoCastling = (origin, destination) => {
 
-    if (battleField.fields[origin.x][origin.y].typeOfCounter === "king" ||
-            battleField.fields[origin.x][origin.y].typeOfCounter === "rook") {
+    if (battleField.fields[origin.x][origin.y].typeOfCounter === "king") {
 
         if (battleField.fields[origin.x][origin.y].typeOfCounter === "king" || // CASTLING
                 battleField.fields[origin.x][origin.y].isFirstMove === true) {
@@ -175,15 +176,17 @@ DoesKingDoCastling = (origin, destination) => {
 
                 changePositionOfCounter(
                     coordinatesOfRookOrigin,
-                    coordinatesOfRookDestination
+                    coordinatesOfRookDestination,
+                    false
                 );
+
+                
 
             }
 
         }
 
         battleField.fields[origin.x][origin.y].isFirstMove = false;
-
     }
 
 };
@@ -193,8 +196,25 @@ doesPawnPromote = (coordinates, team) => {
     if (coordinates.y === 0 || coordinates.y === 7) {
 
 
-        setCounterToPromoteImages(team);
-        toggleOverlayAndPromotionBlock(coordinates);
+        if(team === "black"){
+            battleField.fields[coordinates.x][coordinates.y].typeOfCounter = "queen";
+
+            const field = getFieldFromCoordinates(coordinates.x, coordinates.y);
+
+            console.log(JSON.parse(JSON.stringify(field)));
+            console.log(JSON.parse(JSON.stringify(battleField)));
+
+            field.classList.remove("pawn");
+            field.classList.add("queen");
+
+            field.childNodes[0].src = imagesOfCounter.black.queen;
+
+            return;
+        } else {
+            setCounterToPromoteImages(team);
+            toggleOverlayAndPromotionBlock(coordinates);
+        }
+        
 
     }
 
@@ -259,9 +279,6 @@ didPawnDoEnPassant = (origin, destination) => {
                 destination.y + 1
             );
 
-            console.log(fieldWithPawn);
-            console.log("FIELD");
-
             fieldWithPawn.classList.remove(
                 fieldWithPawn.classList[COLOR_CLASS],
                 fieldWithPawn.classList[TYPE_OF_COUNTER_CLASS]
@@ -297,3 +314,21 @@ didPawnDoEnPassant = (origin, destination) => {
     }
 
 };
+
+isDraw = () => {
+
+    const tabOfCounters = getAllCounters(
+        null,
+        gameOptions.activeColour,
+        true
+    );
+
+    const kingInDanger = isKingInDanger(gameOptions.activeColour);
+
+    if(kingInDanger && tabOfCounters.length === 0){
+        gameOptions.didGameEnd = true;
+        gameOptions.winner = "draw";
+
+        alert(`Draw, ${gameOptions.activeColour} king is in stalement`);
+    }
+}

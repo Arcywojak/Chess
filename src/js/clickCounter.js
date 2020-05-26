@@ -18,142 +18,85 @@ import {
     TYPE_OF_COUNTER_CLASS,
     battleField,
     gameOptions,
-    switchTeams,
-    updatePlayerToMove
+    switchTeams
 } from "./variables.js";
 
 import {isKingInDanger, verifyCheckAndMate} from "./LookForCheck.js";
 
 export let handleClick, promotePawn, selectPromotion;
 
-updatePlayerToMove();
-
-
-/*
- * SetTimeout( () => {
- *   AIdoMove();
- * }, 3000)
- */
-
-
-/*
- * /*
- */// /////////// STRUCTURE OF FUNCTIONS ///////////////
-/*
- *  *
- *  Which functions execute indyvidual functions
- *
- *  handleCLick
- *  |
- *  |-1) removeActivePosition
- *  |
- *  |-2) removeActivePosition, showActivePositon, O-canPawnAttack
- *  |
- *  |-3) getActiveCoordinates, getCoordinatesFromField, changePositionOfCounter
- *
- *  removeActivePosition
- *  |
- *  |-getActiveField, removePossibleMoves
- *
- *  showActivePosition
- *  |
- *  |-getActiveField, getCoordinatesFromField, findPossibleMoves
- *
- *  removeActivePosition
- *  |
- *  |-getActiveField, removePossibleMoves
- *
- *  getActiveCoordinates
- *  |
- *  |-getActiveField,
- *
- *  changePositionOfCounter
- *  |
- *  |-removeActivePosition
- *
- *  canPawnAttack
- *  |
- *  |-getActiveField, getCoordinatesFromField,getFieldFromCoordinates(x2), showPossibleMove(x2)
- *
- *  findPossibleMove
- *  |
- *  |-showPossibleMove
- *
- *  -Number) - one of possible paths during executing
- *
- */
-// // ////////////////////////////////////////////////////
-
-
 handleClick = (e) => {
 
+    if(!gameOptions.didGameEnd && 
+        !(gameOptions.gameMode === "c" && gameOptions.computerColor === gameOptions.activeColour)){
 
-    const field = e.target,
+        const field = e.target,
 
-        active = getActiveField();
+            active = getActiveField();
 
-    if (active === field) {
+        if (active === field) {
 
-        removeActivePosition();
+            removeActivePosition();
 
-        return;
-
-    }
-
-    if (field.parentNode.classList.contains("white") && gameOptions.activeColour === "white" ||
-         field.parentNode.classList.contains("black") && gameOptions.activeColour === "black") {
-
-        removeActivePosition();
-
-        const team = field.parentNode.classList[COLOR_CLASS],
-            typeOfCounter = field.parentNode.classList[TYPE_OF_COUNTER_CLASS],
-            {x, y} = getCoordinatesFromField(
-                field,
-                true
-            );
-
-        findPossibleMoves(
-            typeOfCounter,
-            team,
-            x,
-            y
-        ); // FindMoves.js
-
-        showActivePosition(field);
-
-    } else if (field.classList.contains("to-move") || field.parentNode.classList.contains("to-move")) {
-
-        const instanceContainingToMove = field.classList.contains("to-move") ? field : field.parentNode,
-
-            /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
-            isCheck = isKingInDanger(gameOptions.activeColour);
-
-        if (isCheck) {
-
-            const kingField = document.querySelector(`.${gameOptions.activeColour}.king`);
-
-            kingField.classList.remove("danger");
+            return;
 
         }
 
-        /** ******************************************************** */
+        if (field.parentNode.classList.contains("white") && gameOptions.activeColour === "white" ||
+            field.parentNode.classList.contains("black") && gameOptions.activeColour === "black") {
+
+            removeActivePosition();
+
+            const team = field.parentNode.classList[COLOR_CLASS],
+                typeOfCounter = field.parentNode.classList[TYPE_OF_COUNTER_CLASS],
+                {x, y} = getCoordinatesFromField(
+                    field,
+                    true
+                );
+
+            findPossibleMoves(
+                typeOfCounter,
+                team,
+                x,
+                y
+            ); // FindMoves.js
+
+            showActivePosition(field);
+
+        } else if (field.classList.contains("to-move") || field.parentNode.classList.contains("to-move")) {
+
+            const instanceContainingToMove = field.classList.contains("to-move") ? field : field.parentNode,
+
+                /**  IF WAS CHECK AND WE ESCAPED, REMOVE "DANGER" CLASS   **/
+                isCheck = isKingInDanger(gameOptions.activeColour);
+
+            if (isCheck) {
+
+                const kingField = innerBoard.querySelector(`.${gameOptions.activeColour}.king`);
+
+                kingField.classList.remove("danger");
+
+            }
+
+            /** ******************************************************** */
 
 
-        const from = getActiveCoordinates(),
+            const from = getActiveCoordinates(),
 
-            to = getCoordinatesFromField(
-                instanceContainingToMove,
-                false
+                to = getCoordinatesFromField(
+                    instanceContainingToMove,
+                    false
+                );
+
+
+            changePositionOfCounter(
+                from,
+                to
             );
 
-
-        changePositionOfCounter(
-            from,
-            to
-        );
+        }
 
     }
-
 };
 
 const promotionBlock = document.querySelectorAll(".counter-to-promote");
@@ -246,4 +189,71 @@ button2.addEventListener("click", () => {
 
     location.reload();
     
+})
+
+const gameModeButtons = document.querySelectorAll(".input-wrapper.gm");
+
+gameModeButtons.forEach( btn => {
+    btn.addEventListener("click", (e) => {
+        
+        const id = e.target.id;
+
+        gameOptions.gameMode = id;
+
+        let checkColourField = document.querySelector(".check-colour");
+
+        if(id === "c"){
+            checkColourField.classList.add("shown");
+
+            if(gameOptions.activeColour === gameOptions.computerColor){
+                AIdoMove();
+            }
+        } else {
+            checkColourField.classList.remove("shown");
+        }
+    })
+} )
+
+const checkColourButtons = document.querySelectorAll(".input-wrapper.mini");
+
+checkColourButtons.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+
+        //console.log(gameOptions.gameStarted)
+        
+        if(gameOptions.gameStarted && gameOptions.numberOfMove > 0){
+
+            const alertField = document.querySelector(".change-team-alert");
+
+            if(!alertField.classList.contains("hidden")){
+                return;
+            }
+
+            alertField.classList.remove("hidden");
+
+            return new Promise( () => { 
+                setTimeout( () => {
+              
+                        alertField.classList.add("hidden")
+                
+                }, 3000)
+            })
+        }
+
+        const id = e.target.id;
+
+
+        gameOptions.computerColor = id;
+        console.log( gameOptions.gameStarted, "S")
+
+        if (
+            !gameOptions.didGameEnd && 
+             gameOptions.activeColour === gameOptions.computerColor && 
+             gameOptions.gameMode === "c"
+             ) {
+
+                AIdoMove();
+
+             }
+    })
 })

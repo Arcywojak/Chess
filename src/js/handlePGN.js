@@ -34,7 +34,14 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
     let textToAdd = pgnBlock.innerText;
 
     if(gameOptions.numberOfMove > 0){
-        textToAdd += "\xa0";
+
+        if( (gameOptions.numberOfMove + 1) % 3 === 0){
+            textToAdd += "\n"; 
+
+        } else {
+            textToAdd += "\xa0";
+        }
+        
     }
 
     if (Number.isInteger(gameOptions.numberOfMove)) {
@@ -63,23 +70,29 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
             for (let i = 0; i < movingCounterSiblings.length; i++) {
 
-                if (movingCounterSiblings[i].x !== from.x) {
+                if (movingCounterSiblings[i].x !== from.x || movingCounterSiblings[i].y !== from.y) {
 
-                    const tabOfSibling = getArrayOfMoves(
+                    const tabOfSiblingMoves = getArrayOfMoves(
                         movingCounter,
                         gameOptions.activeColour,
                         movingCounterSiblings[i].x,
                         movingCounterSiblings[i].y
                     );
 
-                    for (let j = 0; j < tabOfSibling.length; j++) {
+                    for (let j = 0; j < tabOfSiblingMoves.length; j++) {
 
-                        if (tabOfSibling[j].x ===
+                        if (tabOfSiblingMoves[j].x ===
                                 to.x &&
-                                tabOfSibling[j].y ===
+                                tabOfSiblingMoves[j].y ===
                                 to.y) {
 
-                            textToAdd += nameOfFieldsX[from.x];
+                            if(movingCounterSiblings[i].x === from.x){
+                                textToAdd += nameOfFieldsY[from.y];
+                            } else {
+                                textToAdd += nameOfFieldsX[from.x];
+                            }
+
+                            
                         }
 
                     }
@@ -451,11 +464,11 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
                 );
 
                 const move = {
-                    "from": {
+                    "origin": {
                         "x": newOrigin.x,
                         "y": newOrigin.y
                     },
-                    "to": {
+                    "destination": {
                         "x": destination.x,
                         "y": destination.y
                     },

@@ -20,7 +20,7 @@ import {isFieldTaken} from "./handleWithDOM.js";
 
 import {openings} from "./openings/openings.js";
 
-import {battleField, gameOptions} from "./variables.js";
+import {battleField, gameOptions, innerBoard} from "./variables.js";
 
 import {canPawnAttack} from './findMoves.js';
 
@@ -36,7 +36,7 @@ getFieldFromCoordinates = (x, y) => {
         throw new Error(`Something is wrong with parameters: x:${x}, y:${y}`)
     }
 
-    const field = document.querySelector(`.x${x}.y${y}`);
+    const field = innerBoard.querySelector(`.x${x}.y${y}`);
 
     return field;
 
@@ -44,7 +44,7 @@ getFieldFromCoordinates = (x, y) => {
 
 getActiveField = (parent) => {
 
-    const active = document.querySelector(".active");
+    const active = innerBoard.querySelector(".active");
 
     if (active !== null) {
 
@@ -423,7 +423,7 @@ getKingMoves = (team, x, y) => {
 
     const enemyColour = getOppositeColour(team);
 
-    const hostileKing = document.querySelector(`.${enemyColour}.king`);
+    const hostileKing = innerBoard.querySelector(`.${enemyColour}.king`);
 
     const hostileKingCoordintes = getCoordinatesFromField(hostileKing);
 

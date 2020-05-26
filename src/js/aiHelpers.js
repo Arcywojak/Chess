@@ -1,4 +1,4 @@
-import { battleField } from "./variables.js";
+import { battleField, gameOptions } from "./variables.js";
 import { isFieldTaken } from "./handleWithDOM.js";
 
 import {getCountersWithMoves} from "./getSomething.js"
@@ -39,7 +39,13 @@ pretendMove = (origin, destination) => {
         destColor = battleField.fields[destination.x][destination.y].color
     }
 
-    battleField.fields[destination.x][destination.y].typeOfCounter = originType;
+    if(originType === "pawn" && (destination.y === 0 || destination.y === 7) ){
+        battleField.fields[destination.x][destination.y].typeOfCounter = "queen";
+    } else{
+        battleField.fields[destination.x][destination.y].typeOfCounter = originType;
+    }
+
+
     battleField.fields[destination.x][destination.y].color = originColor;
 
 
@@ -114,6 +120,11 @@ getCounterValue = (field, x, y) => {
 minimax = (depth, isMaximisingPlayer, alpha, beta, colorOfTeam) => {
 
     if(depth === 0){
+
+        if(gameOptions.computerColor === "white"){
+            return evaluateBoard();
+        }
+        
         return -evaluateBoard();
     }
 

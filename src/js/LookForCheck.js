@@ -5,10 +5,12 @@ import {getAllCounters,
 import {
     battleField,
     gameOptions,
-    showWinner
+    showWinner,
+    innerBoard
 } from "./variables.js";
 
 import {isFieldTaken} from "./handleWithDOM.js";
+import { isDraw } from "./specialMoves.js";
 
 export let doesCounterEndangerKing,
     doesTeamEndangerEnemyKing,
@@ -201,13 +203,13 @@ isMate = (endangeredColour) => {
 
 verifyCheckAndMate = () => {
 
-    const firstKing = document.querySelector(".white.king"),
-        secondKing = document.querySelector(".black.king"),
+    const firstKing = innerBoard.querySelector(".white.king"),
+        secondKing = innerBoard.querySelector(".black.king"),
 
         checkFirst = isKingInDanger("white"),
         checkSecond = isKingInDanger("black"),
 
-        fieldWithDanger = document.querySelector(".danger");
+        fieldWithDanger = innerBoard.querySelector(".danger");
 
     if (checkFirst) {
 
@@ -219,6 +221,7 @@ verifyCheckAndMate = () => {
 
             gameOptions.didGameEnd = true;
             gameOptions.winner = "black";
+            alert("black won by check-mate")
 
             showWinner();
 
@@ -238,7 +241,7 @@ verifyCheckAndMate = () => {
 
             gameOptions.didGameEnd = true;
             gameOptions.winner = "white";
-
+            alert("white won by check-mate")
             showWinner();
 
         }
@@ -251,6 +254,12 @@ verifyCheckAndMate = () => {
 
         fieldWithDanger.classList.remove("danger");
 
+    }
+
+    const draw = isDraw();
+
+    if(draw){
+        console.log("draw")
     }
 
 };
