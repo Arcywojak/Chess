@@ -9,7 +9,7 @@ import {
     innerBoard
 } from "./variables.js";
 
-import {isFieldTaken} from "./handleWithDOM.js";
+import {isFieldTaken, toggleEndMessage} from "./handleWithDOM.js";
 import { isDraw } from "./specialMoves.js";
 
 export let doesCounterEndangerKing,
@@ -220,11 +220,10 @@ verifyCheckAndMate = () => {
         if (mate) {
 
             gameOptions.didGameEnd = true;
-            gameOptions.winner = "black";
-            alert("black won by check-mate")
 
-            showWinner();
-
+            gameOptions.endMessage = "Black won by checkmate";
+            
+            toggleEndMessage();
         }
 
         return;
@@ -240,9 +239,10 @@ verifyCheckAndMate = () => {
         if (mate) {
 
             gameOptions.didGameEnd = true;
-            gameOptions.winner = "white";
-            alert("white won by check-mate")
-            showWinner();
+
+            gameOptions.endMessage = "White won by checkmate";
+            
+            toggleEndMessage();
 
         }
 
@@ -259,7 +259,7 @@ verifyCheckAndMate = () => {
     const draw = isDraw();
 
     if(draw){
-        console.log("draw")
+        toggleEndMessage();
     }
 
 };

@@ -525,7 +525,7 @@ getAllCounters = (specificCounter, colour, withKing=true) => {
 
 getArrayOfMoves = (typeOfCounter, team, x, y, filterTab=true) => {
 
-    let tabOfMoves;
+    let tabOfMoves = [];
 
     const enemyColour = getOppositeColour(team);
 

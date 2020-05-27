@@ -5,7 +5,8 @@ import {getActiveCoordinates,
 
 import {removeActivePosition,
     showActivePosition,
-    toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
+    toggleOverlayAndPromotionBlock,
+    toggleEndMessage} from "./handleWithDOM.js";
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
@@ -257,4 +258,10 @@ checkColourButtons.forEach(btn => {
 
              }
     })
+})
+
+let endMessBtn = innerBoard.querySelector(".end-mess-btn");
+
+endMessBtn.addEventListener("click", () => {
+    toggleEndMessage();
 })

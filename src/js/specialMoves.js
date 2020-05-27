@@ -2,7 +2,7 @@ import {COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, imagesOfCo
 import {isFieldTaken, setCounterToPromoteImages, toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 import {filterTabInCaseOfCheck, isKingInDanger} from "./LookForCheck.js";
 import {changePositionOfCounter} from "./moveCounter.js";
-import {getCoordinatesFromField, getFieldFromCoordinates, getAllCounters} from "./getSomething.js";
+import {getCoordinatesFromField, getFieldFromCoordinates, getAllCounters, getCountersWithMoves} from "./getSomething.js";
 import { convertStringIntoPgnMoves } from "./handlePGN.js";
 
 export let DoesKingDoCastling,
@@ -317,18 +317,16 @@ didPawnDoEnPassant = (origin, destination) => {
 
 isDraw = () => {
 
-    const tabOfCounters = getAllCounters(
-        null,
-        gameOptions.activeColour,
-        true
+    const tabOfCounters = getCountersWithMoves(
+        gameOptions.activeColour
     );
 
     const kingInDanger = isKingInDanger(gameOptions.activeColour);
 
-    if(kingInDanger && tabOfCounters.length === 0){
+    if(!kingInDanger && tabOfCounters.length === 0){
         gameOptions.didGameEnd = true;
-        gameOptions.winner = "draw";
+        gameOptions.endMessage = `Draw, ${gameOptions.activeColour} is in stalemate.`;
 
-        alert(`Draw, ${gameOptions.activeColour} king is in stalement`);
+        return true;
     }
 }

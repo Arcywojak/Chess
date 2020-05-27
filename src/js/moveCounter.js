@@ -8,7 +8,8 @@ import {AIdoMove} from "./artificalInteligence.js";
 import {isFieldTaken,
         removeActivePosition,
         removeRecentMove,
-        showRecentMove} from "./handleWithDOM.js";
+        showRecentMove,
+        toggleEndMessage} from "./handleWithDOM.js";
 
 import {getFieldFromCoordinates} from "./getSomething.js";
 
@@ -229,3 +230,4 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
 
     gameOptions.gameStarted = true
 };
+

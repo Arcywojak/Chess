@@ -22,7 +22,7 @@ export const gameOptions = {
     "oppositeColour": "black",
     "computerIsThinking": false,
     "didGameEnd": false,
-    "winner": null,
+    "endMessage": null,
     "lastMove": {
         "from": {
             "x": null,

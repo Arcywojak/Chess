@@ -7,7 +7,8 @@ export let isFieldTaken,
     showActivePosition,
     showPossibleMoves,
     showRecentMove,
-    toggleOverlayAndPromotionBlock;
+    toggleOverlayAndPromotionBlock,
+    toggleEndMessage;
 
 import {getActiveField,
     getCoordinatesFromField,
@@ -188,3 +189,11 @@ toggleOverlayAndPromotionBlock = (coordinates) => {
     }
 
 };
+
+toggleEndMessage = () => {
+    const endMessageBlock = innerBoard.querySelector(".result-of-game");
+
+    endMessageBlock.childNodes[1].innerText = gameOptions.endMessage;
+
+    endMessageBlock.classList.toggle("none");
+}
