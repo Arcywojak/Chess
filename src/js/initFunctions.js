@@ -52,11 +52,11 @@ export const initPositionOfCounters_DOM = () => {
             }
 
 
-            div.style.webkitTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
-            div.style.MozTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
-            div.style.msTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
-            div.style.OTransform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
-            div.style.transform = `translate(${x * 78.5}px, ${y * 78.5}px) rotate(${gameOptions.reverseBoard})`;
+            div.style.webkitTransform = `translate(${x * 100}%, ${y * 100}%) rotate(${gameOptions.reverseBoard})`;
+            div.style.MozTransform = `translate(${x * 100}%, ${y * 100}%) rotate(${gameOptions.reverseBoard})`;
+            div.style.msTransform = `translate(${x * 100}%, ${y * 100}%) rotate(${gameOptions.reverseBoard})`;
+            div.style.OTransform = `translate(${x * 100}%, ${y * 100}%) rotate(${gameOptions.reverseBoard})`;
+            div.style.transform = `translate(${x * 100}%, ${y * 100}%) rotate(${gameOptions.reverseBoard})`;
 
             innerBoard.appendChild(div);
 
@@ -66,43 +66,6 @@ export const initPositionOfCounters_DOM = () => {
 
 };
 
-export const initCounters = (team = "", typeOfCounter = "", numberOfCounters = null, position = []) => {
-
-    let player;
-
-    if (team === "white") {
-
-        player = whitePlayer;
-
-    } else if (team === "black") {
-
-        player = blackPlayer;
-
-    }
-
-    const playerTypeOfCounter = player.counters[typeOfCounter];
-
-    for (let i = 0; i < numberOfCounters; i++) {
-
-        const counter = {
-            team,
-            "position": {
-                "x": position[i].x * 78.5,
-                "y": position[i].y * 78.5
-            }
-        };
-
-        playerTypeOfCounter[i] = counter;
-
-    }
-
-    initPositionOfCounters(
-        team,
-        typeOfCounter
-    );
-
-
-};
 
 // ////////////
 

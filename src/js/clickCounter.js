@@ -18,7 +18,8 @@ import {
     TYPE_OF_COUNTER_CLASS,
     battleField,
     gameOptions,
-    switchTeams
+    switchTeams,
+    innerBoard
 } from "./variables.js";
 
 import {isKingInDanger, verifyCheckAndMate} from "./LookForCheck.js";

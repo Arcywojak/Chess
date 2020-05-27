@@ -130,8 +130,11 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
     /** *********************************************************** */
 
     originBlockImg.style.transform =
-     `translate(${(destination.x - origin.x) * 78.5}px, ${(destination.y - origin.y) * 78.5}px) 
+     `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
      rotate(${gameOptions.reverseBoard})`;
+
+     originBlockImg.style.width = "100%";
+     originBlockImg.style.height = "100%";
 
     setTimeout(
         () => { // Delay code by 100ms to let animation works

@@ -179,11 +179,11 @@ toggleOverlayAndPromotionBlock = (coordinates) => {
 
     if (coordinates) {
 
-        selectPrize.style.webkitTransform = `translate(${coordinates.x * 78.5}px, ${coordinates.y * 78.5}px)`;
-        selectPrize.style.MozTransform = `translate(${coordinates.x * 78.5}px, ${coordinates.y * 78.5}px)`;
-        selectPrize.style.msTransform = `translate(${coordinates.x * 78.5}px, ${coordinates.y * 78.5}px)`;
-        selectPrize.style.OTransform = `translate(${coordinates.x * 78.5}px, ${coordinates.y * 78.5}px)`;
-        selectPrize.style.transform = `translate(${coordinates.x * 78.5}px, ${coordinates.y * 78.5}px)`;
+        selectPrize.style.webkitTransform = `translate(${coordinates.x * 100}%, ${coordinates.y * 100}%)`;
+        selectPrize.style.MozTransform = `translate(${coordinates.x * 100}%, ${coordinates.y * 100}%)`;
+        selectPrize.style.msTransform = `translate(${coordinates.x * 100}%, ${coordinates.y * 100}%)`;
+        selectPrize.style.OTransform = `translate(${coordinates.x * 100}%, ${coordinates.y * 100}%)`;
+        selectPrize.style.transform = `translate(${coordinates.x * 100}%, ${coordinates.y * 100}%)`;
 
     }
 
