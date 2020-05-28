@@ -20,7 +20,8 @@ import {
     battleField,
     gameOptions,
     switchTeams,
-    innerBoard
+    innerBoard,
+    disableChangingColour
 } from "./variables.js";
 
 import {isKingInDanger, verifyCheckAndMate} from "./LookForCheck.js";
@@ -229,40 +230,54 @@ const checkColourButtons = document.querySelectorAll(".input-wrapper.mini");
 
 checkColourButtons.forEach(btn => {
     btn.addEventListener("click", (e) => {
-        
-        if(gameOptions.gameStarted && gameOptions.numberOfMove > 0){
 
-            const alertField = document.querySelector(".change-team-alert");
+        //We want to input being clicked and only input has property "type"
+        if(!e.target.type){
 
-            if(!alertField.classList.contains("hidden")){
-                return;
+             if(gameOptions.gameStarted && gameOptions.numberOfMove > 0)    {
+
+                const alertField = document.querySelector(".change-team-alert");
+    
+                if(!alertField.classList.contains("hidden")){
+                    return;
+                }
+    
+                alertField.classList.remove("hidden");
+    
+                return new Promise( () => { 
+                    setTimeout( () => {
+                  
+                            alertField.classList.add("hidden")
+                    
+                    }, 3000)
+                })
             }
 
-            alertField.classList.remove("hidden");
-
-            return new Promise( () => { 
-                setTimeout( () => {
-              
-                        alertField.classList.add("hidden")
-                
-                }, 3000)
-            })
+            return;
         }
 
-        const id = e.target.id;
+        if(!gameOptions.gameStarted){
 
-        gameOptions.computerColor = id;
+            gameOptions.gameStarted = true;
 
-        if (
-            !gameOptions.didGameEnd && 
-             gameOptions.activeColour === gameOptions.computerColor && 
-             gameOptions.gameMode === "c"
-             ) {
+            const id = e.target.id;
 
-                AIdoMove();
+            gameOptions.computerColor = id;
 
-             }
+            disableChangingColour();
+
+            if (
+                !gameOptions.didGameEnd && 
+                gameOptions.activeColour === gameOptions.computerColor && 
+                gameOptions.gameMode === "c"
+                ) {
+                    
+                    AIdoMove();
+
+                }
+        }
     })
+    
 })
 
 let endMessBtn = innerBoard.querySelector(".end-mess-btn");

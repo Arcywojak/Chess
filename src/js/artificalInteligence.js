@@ -20,9 +20,10 @@ AIdoMove = () => {
 
     if(move === null){
 
-        const depth = 4;
+        const depthBlock = document.querySelector(".select-depth select");
+        const depth = depthBlock[depthBlock.options.selectedIndex].value;
 
-        move = calculateBestMove(depth, true); 
+        move = calculateBestMove(Number(depth), true); 
 
         changePositionOfCounter(
             move.origin,
@@ -39,8 +40,6 @@ AIdoMove = () => {
             move.origin,
             move.destination
         );
-
-        gameOptions.computerIsThinking = false;
 
     }, 1000)
 

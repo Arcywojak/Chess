@@ -11,7 +11,7 @@ import {isFieldTaken,
         showRecentMove,
         toggleEndMessage} from "./handleWithDOM.js";
 
-import {getFieldFromCoordinates} from "./getSomething.js";
+import {getFieldFromCoordinates, getOppositeColour} from "./getSomething.js";
 
 import {verifyCheckAndMate} from "./LookForCheck.js";
 
@@ -70,6 +70,9 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
     /** ***********UPTADE PGN BEFORE ENTERING CHANGES AFTER MOVE*******************/
 
     if(changeColour){
+
+        changeColourOfActivePlayer();
+
         updatePgn(
             origin,
             destination,
@@ -108,10 +111,6 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
 
     removeRecentMove();
     removeActivePosition();
-
-    if(changeColour){
-        changeColourOfActivePlayer();
-    }
     
     showRecentMove(
         originBlock,
@@ -134,6 +133,24 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
      `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
      rotate(${gameOptions.reverseBoard})`;
 
+     originBlockImg.style.MozTransform =
+     `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
+     rotate(${gameOptions.reverseBoard})`;
+
+     originBlockImg.style.msTransform =
+     `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
+     rotate(${gameOptions.reverseBoard})`;
+
+     originBlockImg.style.OTransform =
+     `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
+     rotate(${gameOptions.reverseBoard})`;
+
+     originBlockImg.style.webkitTransform =
+     `translate(${(destination.x - origin.x) * 100}%, ${(destination.y - origin.y) * 100}%) 
+     rotate(${gameOptions.reverseBoard})`;
+
+     
+
      originBlockImg.style.width = "100%";
      originBlockImg.style.height = "100%";
 
@@ -141,6 +158,22 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
         () => { // Delay code by 100ms to let animation works
 
             originBlockImg.style.transform = // Reset animation
+        `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
+        rotate(${gameOptions.reverseBoard})`;
+
+        originBlockImg.style.MozTransform = // Reset animation
+        `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
+        rotate(${gameOptions.reverseBoard})`;
+
+        originBlockImg.style.msTransform = // Reset animation
+        `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
+        rotate(${gameOptions.reverseBoard})`;
+
+        originBlockImg.style.OTransform = // Reset animation
+        `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
+        rotate(${gameOptions.reverseBoard})`;
+
+        originBlockImg.style.webkitTransform = // Reset animation
         `translate(${(destination.x - origin.x) * 0}px, ${(destination.y - origin.y) * 0}px) 
         rotate(${gameOptions.reverseBoard})`;
 
@@ -193,10 +226,6 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
             verifyCheckAndMate();
             /** *************************************************************************************/
 
-            /****************************** IS DRAW AFTER THIS MOVE? *****************************/
-            isDraw();
-            /*************************************************************************************** */
-            
             if (
                 !gameOptions.didGameEnd && 
                  gameOptions.activeColour === gameOptions.computerColor && 

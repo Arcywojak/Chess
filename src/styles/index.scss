@@ -17,6 +17,7 @@ $aubern: #ac3f21;
 
 body{
     margin: 0;
+    min-width: 300px;
 }
 .container{
     width:100vw;
@@ -62,7 +63,7 @@ body{
     &-inner{
         width:89.71428%;
         height:89.71428%;
-        transform: translate(-1.35px, -1.5px);
+        transform: translate(-1px, -1.5px);
 
         
     }
@@ -70,6 +71,13 @@ body{
     &.reverse{
         transform: rotate(180deg);
     }
+
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none;
+     -khtml-user-select: none; 
+       -moz-user-select: none; 
+        -ms-user-select: none;
+            user-select: none; 
 }
 .white,.black{
     position: absolute;
@@ -364,7 +372,7 @@ box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
     }
 }
 
-.check-colour, .mini, .mini span, .check-colour h3{
+.check-colour, .mini, .mini span, .check-colour h3, .select-depth select, .select-depth h3{
 
     font-size: 0;
     margin: 0;
@@ -413,6 +421,7 @@ box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
     left:80px;
     background-color: $darkBrown;
     bottom:0;
+    top:25px;
     border-radius: 8px;
     border: 2px solid $normalBrown;
     color:#fefefe;
@@ -484,4 +493,21 @@ box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
     display: block;
     border:none;
     background-color: $lightBrown;
+}
+.shown .select-depth{
+    margin-top: 13px;
+    display: flex;
+    h2{
+        font-size: 18px;
+        margin-right: 10px;
+        padding-left: 15px;
+    }
+    select{
+        background-color: $normalBrown;
+        width:45px;
+        color:#fefefe;
+        border-radius: 5px;
+        opacity: 1;
+        font-size: initial;
+    }
 }
