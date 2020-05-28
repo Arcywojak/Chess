@@ -626,8 +626,6 @@ getMoveFromOpenings = () => {
 
         }
 
-      //  console.log(matchingPgns[0].moves)
-
        const randomOpeningMove = convertPgnIntoMoves(
                                     matchingPgns[randomOpening].moves,
                                     Math.round(gameOptions.numberOfMove*2)

@@ -20,7 +20,7 @@ export const gameOptions = {
     "computerColor": "black",
     "activeColour": "white",
     "oppositeColour": "black",
-    "computerIsThinking": false,
+    "promotionBlockActive": false,
     "didGameEnd": false,
     "endMessage": null,
     "lastMove": {

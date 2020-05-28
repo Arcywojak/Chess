@@ -2,8 +2,7 @@ import {COLOR_CLASS, TYPE_OF_COUNTER_CLASS, battleField, gameOptions, imagesOfCo
 import {isFieldTaken, setCounterToPromoteImages, toggleOverlayAndPromotionBlock} from "./handleWithDOM.js";
 import {filterTabInCaseOfCheck, isKingInDanger} from "./LookForCheck.js";
 import {changePositionOfCounter} from "./moveCounter.js";
-import {getCoordinatesFromField, getFieldFromCoordinates, getAllCounters, getCountersWithMoves} from "./getSomething.js";
-import { convertStringIntoPgnMoves } from "./handlePGN.js";
+import {getFieldFromCoordinates, getCountersWithMoves} from "./getSomething.js";
 
 export let DoesKingDoCastling,
     addEnPassantIfPossible,
@@ -200,9 +199,6 @@ doesPawnPromote = (coordinates, team) => {
             battleField.fields[coordinates.x][coordinates.y].typeOfCounter = "queen";
 
             const field = getFieldFromCoordinates(coordinates.x, coordinates.y);
-
-            console.log(JSON.parse(JSON.stringify(field)));
-            console.log(JSON.parse(JSON.stringify(battleField)));
 
             field.classList.remove("pawn");
             field.classList.add("queen");

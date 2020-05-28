@@ -5,8 +5,6 @@ import {getAllCounters,
 
 import {changePositionOfCounter} from "./moveCounter.js";
 
-import {promotePawn} from "./clickCounter.js";
-
 import {gameOptions, battleField} from "./variables.js";
 
 import {pretendMove, undoMove, evaluateBoard, minimax} from "./aiHelpers.js"
@@ -18,7 +16,7 @@ export let AIdoMove,
 
 AIdoMove = () => {
 
-    let move = null//getMoveFromOpenings();
+    let move = getMoveFromOpenings();
 
     if(move === null){
 

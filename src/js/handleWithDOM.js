@@ -11,17 +11,14 @@ export let isFieldTaken,
     toggleEndMessage;
 
 import {getActiveField,
-    getCoordinatesFromField,
-    getFieldFromCoordinates} from "./getSomething.js";
+        getCoordinatesFromField} from "./getSomething.js";
 
 import {
     COLOR_CLASS,
     TYPE_OF_COUNTER_CLASS,
     battleField,
-    changeColourOfActivePlayer,
     gameOptions,
     imagesOfCounter,
-    updatePlayerToMove,
     innerBoard
 } from "./variables.js";
 
@@ -145,8 +142,6 @@ setCounterToPromoteImages = (team) => {
 
     const promotionFields = document.querySelectorAll(".counter-to-promote");
 
-    console.log(team);
-
     let images;
 
     if (team === "white") {
@@ -170,7 +165,11 @@ setCounterToPromoteImages = (team) => {
 
 };
 
-toggleOverlayAndPromotionBlock = (coordinates) => {
+toggleOverlayAndPromotionBlock = (coordinates, forbideAIDoMove = true) => {
+
+    if(forbideAIDoMove){
+        gameOptions.promotionBlockActive = true;
+    }
 
     const selectPrize = document.querySelector(".select-counter-to-promote"),
         promotionOverlay = document.querySelector(".promotion-overlay");

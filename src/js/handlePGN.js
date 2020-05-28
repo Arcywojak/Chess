@@ -35,7 +35,7 @@ updatePgn = (from, to, movingCounter, attackedCounter) => {
 
     if(gameOptions.numberOfMove > 0){
 
-        if( (gameOptions.numberOfMove + 1) % 3 === 0){
+        if( (gameOptions.numberOfMove) % 2 === 0){
             textToAdd += "\n"; 
 
         } else {

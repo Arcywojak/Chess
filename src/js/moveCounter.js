@@ -201,6 +201,7 @@ changePositionOfCounter = (origin, destination, changeColour = true) => {
                 !gameOptions.didGameEnd && 
                  gameOptions.activeColour === gameOptions.computerColor && 
                  changeColour &&
+                 !gameOptions.promotionBlockActive &&
                  gameOptions.gameMode === "c"
                  ) {
 

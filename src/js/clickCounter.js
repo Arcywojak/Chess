@@ -105,6 +105,8 @@ const promotionBlock = document.querySelectorAll(".counter-to-promote");
 
 promotePawn = (src, id) => {
 
+    gameOptions.promotionBlockActive = false;
+
     const theLatestPosition = {"x": gameOptions.lastMove.to.x,
         "y": gameOptions.lastMove.to.y};
 
@@ -118,9 +120,16 @@ promotePawn = (src, id) => {
     theLatestField.classList.add(id);
     theLatestField.childNodes[0].src = src;
 
-    toggleOverlayAndPromotionBlock();
+    toggleOverlayAndPromotionBlock(null, false);
 
     verifyCheckAndMate();
+
+    if(
+        gameOptions.computerColor === gameOptions.activeColour &&
+        gameOptions.gameMode === "c"
+       ) {
+           AIdoMove();
+       }
 
 };
 
@@ -220,8 +229,6 @@ const checkColourButtons = document.querySelectorAll(".input-wrapper.mini");
 
 checkColourButtons.forEach(btn => {
     btn.addEventListener("click", (e) => {
-
-        //console.log(gameOptions.gameStarted)
         
         if(gameOptions.gameStarted && gameOptions.numberOfMove > 0){
 
@@ -244,9 +251,7 @@ checkColourButtons.forEach(btn => {
 
         const id = e.target.id;
 
-
         gameOptions.computerColor = id;
-        console.log( gameOptions.gameStarted, "S")
 
         if (
             !gameOptions.didGameEnd && 
