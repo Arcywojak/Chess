@@ -6,9 +6,9 @@ What helped me to do this project:
 3) Artlicle about chess algorithm from https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/;
 4) My interest of chess;
 5) Desire to have a nice project;
-
-TO_DO:
--clean code (possible to some extent);
--repair error during castling (it only appears in console but app works);
--make AI smarter and faster (I am too dumb to improve that at this moment);
--and I do not have more ideas currently;
+  
+TO_DO:  
+ -clean code (possible to some extent);  
+ -repair error during castling (it only appears in console but app works);  
+ -make AI smarter and faster (I am too dumb to improve that at this moment);  
+ -and I do not have more ideas currently;  
