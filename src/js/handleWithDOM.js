@@ -120,8 +120,6 @@ showPossibleMoves = (arrayOfMoves) => {
 
 isFieldTaken = (x, y) => {
 
-    try {
-
         if (battleField.fields[x][y].color !== null) { // It mean the field is taken by some counter
 
             return true;
@@ -129,13 +127,6 @@ isFieldTaken = (x, y) => {
         }
 
         return false;
-
-    } catch (error) {
-
-        console.error(`Error with parameters:${x}, ${y} \n ${error}`);
-
-    }
-
 
 };
 setCounterToPromoteImages = (team) => {

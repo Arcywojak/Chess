@@ -1,5 +1,6 @@
 
 
+
 class Chess {
 
     // If we give FEN as parameter, PGN is empty
@@ -38,7 +39,8 @@ class Chess {
             },
             colour: null,
             typeOfPiece: null,
-        }
+        };
+        this.colourToMove = this.fenFlags[this.fenFlagNumeration.SIDE_TO_MOVE];
     }
 
     transformPgnIntoFen(){
@@ -102,14 +104,14 @@ class Chess {
         isAdditionBlocked,
         tabOfMoves = [];
 
-    if (team === "white") {
+    if (team === "w") {
 
         newRank = numberOfRank - 1;
         isFirstMove = numberOfRank === 6;
 
         additionMoveRank = newRank - 1;
 
-    } else if (team === "black") {
+    } else if (team === "b") {
 
         newRank = numberOfRank + 1;
         isFirstMove = numberOfRank === 1;
@@ -119,9 +121,9 @@ class Chess {
     }
 
     if(newRank >=0 && newRank <=7){
-        isBlocked = isFieldTaken(
+        isBlocked = this.isFieldTaken(
            newRank,
-            Column
+           column
         );
     } else {
         isBlocked = true;
@@ -139,7 +141,7 @@ class Chess {
 
         
         if(additionMoveRank >=0 && additionMoveRank <=7){
-            isAdditionBlocked = isFieldTaken(
+            isAdditionBlocked = this.isFieldTaken(
                additionMoveRank,
                column
             );
@@ -163,6 +165,7 @@ class Chess {
             }
 
         }
+        console.log(tabOfMoves)
 
         const pawnAttackMoves = this.getPawnAttackMoves(rank, column, team)
 
@@ -217,7 +220,7 @@ getKnightMoves(rank , column, team){
        //Remove fields where we attack our team's pieces
 
        const moreFilteredTab = [];
-       console.log(filteredTab)
+     //  console.log(filteredTab)
 
        for (let i = 0; i < filteredTab.length; i++) {
 
@@ -244,7 +247,7 @@ getBishopMoves(rank, column, team){
 
 
         for(let i = 1; (rank + i <= 7 && column + i <=7); i++){
-            takenField = isFieldTaken(rank+i, column+i);
+            takenField =this.isFieldTaken(rank+i, column+i);
             
             if(takenField){
                 if(this.board.fields[rank+i][column+i].colour !== team){
@@ -257,7 +260,7 @@ getBishopMoves(rank, column, team){
         }
 
         for(let i = 1; (rank+i <= 7 && column-i >=0); i++){
-            takenField = isFieldTaken(rank+i, column-i);
+            takenField =this.isFieldTaken(rank+i, column-i);
 
             if(takenField){
  
@@ -271,7 +274,7 @@ getBishopMoves(rank, column, team){
         }
 
         for(let i = 1; (rank-i >=0 && column+i <=7); i++){
-            takenField = isFieldTaken(rank-i,column+i);
+            takenField =this.isFieldTaken(rank-i,column+i);
 
             if(takenField){
                 if(this.board.fields[rank-i][column+i].colour !== team){
@@ -285,7 +288,7 @@ getBishopMoves(rank, column, team){
         }
 
         for(let i = 1; (rank-i >=0 && column-i >=0); i++){
-            takenField = isFieldTaken(rank-i,column-i);
+            takenField =this.isFieldTaken(rank-i,column-i);
 
             if(takenField){
                 if(this.board.fields[rank-i][column-i].colour !== team){
@@ -300,13 +303,13 @@ getBishopMoves(rank, column, team){
         return tabOfMoves;
     }
 
-getRookMoves(column,rank, team){
+getRookMoves(rank, column, team){
 
         let tabOfMoves = [];
         let takenField;
 
      for(let i = 1;column+i<=7; i++){
-        takenField = isFieldTaken(rank, column + i);
+        takenField =this.isFieldTaken(rank, column + i);
 
             if(takenField){
             
@@ -321,7 +324,7 @@ getRookMoves(column,rank, team){
         }
 
     for(let i = 1;column-i>=0; i++){
-        takenField = isFieldTaken(rank ,column - i);
+        takenField =this.isFieldTaken(rank ,column - i);
 
             if(takenField){
                
@@ -336,7 +339,7 @@ getRookMoves(column,rank, team){
     }
 
     for(let i = 1;rank-i>=0; i++){
-        takenField = isFieldTaken(rank-i, column);
+        takenField =this.isFieldTaken(rank-i, column);
 
             if(takenField){
 
@@ -351,7 +354,7 @@ getRookMoves(column,rank, team){
     }
 
     for(let i = 1;rank+i<=7; i++){
-        takenField = isFieldTaken(rank+i, column);
+        takenField =this.isFieldTaken(rank+i, column);
 
             if(takenField){
         
@@ -370,8 +373,11 @@ getRookMoves(column,rank, team){
     }
 
     getQueenMoves(rank, column, team){
-        const rookPower = getRookMoves(rank, column, team);
-        const bishopPower = getBishopMoves(rank, column, team);
+
+        console.log(rank, column)
+
+        const rookPower = this.getRookMoves(rank, column, team);
+        const bishopPower = this.getBishopMoves(rank, column, team);
         const queenMoves = rookPower.concat(bishopPower);
 
         return queenMoves;
@@ -384,42 +390,42 @@ getRookMoves(column,rank, team){
     
         let tabOfMoves = [
             {
-               column:rank,
-               rank:y-1
+               rank:rank,
+               column:column-1
             },
             {
-               column:rank,
-               rank:y+1
+               rank:rank,
+               column:column+1
             },
             {
-               column:rank-1,
-               rank:y
+               rank:rank-1,
+               column:column
             },
             {
-               column:rank+1,
-               rank:y
+               rank:rank+1,
+               column:column
             },
             {
-               column:rank-1,
-               rank:y-1
+               rank:rank-1,
+               column:column-1
             },
             {
-               column:rank+1,
-               rank:y+1
+               rank:rank+1,
+               column:column+1
             },
             {
-               column:rank-1,
-               rank:y+1
+               rank:rank-1,
+               column:column+1
             },
             {
-               column:rank+1,
-               rank:y-1
+               rank:rank+1,
+               column:column-1
             },
         ];
     
-        const hostileColour = getOppositeColour(team);
+        const hostileColour = this.getOppositeColour(team);
     
-        const hostileKing = getKingCoordinates(hostileColour)
+        const hostileKingCoordintes = this.getKingCoordinates(hostileColour)
     
         
     
@@ -433,22 +439,22 @@ getRookMoves(column,rank, team){
     
             if(rank>=0 &&column<=7 &&rank>=0 &&rank<=7){      
     
-                takenField = isFieldTaken(rank,rank);
+                takenField =this.isFieldTaken(rank,rank);
     
                 if(
-                    Math.abs(hostileKingCoordintes.rank -column)>1 ||
-                    Math.abs(hostileKingCoordintes.y -rank)>1 
+                    Math.abs(hostileKingCoordintes.rank - rank)>1 ||
+                    Math.abs(hostileKingCoordintes.column - column)>1 
                   ) {
     
                     if(takenField){
                 
-                        if(this.board.fields[rank][y].color !== team){
+                        if(this.board.fields[rank][column].colour !== team){
                              
-                                filteredTab.push({rank:rank,rank:y})
+                                filteredTab.push({rank:rank,column:column})
                         }
     
                     } else {
-                        filteredTab.push({rank:rank,rank:y});
+                        filteredTab.push({rank:rank,column:column});
                     }
                 }
             }  
@@ -466,12 +472,12 @@ getRookMoves(column,rank, team){
         
         const tabOfMoves = [],
 
-        unfriendlyColour = getOppositeColour(team),
+        unfriendlyColour = this.getOppositeColour(team),
 
         // This number decide if the pawn go up or down through the this.board
         moveRank = unfriendlyColour === "w"
             ? 1
-            : -1
+            : -1,
         // //////////////////////////////////////////////////////////////////////
 
         rightCoordinates = {
@@ -543,7 +549,7 @@ getRookMoves(column,rank, team){
                     {"rank": rankToReturn,
                      "column": this.lastMove.to.column}
                 ];
-        }
+        } else return []
     }
 
     getOppositeColour(team){
@@ -565,6 +571,15 @@ getRookMoves(column,rank, team){
     };
 
     isFieldTaken = (rank, column) => {
+
+        if(
+            rank > 7 ||
+            rank < 0 ||
+            column > 7 ||
+            column < 0
+            ){
+                return false;
+            }
 
         if (this.board.fields[rank][column].colour !== null) { // It mean the field is taken by some counter
 
@@ -597,17 +612,21 @@ getRookMoves(column,rank, team){
         return kingCoordinates;
     }
 
-    getArrayOfMoves(rank, column){
+    getArrayOfMoves(rank, column, filterTab = false){
 
         let tabOfMoves;
-        const typeOfPiece = (this.board[rank][column].typeOfPiece).toLowerCase();
-        const team = this.board[rank][column].colour;
+        const typeOfPiece = (this.board.fields[rank][column].typeOfPiece).toLowerCase();
+        const team = this.board.fields[rank][column].colour;
+
+        //console.log(typeOfPiece)
 
         switch(typeOfPiece){
 
             case 'p':
 
                 tabOfMoves = this.getPawnMoves(rank, column, team);
+
+                
                 
                 break;
     
@@ -625,7 +644,7 @@ getRookMoves(column,rank, team){
     
             case 'r':
     
-                tabOfMoves = getRookMoves(rank, column, team);
+                tabOfMoves = this.getRookMoves(rank, column, team);
     
                 break;
     
@@ -644,11 +663,6 @@ getRookMoves(column,rank, team){
             default: throw new Error("You have probably given wrong name of counter");
         }
     
-        if(filterTab){
-            tabOfMoves = filterTabInCaseOfCheck(rank, column, team, tabOfMoves);
-        }
-        
-    
         return tabOfMoves;
         
 }
@@ -661,7 +675,7 @@ getRookMoves(column,rank, team){
 
         for(let i=0; i<tabOfMoves.length; i++){
 
-            willBeCheck = willBeKingInDangerAfterMove(rank, column, team, tabOfMoves[i]);
+            willBeCheck = this.willBeKingInDangerAfterMove(rank, column, team, tabOfMoves[i]);
 
             if(!willBeCheck){
                 filteredTab.push[ tabOfMoves[i] ]
@@ -673,15 +687,107 @@ getRookMoves(column,rank, team){
 
     }
 
+    makeMove(from, to){
+
+        const pieceType = this.board.fields[from.rank][from.column].typeOfPiece;
+        const colour = this.board.fields[from.rank][from.column].colour;
+
+        //IF pawn made move, he attacked somebody and there were 
+        //   nobody at destination it mean that it did enPassant
+        if(
+            pieceType.toLowerCase() === "p" && 
+            from.column !== to.column &&
+            !this.isFieldTaken(to.rank, to.column)
+        ) {
+            //remove the pawn it killed
+
+            const rankToRemove = colour === "w" ? (to.rank + 1) : (to.rank - 1)
+
+            console.log(rankToRemove, to.column)
+
+            this.board.fields[rankToRemove][to.column].colour = null;
+            this.board.fields[rankToRemove][to.column].typeOfPiece = null;
+
+        }
+
+        this.lastMove.from.rank = from.rank;
+        this.lastMove.from.column = from.column;
+        this.lastMove.to.rank = to.rank;
+        this.lastMove.to.column = to.column;
+        this.lastMove.colour = colour;
+        this.lastMove.typeOfPiece = pieceType;
+
+        this.board.fields[to.rank][to.column].colour = colour;
+        this.board.fields[to.rank][to.column].typeOfPiece = pieceType;
+
+        this.board.fields[from.rank][from.column].colour = null;
+        this.board.fields[from.rank][from.column].typeOfPiece = null;
+        this.colourToMove = this.colourToMove === "w" ? "b" : "w";
+
+        this.updateFen();
+    }
+
+    updateFen(){
+        this.updateFirstFenFlag();
+    
+    }
+
+    updateFirstFenFlag(){
+        const fenFlags = this.fenFlags;
+
+      
+
+        let newFirstFenFlag = '';
+
+        for(let rank = 0; rank <=7; rank++){
+            for(let column = 0; column <=7; column++){
+                if(this.isFieldTaken(rank, column)){
+                    newFirstFenFlag = `${newFirstFenFlag}${this.board.fields[rank][column].typeOfPiece}`;
+                } else {
+
+                    let counter = 1;
+
+                    if(column < 7){
+
+                        column++;
+
+                        while( !this.isFieldTaken(rank, column) && column <= 7){
+                            counter++;
+                            column++;
+                             
+                        }
+                    
+                        newFirstFenFlag = `${newFirstFenFlag}${counter}`;
+                            
+                            
+                        if(column <=7){
+                            newFirstFenFlag = `${newFirstFenFlag}${this.board.fields[rank][column].typeOfPiece}`;
+                        }
+                        
+                    }
+
+                     
+                }
+            }
+            if(rank < 7){
+                newFirstFenFlag = `${newFirstFenFlag}/`; 
+            }     
+        }
+
+        fenFlags[this.fenFlagNumeration.PIECE_PLACEMENT] = newFirstFenFlag;
+
+        this.FEN = fenFlags.join(" ");
+    }
+
+    didGameEnd(){
+        return false;
+    }
+
 
     
 }
 
 const chess = new Chess();
 
-const string = "abcdef"
-
-console.log(chess.board)
-console.log(chess.getKnightMoves(0,1,"b"))
 
 export default Chess;
