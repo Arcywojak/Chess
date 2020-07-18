@@ -86,28 +86,57 @@ class ChessBoard {
         for(let rank=0; rank<ranks.length; rank++){
 
             const rankAsString = ranks[rank]
-          
+            
+      
             for(let rankNumber = 0; rankNumber<rankAsString.length; rankNumber++){
+
+                const numberOfField = rank*7 + rankNumber + rank + incrementNumber
            
                 //if character is not a number, it mean it is a letter of a piece
 
-                if( isNaN(Number(rankAsString[rankNumber])) ){
-                    let img = document.createElement("img");
+              //  console.log(rank*7, rankNumber, rank, incrementNumber)
 
-                    img.src = this.imagesOfPieces[ rankAsString[rankNumber] ];
+                if( 
+                    isNaN(Number(rankAsString[rankNumber])) ){
 
-                    img.style.cursor = "pointer";
-                    img.style.width = "100%";
-                    img.style.height = "100%";
-                    img.id = ( this.getPieceColour(rankAsString[rankNumber]) )
+                    if(!(fields[numberOfField].id)){
 
-                    fields[ rank*7 + rankNumber + rank + incrementNumber].appendChild(img);
-                    fields[ rank*7 + rankNumber + rank + incrementNumber].id =  rankAsString[rankNumber] 
+                        let img = document.createElement("img");
+
+                        img.src = this.imagesOfPieces[ rankAsString[rankNumber] ];
+
+                        img.style.cursor = "pointer";
+                        img.style.width = "100%";
+                        img.style.height = "100%";
+                        img.id =  this.getPieceColour(rankAsString[rankNumber]) 
+
+                        fields[numberOfField].appendChild(img);
+                        fields[numberOfField].id =  rankAsString[rankNumber] 
+                    } else {
+
+                        let img = fields[numberOfField].childNodes[0];
+                        if(img.src !== this.imagesOfPieces[ rankAsString[rankNumber] ]){
+                            img.src = this.imagesOfPieces[ rankAsString[rankNumber] ];
+
+                            img.id = this.getPieceColour(rankAsString[rankNumber]);
+                            fields[numberOfField].id = rankAsString[rankNumber]
+                        }
+                    }
 
                 } else { // if we reach number, we must skip fields
+
+                    for(let i=0; i < Number(rankAsString[rankNumber] ); i++){
+                        if(fields[ numberOfField + i].id){
+                            const img = fields[ numberOfField + i].childNodes[0];
+                            fields[ numberOfField + i].removeChild(img);
+                            fields[ numberOfField + i].removeAttribute("id");
+                        }
+                    }
+
                     incrementNumber += Number(rankAsString[rankNumber] - 1);
                 }
             }
+
 
             incrementNumber = 0;
         }
@@ -146,6 +175,25 @@ class ChessBoard {
 
         }
     }
+
+ /*   updateBoard(FEN){
+        const firstFenFlag = FEN.split(" ")[0];
+
+        const ranks = firstFenFlag.split("/");
+
+        const fields = this.board.querySelectorAll(".field");
+
+        for(let rank = 0; rank < ranks.length; rank++){
+            for(let column = 0; column < ranks[rank].length; column ++){
+                const character = ranks[rank][column];
+
+                if(isNaN(Number(character))){
+                    if(fields[rank*7 + column + rank + incrementNumber])
+
+                }
+            }
+        }
+    }*/
 
     markFieldsAsLastMove(from, to){
 

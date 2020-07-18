@@ -165,7 +165,6 @@ class Chess {
             }
 
         }
-        console.log(tabOfMoves)
 
         const pawnAttackMoves = this.getPawnAttackMoves(rank, column, team)
 
@@ -220,7 +219,6 @@ getKnightMoves(rank , column, team){
        //Remove fields where we attack our team's pieces
 
        const moreFilteredTab = [];
-     //  console.log(filteredTab)
 
        for (let i = 0; i < filteredTab.length; i++) {
 
@@ -374,8 +372,6 @@ getRookMoves(rank, column, team){
 
     getQueenMoves(rank, column, team){
 
-        console.log(rank, column)
-
         const rookPower = this.getRookMoves(rank, column, team);
         const bishopPower = this.getBishopMoves(rank, column, team);
         const queenMoves = rookPower.concat(bishopPower);
@@ -439,7 +435,7 @@ getRookMoves(rank, column, team){
     
             if(rank>=0 &&column<=7 &&rank>=0 &&rank<=7){      
     
-                takenField =this.isFieldTaken(rank,rank);
+                takenField =this.isFieldTaken(rank, column);
     
                 if(
                     Math.abs(hostileKingCoordintes.rank - rank)>1 ||
@@ -618,8 +614,6 @@ getRookMoves(rank, column, team){
         const typeOfPiece = (this.board.fields[rank][column].typeOfPiece).toLowerCase();
         const team = this.board.fields[rank][column].colour;
 
-        //console.log(typeOfPiece)
-
         switch(typeOfPiece){
 
             case 'p':
@@ -703,8 +697,6 @@ getRookMoves(rank, column, team){
 
             const rankToRemove = colour === "w" ? (to.rank + 1) : (to.rank - 1)
 
-            console.log(rankToRemove, to.column)
-
             this.board.fields[rankToRemove][to.column].colour = null;
             this.board.fields[rankToRemove][to.column].typeOfPiece = null;
 
@@ -747,7 +739,7 @@ getRookMoves(rank, column, team){
 
                     let counter = 1;
 
-                    if(column < 7){
+                    if(column <= 7){
 
                         column++;
 

@@ -11,7 +11,7 @@ class Controller {
     }
 
     clickPiece(e){
-        console.log(e.target )
+       // console.log(e.target )
         //Game does not end 
         //  AND
         //No computer plays OR It is not computer turn
@@ -60,11 +60,7 @@ class Controller {
 
     movePiece(from, to){
         this.chess.makeMove(from, to);
-        //this.chessBoard.updateBoard(this.chess.FEN)
-
-        console.log(this.chess.FEN)
-
-        this.chessBoard.changePositionOfPiece(from, to);
+        this.chessBoard.fillBoardInPieces(this.chess.FEN)
         this.chessBoard.removeLastMoveFields();
         this.chessBoard.markFieldsAsLastMove(from, to);
         this.chessBoard.removeActiveField();
