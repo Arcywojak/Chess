@@ -1,3 +1,4 @@
+## The application is being refactored at this moment on branch "after-refactoring", but the old version is deployed (master branch)
 # Project deployed [HERE](https://my-chesss.netlify.app/).
 
 ### What helped me to do this project:
