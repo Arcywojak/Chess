@@ -1,6 +1,7 @@
 
 
 
+
 class Chess {
 
     // If we give FEN as parameter, PGN is empty
@@ -608,7 +609,7 @@ getRookMoves(rank, column, team){
         return kingCoordinates;
     }
 
-    getArrayOfMoves(rank, column, filterTab = false){
+    getArrayOfMoves(rank, column, filterTab = true){
 
         let tabOfMoves;
         const typeOfPiece = (this.board.fields[rank][column].typeOfPiece).toLowerCase();
@@ -656,6 +657,10 @@ getRookMoves(rank, column, team){
     
             default: throw new Error("You have probably given wrong name of counter");
         }
+
+        if(filterTab){
+            tabOfMoves = this.filterMovesInCaseOfCheck(rank, column, team, tabOfMoves)
+        }
     
         return tabOfMoves;
         
@@ -669,16 +674,119 @@ getRookMoves(rank, column, team){
 
         for(let i=0; i<tabOfMoves.length; i++){
 
-            willBeCheck = this.willBeKingInDangerAfterMove(rank, column, team, tabOfMoves[i]);
+            willBeCheck = this.willBeKingInDangerAfterMove({rank, column},tabOfMoves[i], team);
+
+            
+
 
             if(!willBeCheck){
-                filteredTab.push[ tabOfMoves[i] ]
+                filteredTab.push( tabOfMoves[i] );
             }
 
         }
 
+        
+
         return filteredTab;
 
+    }
+
+    willBeKingInDangerAfterMove(from, to, team){
+
+    //Temporary change the condition of board
+        const pieceTypeFrom = this.board.fields[from.rank][from.column].typeOfPiece;
+        const colourFrom = this.board.fields[from.rank][from.column].colour
+        const pieceTypeTo = this.board.fields[to.rank][to.column].typeOfPiece;
+        const colourTo = this.board.fields[to.rank][to.column].colour
+        
+        this.board.fields[from.rank][from.column].typeOfPiece = null;
+        this.board.fields[from.rank][from.column].colour = null;
+
+        this.board.fields[to.rank][to.column].typeOfPiece = pieceTypeFrom;
+        this.board.fields[to.rank][to.column].colour = colourFrom;
+
+        const isCheck = this.isKingInDanger(team);
+
+    //Undo changes
+
+        this.board.fields[from.rank][from.column].typeOfPiece = pieceTypeFrom;
+        this.board.fields[from.rank][from.column].colour = colourFrom;
+
+        this.board.fields[to.rank][to.column].typeOfPiece = pieceTypeTo;
+        this.board.fields[to.rank][to.column].colour = colourTo;
+
+
+
+        return isCheck;
+    }
+
+    isKingInDanger(team){
+
+        const hostileColour = this.getOppositeColour(team);
+
+        const kingCoordinates = this.getKingCoordinates(team)
+
+        const hostilePiecesWithMoves = this.getPiecesWithMoves(hostileColour, false);
+
+
+
+        for(let i=0; i<hostilePiecesWithMoves.length; i++){
+            
+            for(let j=0; j<hostilePiecesWithMoves[i].moves.length; j++){
+               
+                const {rank, column} = hostilePiecesWithMoves[i].moves[j]
+                if(rank === kingCoordinates.rank && column === kingCoordinates.column){
+
+                    return true;
+                }
+                
+            }
+        }
+
+
+        return false;
+    }
+
+    getPiecesWithMoves(team, filter=true, specificPiece=null){
+        let tabOfMoves = [];
+
+        if(specificPiece){
+            
+            for(let rank=0; rank<=7; rank++){
+                for(let column=0; column<=7; column++){
+                    if(
+                        this.board.fields[rank][column].colour === team &&
+                        this.board.fields[rank][column].typeOfPiece.toLowerCase() === specificPiece.toLowerCase()
+                        ) {
+                            return {
+                                rank,
+                                column,
+                                colour: team,
+                                typeOfPiece: this.board.fields[rank][column].typeOfPiece,
+                                moves: this.getArrayOfMoves(rank, column, filter)
+                            }
+                        }
+                }
+            }
+        }
+
+        for(let rank=0; rank<=7; rank++){
+            for(let column=0; column<=7; column++){
+                if(this.board.fields[rank][column].colour === team){
+
+                    tabOfMoves.push({
+                        rank,
+                        column,
+                        colour: team,
+                        typeOfPiece: this.board.fields[rank][column].typeOfPiece,
+                        moves: this.getArrayOfMoves(rank, column, filter)
+                    })
+
+                }
+            }
+        }
+
+        return tabOfMoves;
     }
 
     makeMove(from, to){
