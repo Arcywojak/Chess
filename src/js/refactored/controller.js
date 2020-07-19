@@ -65,7 +65,7 @@ class Controller {
         this.chessBoard.markFieldsAsLastMove(from, to);
         this.chessBoard.removeActiveField();
 
-        console.log(this.chess.colourToMove)
+        console.log(this.chess.FEN)
     }
 
     addAllEventListeners(){

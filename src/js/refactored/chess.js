@@ -891,6 +891,35 @@ getRookMoves(rank, column, team){
             this.board.fields[rankToRemove][to.column].typeOfPiece = null;
         }
 
+        this.checkConditionOfCastlings(from, to);    
+
+        this.lastMove.from.rank = from.rank;
+        this.lastMove.from.column = from.column;
+        this.lastMove.to.rank = to.rank;
+        this.lastMove.to.column = to.column;
+
+        //Add piece to his new place
+        this.board.fields[to.rank][to.column].colour = colour;
+        this.board.fields[to.rank][to.column].typeOfPiece = pieceType;
+
+        //Remove piece from his old place
+        this.board.fields[from.rank][from.column].colour = null;
+        this.board.fields[from.rank][from.column].typeOfPiece = null;
+
+        //It is needed when we do castling
+        if(reverseColours){
+            this.lastMove.colour = colour;
+            this.lastMove.typeOfPiece = pieceType;
+            this.colourToMove = this.colourToMove === "w" ? "b" : "w";
+        } 
+
+        this.updateFen();
+    }
+
+    checkConditionOfCastlings(from, to){
+
+        const pieceType = this.board.fields[from.rank][from.column].typeOfPiece;
+
         if(pieceType.toLowerCase() === "k"){
             if(pieceType === "K"){
                 this.updateThirdFenFlag(["K", "Q"]);
@@ -931,26 +960,30 @@ getRookMoves(rank, column, team){
             }
         }
 
-        
+    //The code below will help when castling was not done and we move rook for the first time
+        if(pieceType.toLowerCase() === "r"){
+            
+            if(from.rank === 7){
+                if(from.column === 7) {
 
-        this.lastMove.from.rank = from.rank;
-        this.lastMove.from.column = from.column;
-        this.lastMove.to.rank = to.rank;
-        this.lastMove.to.column = to.column;
+                    this.updateThirdFenFlag(["K"])
 
-        this.board.fields[to.rank][to.column].colour = colour;
-        this.board.fields[to.rank][to.column].typeOfPiece = pieceType;
+                } else if(from.column === 0){
 
-        this.board.fields[from.rank][from.column].colour = null;
-        this.board.fields[from.rank][from.column].typeOfPiece = null;
+                    this.updateThirdFenFlag(["Q"])
+                }
+            } else if(from.rank === 0){
 
-        if(reverseColours){
-            this.lastMove.colour = colour;
-            this.lastMove.typeOfPiece = pieceType;
-            this.colourToMove = this.colourToMove === "w" ? "b" : "w";
-        } 
+                if(from.column === 7) {
 
-        this.updateFen();
+                    this.updateThirdFenFlag(["k"])
+
+                } else if(from.column === 0){
+
+                    this.updateThirdFenFlag(["q"])
+                }
+            }
+        }
     }
 
     updateFen(){
@@ -1008,17 +1041,32 @@ getRookMoves(rank, column, team){
     updateThirdFenFlag(letters){
         const fenFlags = this.fenFlags;
 
-        let newThirdFenFlag = fenFlags[this.fenFlagNumeration.CASTLING_ABILITY];
+        const thirdFenFlag = fenFlags[this.fenFlagNumeration.CASTLING_ABILITY];
 
-        for(let i=0; i<letters.length; i++){
-            newThirdFenFlag.replace(letters[i], "");
+        const thirdFenFlagAsArray = thirdFenFlag.split("");
+
+        let filteredThirdFenFlag = thirdFenFlagAsArray.filter( char => {
+
+            let isLetter = false;
+
+            for(let i=0; i<letters.length; i++){
+                if(letters[i] === char){
+                    isLetter = true;
+                    break;
+                }
+            }
+            if(!isLetter){
+                return char
+            }
+    })
+
+        filteredThirdFenFlag = filteredThirdFenFlag.join("");
+
+        if(filteredThirdFenFlag === ""){
+            filteredThirdFenFlag = "-";
         }
 
-        if(newThirdFenFlag === ""){
-            newThirdFenFlag = "-";
-        }
-
-        fenFlags[this.fenFlagNumeration.CASTLING_ABILITY] = newThirdFenFlag;
+        fenFlags[this.fenFlagNumeration.CASTLING_ABILITY] = filteredThirdFenFlag;
 
         this.FEN = fenFlags.join(" ");
     }
