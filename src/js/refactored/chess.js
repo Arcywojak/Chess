@@ -422,12 +422,7 @@ getRookMoves(rank, column, team){
     
         const hostileColour = this.getOppositeColour(team);
     
-        const hostileKingCoordintes = this.getKingCoordinates(hostileColour)
-    
-        
-    
-        
-    
+        const hostileKingCoordintes = this.getKingCoordinates(hostileColour) 
     
     //REMOVE IMPOSSIBLE MOVES (ATTACKING FRIENDS AND APPROACHING THE ENEMY KING)
         for(let i=0; i < tabOfMoves.length; i++){
@@ -458,11 +453,98 @@ getRookMoves(rank, column, team){
         }
     /******************************************************************* */
         
+        const castlingMoves = this.getCastlingMoves(rank, column, team);
+
+        const kingMoves = castlingMoves.concat(filteredTab);
     
     
-    
-        return filteredTab;
+        return kingMoves;
         
+    }
+
+    getCastlingMoves(rank, column, team){
+
+        /*MAGIC NUMBERS:
+            SHORT CASTLING
+                column:5 the field on the right of King, here rook comes when castling (f1)
+                column:6 the field on the right of King, here king comes when castling (g1)
+
+            LONG CASTLING
+                column:3 the field on the left of King, here comes rook when castling (d1)
+                column:2 the field on the left of King, here king comes when castling (c1)
+                column:1 the field on the left of King                                (b1)
+        */
+        let shortCastlingLetter, 
+            longCastlingLetter
+
+        const castlingMoves = [];
+
+        if(team === "w"){
+            shortCastlingLetter = "K";
+            longCastlingLetter = "Q";
+        } else {
+            shortCastlingLetter = "k";
+            longCastlingLetter = "q";
+        }
+        
+        const castlingFenFlag = this.fenFlags[this.fenFlagNumeration.CASTLING_ABILITY];
+
+        if(
+            castlingFenFlag.includes(shortCastlingLetter) &&
+            !(this.isFieldTaken(rank, 5)) &&
+            !(this.isFieldTaken(rank, 6))
+          ){
+            const shortCastlingMoves = [
+                {
+                    rank : rank,
+                    column: 5
+                },
+                {
+                    rank : rank,
+                    column: 6
+                }
+            ]
+
+            const filteredShortCastlingMoves = this.filterMovesInCaseOfCheck(rank, column, team, shortCastlingMoves);
+
+            if(filteredShortCastlingMoves.length === 2){ //Both moves  are possible
+                //we push only second move because that is the move to castle
+                castlingMoves.push(shortCastlingMoves[1])
+            }
+        }
+
+        if(
+            castlingFenFlag.includes(longCastlingLetter) &&
+            !(this.isFieldTaken(rank, 3)) &&
+            !(this.isFieldTaken(rank, 2)) &&
+            !(this.isFieldTaken(rank, 1)) 
+          ){
+
+            const longCastlingMoves = [
+                {
+                    rank : rank,
+                    column: 3
+                },
+                {
+                    rank : rank,
+                    column: 2
+                },
+                {
+                    rank : rank,
+                    column: 1
+                }
+            ]
+
+            const filteredLongCastlingMoves = this.filterMovesInCaseOfCheck(rank, column, team, longCastlingMoves);
+
+            if(filteredLongCastlingMoves.length === 3){ //Both moves  are possible
+                //we push only second move because that is the move to castle
+                castlingMoves.push(longCastlingMoves[1])
+            }
+        }
+
+        return castlingMoves;
+
     }
 
     getPawnAttackMoves(rank, column, team){
@@ -789,7 +871,7 @@ getRookMoves(rank, column, team){
         return tabOfMoves;
     }
 
-    makeMove(from, to){
+    makeMove(from, to, reverseColours = true){
 
         const pieceType = this.board.fields[from.rank][from.column].typeOfPiece;
         const colour = this.board.fields[from.rank][from.column].colour;
@@ -807,22 +889,66 @@ getRookMoves(rank, column, team){
 
             this.board.fields[rankToRemove][to.column].colour = null;
             this.board.fields[rankToRemove][to.column].typeOfPiece = null;
-
         }
+
+        if(pieceType.toLowerCase() === "k"){
+            if(pieceType === "K"){
+                this.updateThirdFenFlag(["K", "Q"]);
+            } else {
+                this.updateThirdFenFlag(["k", "q"]); 
+            }
+
+            if(Number(from.column) - Number(to.column) === -2){ 
+                //SHORT CASTLING, we must also move rook
+                const rookMove = {
+                    from: {
+                        rank: from.rank,
+                        column: 7
+                    },
+                    to: {
+                        rank: from.rank,
+                        column: to.column - 1 //on the left of the king
+                    }
+                }
+
+                this.makeMove(rookMove.from, rookMove.to, false);
+            }
+
+            if(Number(from.column) - Number(to.column) === 2){ 
+                //LONG CASTLING, we must also move rook
+                const rookMove = {
+                    from: {
+                        rank: from.rank,
+                        column: 0
+                    },
+                    to: {
+                        rank: from.rank,
+                        column: to.column + 1 //on the right of the king
+                    }
+                }
+
+                this.makeMove(rookMove.from, rookMove.to, false);
+            }
+        }
+
+        
 
         this.lastMove.from.rank = from.rank;
         this.lastMove.from.column = from.column;
         this.lastMove.to.rank = to.rank;
         this.lastMove.to.column = to.column;
-        this.lastMove.colour = colour;
-        this.lastMove.typeOfPiece = pieceType;
 
         this.board.fields[to.rank][to.column].colour = colour;
         this.board.fields[to.rank][to.column].typeOfPiece = pieceType;
 
         this.board.fields[from.rank][from.column].colour = null;
         this.board.fields[from.rank][from.column].typeOfPiece = null;
-        this.colourToMove = this.colourToMove === "w" ? "b" : "w";
+
+        if(reverseColours){
+            this.lastMove.colour = colour;
+            this.lastMove.typeOfPiece = pieceType;
+            this.colourToMove = this.colourToMove === "w" ? "b" : "w";
+        } 
 
         this.updateFen();
     }
@@ -875,6 +1001,24 @@ getRookMoves(rank, column, team){
         }
 
         fenFlags[this.fenFlagNumeration.PIECE_PLACEMENT] = newFirstFenFlag;
+
+        this.FEN = fenFlags.join(" ");
+    }
+
+    updateThirdFenFlag(letters){
+        const fenFlags = this.fenFlags;
+
+        let newThirdFenFlag = fenFlags[this.fenFlagNumeration.CASTLING_ABILITY];
+
+        for(let i=0; i<letters.length; i++){
+            newThirdFenFlag.replace(letters[i], "");
+        }
+
+        if(newThirdFenFlag === ""){
+            newThirdFenFlag = "-";
+        }
+
+        fenFlags[this.fenFlagNumeration.CASTLING_ABILITY] = newThirdFenFlag;
 
         this.FEN = fenFlags.join(" ");
     }
