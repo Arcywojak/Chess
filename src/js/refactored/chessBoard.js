@@ -3,9 +3,10 @@
 class ChessBoard {
 
 
-    constructor(board, clickable=true, draggable=true, gameMode="h"){
+    constructor(board, promotionBlock, clickable=true, draggable=true, gameMode="h"){
 
         this.board = board;
+        this.promotionBlock = promotionBlock;
         this.clickable = clickable;
         this.draggable = draggable;
 
@@ -115,6 +116,7 @@ class ChessBoard {
                     } else {
 
                         let img = fields[numberOfField].childNodes[0];
+                        
                         if(img.src !== this.imagesOfPieces[ rankAsString[rankNumber] ]){
                             img.src = this.imagesOfPieces[ rankAsString[rankNumber] ];
 
@@ -298,6 +300,80 @@ class ChessBoard {
 
             return coordinates;
         }
+    }
+
+    markFieldAsEndangered(coordinates){
+        const field = this.board.querySelector(`.field.rank${coordinates.rank}.column${coordinates.column}`)
+
+        field.classList.add("danger")
+    }
+
+    removeEndangeredField(){
+
+        if(document.querySelector(".field.danger")){
+            const field = document.querySelector(".field.danger");
+
+            field.classList.remove("danger")
+        }
+        
+    }
+
+    showPromotionBlock(rank, column, color){
+        const promotionOverlay = document.querySelector(".promotion-overlay");
+
+        const promotionImages = this.promotionBlock.querySelectorAll("img");
+
+        if(color === "w"){
+            promotionImages[0].src = this.imagesOfPieces["Q"];
+            promotionImages[0].id = "Q"
+            promotionImages[1].src = this.imagesOfPieces["R"];
+            promotionImages[1].id = "R"
+            promotionImages[2].src = this.imagesOfPieces["B"];
+            promotionImages[2].id = "B"
+            promotionImages[3].src = this.imagesOfPieces["N"];
+            promotionImages[3].id = "N"
+        } else {
+            promotionImages[0].src = this.imagesOfPieces["q"];
+            promotionImages[0].id = "q"
+            promotionImages[1].src = this.imagesOfPieces["r"];
+            promotionImages[1].id = "r"
+            promotionImages[2].src = this.imagesOfPieces["b"];
+            promotionImages[2].id = "b"
+            promotionImages[3].src = this.imagesOfPieces["n"];
+            promotionImages[3].id = "n" 
+        }
+
+        if(rank === 0){
+
+            this.promotionBlock.style.transform = `translate(${column * 100}%)`
+
+        } else if(rank === 7){
+           
+            this.promotionBlock.style.transform = `translate(${column * 100}%,  100%)`
+
+        }
+        
+
+        this.promotionBlock.classList.remove("invisible");
+        promotionOverlay.classList.remove("invisible");
+    }
+
+    removePromotionBlock(){
+        const promotionOverlay = document.querySelector(".promotion-overlay");
+
+        this.promotionBlock.classList.add("invisible");
+        promotionOverlay.classList.add("invisible");
+    }
+
+    showFinalMessage(){
+        const block = document.querySelector("result-of-game");
+
+        block.classList.remove("none");
+    }
+    removeFinalMessage(){
+        const block = document.querySelector("result-of-game");
+
+        block.classList.add("none");
     }
 }
 

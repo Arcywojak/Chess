@@ -1,7 +1,5 @@
 
 
-
-
 class Chess {
 
     // If we give FEN as parameter, PGN is empty
@@ -18,6 +16,11 @@ class Chess {
     reset() {
         if(this.PGN.length > 0) {
             this.FEN = this.transformPgnIntoFen();
+        }
+        this.game = {
+            end: false,
+            winner: null,
+            reason: ""
         }
         this.fenFlagNumeration = {
             PIECE_PLACEMENT : 0,
@@ -42,6 +45,14 @@ class Chess {
             typeOfPiece: null,
         };
         this.colourToMove = this.fenFlags[this.fenFlagNumeration.SIDE_TO_MOVE];
+        this.isPawnPromoting = false;
+        this.isCheck = {
+            status: false,
+            coordinates: {
+                rank: null,
+                column: null
+            }
+        }
     }
 
     transformPgnIntoFen(){
@@ -307,20 +318,24 @@ getRookMoves(rank, column, team){
         let tabOfMoves = [];
         let takenField;
 
+    //add right moves
+
      for(let i = 1;column+i<=7; i++){
         takenField =this.isFieldTaken(rank, column + i);
 
             if(takenField){
             
                 if(this.board.fields[rank][column + i].colour !== team){
-                    tabOfMoves.push({rank,column:column+1})
+                    tabOfMoves.push({rank,column:column+i})
                 }
 
                 break;
             }
-            tabOfMoves.push({rank, column: column + 1});
+            tabOfMoves.push({rank, column: column + i});
 
         }
+
+    //add left moves
 
     for(let i = 1;column-i>=0; i++){
         takenField =this.isFieldTaken(rank ,column - i);
@@ -337,6 +352,8 @@ getRookMoves(rank, column, team){
 
     }
 
+    //add top moves
+
     for(let i = 1;rank-i>=0; i++){
         takenField =this.isFieldTaken(rank-i, column);
 
@@ -351,6 +368,8 @@ getRookMoves(rank, column, team){
             tabOfMoves.push({rank:rank-i, column});
 
     }
+
+    //add bottom moves
 
     for(let i = 1;rank+i<=7; i++){
         takenField =this.isFieldTaken(rank+i, column);
@@ -569,7 +588,9 @@ getRookMoves(rank, column, team){
             "column":column - 1
         };
 
-    if (leftCoordinates.column >= 0 ) {
+    if (leftCoordinates.column >= 0 && 
+        leftCoordinates.rank <= 7 && 
+        leftCoordinates.rank >= 0) {
 
         if (this.board.fields[leftCoordinates.rank][leftCoordinates.column].colour === unfriendlyColour) {
 
@@ -582,7 +603,9 @@ getRookMoves(rank, column, team){
 
     }
 
-    if (rightCoordinates.column <= 7) {
+    if (rightCoordinates.column <= 7 &&
+        leftCoordinates.rank <= 7 && 
+        leftCoordinates.rank >= 0) {
 
         if (this.board.fields[rightCoordinates.rank][rightCoordinates.column].colour === unfriendlyColour) {
 
@@ -787,7 +810,7 @@ getRookMoves(rank, column, team){
         this.board.fields[to.rank][to.column].typeOfPiece = pieceTypeFrom;
         this.board.fields[to.rank][to.column].colour = colourFrom;
 
-        const isCheck = this.isKingInDanger(team);
+        const isCheck = this.isKingInDanger(team, false);
 
     //Undo changes
 
@@ -802,7 +825,7 @@ getRookMoves(rank, column, team){
         return isCheck;
     }
 
-    isKingInDanger(team){
+    isKingInDanger(team, updateCheckStatus=true){
 
         const hostileColour = this.getOppositeColour(team);
 
@@ -819,12 +842,24 @@ getRookMoves(rank, column, team){
                 const {rank, column} = hostilePiecesWithMoves[i].moves[j]
                 if(rank === kingCoordinates.rank && column === kingCoordinates.column){
 
+                    if(updateCheckStatus){
+                        this.isCheck.status = true;
+                        this.isCheck.coordinates.rank = kingCoordinates.rank;
+                        this.isCheck.coordinates.column = kingCoordinates.column;
+                    }   
+
                     return true;
                 }
                 
             }
         }
 
+        if(updateCheckStatus){
+            this.isCheck.status = false;
+            this.isCheck.coordinates.rank = null;
+            this.isCheck.coordinates.column = null;
+        }
+        
 
         return false;
     }
@@ -876,20 +911,16 @@ getRookMoves(rank, column, team){
         const pieceType = this.board.fields[from.rank][from.column].typeOfPiece;
         const colour = this.board.fields[from.rank][from.column].colour;
 
-        //IF pawn made move, he attacked somebody and there were 
-        //   nobody at destination it mean that it did enPassant
-        if(
-            pieceType.toLowerCase() === "p" && 
-            from.column !== to.column &&
-            !this.isFieldTaken(to.rank, to.column)
-        ) {
-            //remove the pawn it killed
+        // If pawn moved or something was killed we reset the halfmove clock
+        // in other case we increment halfmove clock
 
-            const rankToRemove = colour === "w" ? (to.rank + 1) : (to.rank - 1)
-
-            this.board.fields[rankToRemove][to.column].colour = null;
-            this.board.fields[rankToRemove][to.column].typeOfPiece = null;
+        if(pieceType.toLowerCase() === "p" || this.isFieldTaken(to.rank, to.column)){
+            this.updateFifthFenFlag(-1);
+        } else{
+            this.updateFifthFenFlag(1);
         }
+
+        this.checkMoveOfPawn(from, to)
 
         this.checkConditionOfCastlings(from, to);    
 
@@ -913,7 +944,40 @@ getRookMoves(rank, column, team){
             this.colourToMove = this.colourToMove === "w" ? "b" : "w";
         } 
 
+        this.verifyGameStatus();
+
         this.updateFen();
+    }
+
+    checkMoveOfPawn(from, to){
+
+        const pieceType = this.board.fields[from.rank][from.column].typeOfPiece;
+        const colour = this.board.fields[from.rank][from.column].colour;
+        
+        if(pieceType.toLowerCase() === "p") {
+            
+        }
+        if(pieceType.toLowerCase() === "p"){
+
+            /* CHECK IF EN PASSANT OCCURED */
+            //  IF pawn made move, he attacked somebody and there were 
+            //  nobody at destination it mean that it did enPassant
+
+            if( from.column !== to.column && !this.isFieldTaken(to.rank, to.column) ) {
+                //remove the pawn it killed
+
+                const rankToRemove = colour === "w" ? (to.rank + 1) : (to.rank - 1)
+
+                this.board.fields[rankToRemove][to.column].colour = null;
+                this.board.fields[rankToRemove][to.column].typeOfPiece = null;
+            }
+
+            /* CHECK IF PAWN DID PROMOTE */
+
+            if(to.rank === 0 || to.rank === 7){
+                this.isPawnPromoting = true;
+            }
+        }
     }
 
     checkConditionOfCastlings(from, to){
@@ -1069,6 +1133,115 @@ getRookMoves(rank, column, team){
         fenFlags[this.fenFlagNumeration.CASTLING_ABILITY] = filteredThirdFenFlag;
 
         this.FEN = fenFlags.join(" ");
+    }
+
+    updateFifthFenFlag(number){
+        const fenFlags = this.fenFlags;
+
+        let fifthFenFlag = fenFlags[this.fenFlagNumeration.HALFMOVE_CLOCK];
+
+        let fifthFenFlagAsNumber = Number(fifthFenFlag);
+
+        if(number === 1){
+            fifthFenFlagAsNumber++;
+        } else {
+            fifthFenFlagAsNumber = 0;
+        }
+
+        fifthFenFlag = toString(fifthFenFlagAsNumber);
+
+        fenFlags[this.fenFlagNumeration.HALFMOVE_CLOCK] = fifthFenFlag;
+
+        this.FEN = fenFlags.join(" ");
+    }
+
+    promotePawn(typeOfPiece){
+
+        if(this.isPawnPromoting){
+
+            this.board.fields[this.lastMove.to.rank][this.lastMove.to.column].typeOfPiece = typeOfPiece;
+
+            this.isPawnPromoting = false;
+    
+            this.updateFen();
+
+            //we must verify if we check opposite king after promotion
+
+            const team = this.board.fields[this.lastMove.to.rank][this.lastMove.to.column].colour
+
+            const getOppositeColour = this.getOppositeColour(team)
+    
+            this.verifyGameStatus();
+        }
+        
+    }
+
+    verifyGameStatus(){
+        const isCheck = this.isKingInDanger(this.colourToMove);
+
+        if(isCheck){
+            this.verifyMate(this.colourToMove);
+        } else {
+            this.verifyStalemate(this.colourToMove);
+        }
+
+        this.verifyHalfmoveClock();
+    }
+
+    verifyMate(team){
+        const piecesWithMoves = this.getPiecesWithMoves(team);
+        let mate = true;
+
+        for(let numberOfPiece = 0; numberOfPiece<piecesWithMoves.length; numberOfPiece++){
+            if(piecesWithMoves[numberOfPiece].moves.length > 0){
+                mate = false;
+                break;
+            }
+        }
+
+        if(mate){
+
+            const colourOfWinner = this.getOppositeColour(team) === "w" ? "White" : "Black";
+
+            this.game.end = true;
+            this.game.winner = this.getOppositeColour(team);
+            this.game.reason = `${colourOfWinner} has won by checkmate`
+        }
+  
+    }
+
+    verifyStalemate(team){
+        const piecesWithMoves = this.getPiecesWithMoves(team);
+        let stalemate = true;
+        for(let numberOfPiece = 0; numberOfPiece<piecesWithMoves.length; numberOfPiece++){
+            if(piecesWithMoves[numberOfPiece].moves.length > 0){
+                stalemate = false;
+                break;
+            }
+        }
+
+        if(stalemate){
+            const colourBeingInStalemate = team === "w" ? "White" : "Black";
+        
+            this.game.end = true;
+            this.game.winner = "DRAW";
+            this.game.reason = `${colourBeingInStalemate} king is in stalemate`;
+        }
+ 
+    }
+
+    verifyHalfmoveClock(){
+        const fenFlags = this.fenFlags;
+
+        const fifthFenFlag = fenFlags[this.fenFlagNumeration.HALFMOVE_CLOCK];
+
+        const fifthFenFlagAsNumber = Number(fifthFenFlag);
+
+        if(fifthFenFlagAsNumber >=50){
+            this.game.end = true;
+            this.game.winner = "DRAW";
+            this.game.reason = "Draw, 50 moves without any action";
+        }
     }
 
     didGameEnd(){

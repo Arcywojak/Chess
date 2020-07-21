@@ -5,8 +5,8 @@ class Controller {
         this.chess = chess;
         this.chessBoard = chessBoard;
         this.gameMode = {
-            mode: this.gameMode,
-            computerColour: this.computerColour
+            mode: gameMode,
+            computerColour: computerColour
         }
     }
 
@@ -16,7 +16,7 @@ class Controller {
         //  AND
         //No computer plays OR It is not computer turn
         if( 
-            !this.chess.didGameEnd() && 
+            !this.chess.game.end && 
             ( (this.gameMode.mode === "h") || this.gameMode.computerColour !== this.chess.colourToMove ) 
             ){
 
@@ -62,16 +62,51 @@ class Controller {
         this.chess.makeMove(from, to);
         this.chessBoard.fillBoardInPieces(this.chess.FEN)
         this.chessBoard.removeLastMoveFields();
+        this.chessBoard.removeEndangeredField();
         this.chessBoard.markFieldsAsLastMove(from, to);
         this.chessBoard.removeActiveField();
+        if(this.chess.isCheck.status){
+            this.chessBoard.markFieldAsEndangered(this.chess.isCheck.coordinates);
+        }
 
-        console.log(this.chess.FEN)
+        if(this.chess.isPawnPromoting){
+
+            //we must take the opposite colour because the turn of promoting 
+            //pawn has ended despite the fact the he has not promoted yet.
+
+            const colour = this.chess.getOppositeColour(this.chess.colourToMove)
+
+            this.chessBoard.showPromotionBlock(to.rank, to.column, colour);
+        }
+
+        console.log(this.chess.game)
+    }
+
+    clickPromotionBlock(e){
+        if(e.target.nodeName === "IMG"){
+
+            const imageCharacter = e.target.id;
+
+            this.chess.promotePawn(imageCharacter)
+
+            this.chessBoard.fillBoardInPieces(this.chess.FEN);
+
+            this.chessBoard.removePromotionBlock();
+
+            if(this.chess.isCheck.status){
+                this.chessBoard.markFieldAsEndangered(this.chess.isCheck.coordinates);
+            }
+        }
     }
 
     addAllEventListeners(){
 
         this.chessBoard.board.addEventListener("click", (e) => {
             this.clickPiece(e)
+        })
+
+        this.chessBoard.promotionBlock.addEventListener("click", (e) => {
+            this.clickPromotionBlock(e);
         })
     }
 
