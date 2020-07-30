@@ -1,9 +1,10 @@
 
 class Controller {
 
-    constructor(chess, chessBoard, gameMode = "h", computerColour = "b"){
+    constructor(chess, chessBoard, userInterface, gameMode = "h", computerColour = "b"){
         this.chess = chess;
         this.chessBoard = chessBoard;
+        this.userInterface = userInterface;
         this.gameMode = {
             mode: gameMode,
             computerColour: computerColour
@@ -11,7 +12,7 @@ class Controller {
     }
 
     clickPiece(e){
-       // console.log(e.target )
+
         //Game does not end 
         //  AND
         //No computer plays OR It is not computer turn
@@ -79,7 +80,12 @@ class Controller {
             this.chessBoard.showPromotionBlock(to.rank, to.column, colour);
         }
 
-        console.log(this.chess.game)
+        this.userInterface.updateFen(this.chess.FEN)
+        this.userInterface.updateColour(this.chess.colourToMove);
+
+        if(this.chess.game.end){
+            this.chessBoard.showMessageBlock(this.chess.game.reason);
+        }
     }
 
     clickPromotionBlock(e){
@@ -108,12 +114,28 @@ class Controller {
         this.chessBoard.promotionBlock.addEventListener("click", (e) => {
             this.clickPromotionBlock(e);
         })
+
+        const resetButton = this.userInterface.interfaceBlock.querySelector(".game-info .restart-button");
+        
+        resetButton.addEventListener("click", this.resetGame);
+
+        const switchButton = this.userInterface.interfaceBlock.querySelector(".game-info .switch-button");
+        
+        switchButton.addEventListener("click", () => {
+            this.chessBoard.reverseBoard();
+        }); 
+
+        const endMessageButton = this.chessBoard.endMessageBlock.childNodes[3];
+
+        endMessageButton.addEventListener("click", () => {
+            this.chessBoard.hideMessageBlock();
+        })
     }
 
-    setGameMode(mode){
-        this.gameMode = mode;
-        this.computerColor
+    resetGame(){
+        window.location.reload();
     }
+
 }
 
 export default Controller

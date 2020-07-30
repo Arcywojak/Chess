@@ -10,12 +10,12 @@ class Chess {
     constructor(FEN, PGN){
         this.FEN = FEN || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         this.PGN = ''//(typeof(FEN) === "String" || typeof(PGN) !== "String")  ? "" : PGN;
-        this.reset();
+        this.reset(FEN, PGN);
     }
 
-    reset() {
-        if(this.PGN.length > 0) {
-            this.FEN = this.transformPgnIntoFen();
+    reset(FEN, PGN="") {
+        if(PGN.length > 0) {
+            FEN = this.transformPgnIntoFen();
         }
         this.game = {
             end: false,
@@ -1052,6 +1052,7 @@ getRookMoves(rank, column, team){
 
     updateFen(){
         this.updateFirstFenFlag();
+        this.updateSecondFenFlag();
     
     }
 
@@ -1102,6 +1103,20 @@ getRookMoves(rank, column, team){
         this.FEN = fenFlags.join(" ");
     }
 
+    updateSecondFenFlag(){
+        const fenFlags = this.fenFlags;
+
+        
+
+        if(fenFlags[this.fenFlagNumeration.SIDE_TO_MOVE] === "w"){
+            fenFlags[this.fenFlagNumeration.SIDE_TO_MOVE] = "b"
+        } else{
+            fenFlags[this.fenFlagNumeration.SIDE_TO_MOVE] = "w";
+        }
+
+        this.FEN = fenFlags.join(" ");
+    }
+
     updateThirdFenFlag(letters){
         const fenFlags = this.fenFlags;
 
@@ -1139,7 +1154,6 @@ getRookMoves(rank, column, team){
         const fenFlags = this.fenFlags;
 
         let fifthFenFlag = fenFlags[this.fenFlagNumeration.HALFMOVE_CLOCK];
-
         let fifthFenFlagAsNumber = Number(fifthFenFlag);
 
         if(number === 1){
@@ -1148,11 +1162,13 @@ getRookMoves(rank, column, team){
             fifthFenFlagAsNumber = 0;
         }
 
-        fifthFenFlag = toString(fifthFenFlagAsNumber);
+        fifthFenFlag = fifthFenFlagAsNumber.toString();
 
         fenFlags[this.fenFlagNumeration.HALFMOVE_CLOCK] = fifthFenFlag;
 
         this.FEN = fenFlags.join(" ");
+
+        
     }
 
     promotePawn(typeOfPiece){
@@ -1225,7 +1241,7 @@ getRookMoves(rank, column, team){
         
             this.game.end = true;
             this.game.winner = "DRAW";
-            this.game.reason = `${colourBeingInStalemate} king is in stalemate`;
+            this.game.reason = `Draw, ${colourBeingInStalemate} king is in stalemate`;
         }
  
     }
@@ -1237,10 +1253,10 @@ getRookMoves(rank, column, team){
 
         const fifthFenFlagAsNumber = Number(fifthFenFlag);
 
-        if(fifthFenFlagAsNumber >=50){
+        if(fifthFenFlagAsNumber >=100){
             this.game.end = true;
             this.game.winner = "DRAW";
-            this.game.reason = "Draw, 50 moves without any action";
+            this.game.reason = "Draw, 100 moves without any action";
         }
     }
 

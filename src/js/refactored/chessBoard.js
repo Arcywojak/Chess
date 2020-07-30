@@ -3,10 +3,11 @@
 class ChessBoard {
 
 
-    constructor(board, promotionBlock, clickable=true, draggable=true, gameMode="h"){
+    constructor(board, promotionBlock, endMessageBlock, clickable=true, draggable=true, gameMode="h"){
 
         this.board = board;
         this.promotionBlock = promotionBlock;
+        this.endMessageBlock = endMessageBlock
         this.clickable = clickable;
         this.draggable = draggable;
 
@@ -52,11 +53,11 @@ class ChessBoard {
                 field.style.width = "12.5%";
                 field.style.height = "12.5%";
                 field.style.position = "absolute";
-                field.style.webkitTransform = `translate(${column * 100}%, ${rank * 100}%)`;
-                field.style.MozTransform = `translate(${column * 100}%, ${rank * 100}%)`;
-                field.style.msTransform = `translate(${column * 100}%, ${rank * 100}%)`;
-                field.style.OTransform = `translate(${column * 100}%, ${rank * 100}%)`;
-                field.style.transform = `translate(${column * 100}%, ${rank * 100}%)`;
+                field.style.webkitTransform = `translate(${column * 100}%, ${rank * 100}%) rotate(0)`;
+                field.style.MozTransform = `translate(${column * 100}%, ${rank * 100}%) rotate(0)`;
+                field.style.msTransform = `translate(${column * 100}%, ${rank * 100}%) rotate(0)`;
+                field.style.OTransform = `translate(${column * 100}%, ${rank * 100}%) rotate(0)`;
+                field.style.transform = `translate(${column * 100}%, ${rank * 100}%) rotate(0)`;
 
                 field.classList.add(
                 "field",
@@ -374,6 +375,65 @@ class ChessBoard {
         const block = document.querySelector("result-of-game");
 
         block.classList.add("none");
+    }
+
+    reverseBoard(){
+
+       // this.reverseAllFields();
+
+        if(this.board.parentNode.style.transform === "rotate(180deg)"){
+
+            this.board.parentNode.style.transform = "" 
+
+            this.reverseAllFields(false);
+
+        } else {
+
+            this.board.parentNode.style.transform = "rotate(180deg)";
+
+            this.reverseAllFields(true)
+        }
+
+    }
+
+    reverseAllFields(fromWhiteToBlack){
+        const fields = this.board.querySelectorAll(".field");
+
+            fields.forEach(field => {
+                
+                let transformStyle = field.style.transform.split(" ");
+
+                //Transform style are 3 words of style: 
+                // 0. translate(X%,
+                // 1. X%)
+                // 2. rotate(Xdeg)
+
+                let rotateStyle = transformStyle[2];
+
+                if(fromWhiteToBlack){
+                    rotateStyle = "rotate(180deg)";
+                } else {
+                    rotateStyle = "rotate(0)"; 
+                }
+
+                transformStyle[2] = rotateStyle;
+
+                const transformStyleAsString = transformStyle.join(" ")
+
+                field.style.transform = transformStyleAsString ;
+
+            })
+    }
+
+    showMessageBlock(text){
+
+      this.endMessageBlock.childNodes[1].innerText = text;
+
+      this.endMessageBlock.classList.remove("none");
+    }
+
+    hideMessageBlock(){
+        this.endMessageBlock.classList.add("none");
     }
 }
 
